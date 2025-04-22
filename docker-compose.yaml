@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  directus:
+    image: directus/directus:latest
+    ports:
+      - "8055:8055"
+    environment:
+      KEY: 'your-project-key'
+      SECRET: 'super-secret-key'
+      ADMIN_EMAIL: 'admin@tu-sitio.com'
+      ADMIN_PASSWORD: 'admin'
+      DB_CLIENT: 'sqlite3'
+      DB_FILENAME: '/data/db.sqlite'
+      STORAGE_LOCATIONS: 's3'
+      STORAGE_S3_KEY: 'your-aws-access-key'
+      STORAGE_S3_SECRET: 'your-aws-secret'
+      STORAGE_S3_BUCKET: 'nombre-del-bucket'
+      STORAGE_S3_REGION: 'us-east-1'
+      STORAGE_S3_ENDPOINT: 'https://s3.amazonaws.com'
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+
