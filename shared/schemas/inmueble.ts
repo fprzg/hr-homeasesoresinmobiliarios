@@ -26,7 +26,7 @@ const metadataSchema = z.object({
     ubicacion: z.string(),
     precio: z.number(),
     fechaPublicacion: z.string().datetime(),
-    pordataUrl: z.string().url(),
+    portadaUrl: z.string().url(),
     videoUrl: z.string().url().optional(),
     tags: z.array(z.string()).optional(),
 });

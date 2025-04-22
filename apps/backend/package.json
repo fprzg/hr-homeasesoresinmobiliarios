@@ -7,6 +7,7 @@
     "start": "bun ./index.ts",
     "dev": "bun --watch ./index.ts"
   },
+  "workspaces": ["apps/*", "shared"],
   "devDependencies": {
     "@types/bun": "latest"
   },
@@ -14,6 +15,9 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@project/shared": "workspace:*",
+
+    "@hono/zod-validator": "^0.4.3",
     "hono": "^4.7.7",
     "zod": "^3.24.3"
   }

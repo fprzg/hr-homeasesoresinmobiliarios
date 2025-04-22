@@ -9,11 +9,17 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "workspaces": ["apps/*", "shared"],
   "dependencies": {
+    "@project/shared": "workspace:*",
+
     "@radix-ui/react-slot": "^1.2.0",
     "@tailwindcss/vite": "^4.1.4",
     "@tanstack/react-query": "^5.74.4",
     "@tanstack/react-router": "^1.116.0",
+    "@tiptap/pm": "^2.11.7",
+    "@tiptap/react": "^2.11.7",
+    "@tiptap/starter-kit": "^2.11.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.503.0",
