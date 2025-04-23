@@ -7,18 +7,19 @@
     "start": "bun ./index.ts",
     "dev": "bun --watch ./index.ts"
   },
-  "workspaces": ["apps/*", "shared"],
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "^1.2.10",
+    "drizzle-kit": "^0.31.0"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "@project/shared": "workspace:*",
-
     "@hono/zod-validator": "^0.4.3",
+    "drizzle-orm": "^0.42.0",
     "hono": "^4.7.7",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.7",
     "zod": "^3.24.3"
   }
 }

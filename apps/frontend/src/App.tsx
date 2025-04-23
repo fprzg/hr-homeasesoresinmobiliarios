@@ -1,25 +1,16 @@
-import './App.css'
-import { EditorProvider, FloatingMenu, BubbleMenu } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ContentEditor } from "@/components/content-editor";
 
-const extensions = [StarterKit]
-
-const content = '<p>Hello World!</p>'
-
-const Tiptap = () => {
-  return (
-    <EditorProvider extensions={extensions} content={content}>
-      <FloatingMenu editor={null}>This is the floating menu</FloatingMenu>
-      <BubbleMenu editor={null}>This is the bubble menu</BubbleMenu>
-    </EditorProvider>
-  )
-}
+const queryClient = new QueryClient();
 
 function App() {
   return (
-  <Tiptap></Tiptap>
-  )
+    <QueryClientProvider client={queryClient}>
+      <div className="min-h-screen bg-gray-50">
+        <ContentEditor />
+      </div>
+    </QueryClientProvider>
+  );
 }
 
-export default App
-
+export default App;
