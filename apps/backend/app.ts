@@ -8,9 +8,9 @@ const app = new Hono();
 app.use("*", logger());
 
 const apiRotues = app.basePath("/api")
-  .route("/inmueble", routes.inmuebles)
-  .route("/categoria", routes.categorias)
-  .route("/usuario", routes.usuarios)
+  .route("/inmuebles", routes.inmuebles)
+  .route("/categorias", routes.categorias)
+  .route("/usuarios", routes.usuarios)
   .route("/stats", routes.stats);
 
 app.get("/api/test", (c) => {

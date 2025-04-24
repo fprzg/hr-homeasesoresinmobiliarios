@@ -8,6 +8,7 @@
     "dev": "bun --watch ./index.ts"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/bun": "^1.2.10",
     "drizzle-kit": "^0.31.0"
   },
@@ -16,6 +17,7 @@
   },
   "dependencies": {
     "@hono/zod-validator": "^0.4.3",
+    "bcrypt": "^5.1.1",
     "drizzle-orm": "^0.42.0",
     "hono": "^4.7.7",
     "jsonwebtoken": "^9.0.2",

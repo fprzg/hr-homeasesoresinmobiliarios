@@ -6,7 +6,6 @@ import { categoriaSchema } from "@shared/zodSchemas/categoria";
 import { sql, eq } from "drizzle-orm"
 import z from "zod";
 import { db } from "../db/client"
-import { jwtMiddleware } from "../services/auth";
 
 export const categorias =  new Hono()
     .get('/api/categorias', zValidator('query', paginacionSchema), async (c) => {
@@ -44,7 +43,7 @@ export const categorias =  new Hono()
     })
     .post(
         '/api/categorias',
-        jwtMiddleware,
+        //jwtMiddleware,
         zValidator('json', categoriaSchema),
         async (c) => {
             const data = c.req.valid('json');
@@ -54,7 +53,7 @@ export const categorias =  new Hono()
     )
     .put(
         '/api/categorias/:id',
-        jwtMiddleware,
+        //jwtMiddleware,
         zValidator('json', categoriaSchema.partial()),
         async (c) => {
             const id = z.number().int().parse(Number(c.req.param('id')));
@@ -73,7 +72,8 @@ export const categorias =  new Hono()
             return c.json(categoria, 200);
         }
     )
-    .delete('/api/categorias/:id', jwtMiddleware, async (c) => {
+    .delete('/api/categorias/:id', //jwtMiddleware,
+    async (c) => {
         const id = z.number().int().parse(Number(c.req.param('id')));
         const result = await db.delete(schema.categorias).where(eq(schema.categorias.id, id)).returning().get();
 

@@ -17,6 +17,15 @@ export const categorias = sqliteTable('categorias', {
 
 export const usuarios = sqliteTable('usuarios', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  email: text('email').notNull().unique(),
+  username: text('username').notNull().unique(),
   password: text('password').notNull(),
+});
+
+export const jwtTokensTable = sqliteTable('jwt_tokens', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => usuarios.id),
+    token: text('token').notNull().unique(),
+    expiresAt: integer('expires_at').notNull(), // Unix timestamp
 });

@@ -3,7 +3,6 @@ import { zValidator } from "@hono/zod-validator";
 import * as inmueble from "@shared/zodSchemas/inmueble";
 import * as query from "@shared/zodSchemas/query";
 import { z } from "zod";
-import { jwtMiddleware } from "../services/auth";
 import { InmuebleModel } from "db/models/inmueblesModel";
 
 export const inmuebles = new Hono()
@@ -32,7 +31,7 @@ export const inmuebles = new Hono()
     })
     .post(
         '/',
-        jwtMiddleware,
+        //jwtMiddleware,
         zValidator('json', inmueble.inmuebleSchema),
         async (c) => {
             const data = c.req.valid('json');
@@ -42,7 +41,7 @@ export const inmuebles = new Hono()
     )
     .put(
         '/:id',
-        jwtMiddleware,
+        //jwtMiddleware,
         zValidator('json', inmueble.inmuebleSchema.partial()),
         async (c) => {
             const id = z.string().parse(c.req.param('id'));
@@ -56,13 +55,14 @@ export const inmuebles = new Hono()
             return c.json(inmueble, 200);
         }
     )
-    .delete('/:id', jwtMiddleware, async (c) => {
-        const id = z.string().parse(c.req.param('id'));
-        const result = await InmuebleModel.eliminate(id)
+    .delete('/:id', //jwtMiddleware,
+        async (c) => {
+            const id = z.string().parse(c.req.param('id'));
+            const result = await InmuebleModel.eliminate(id)
 
-        if (!result) {
-            return c.json({ error: 'Inmueble no encontrado' }, 404);
-        }
+            if (!result) {
+                return c.json({ error: 'Inmueble no encontrado' }, 404);
+            }
 
-        return c.status(204);
-    });
+            return c.status(204);
+        });
