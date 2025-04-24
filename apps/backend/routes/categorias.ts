@@ -1,11 +1,11 @@
 import { Hono, type MiddlewareHandler } from "hono";
-import * as schema from "../db/schemas"
 import { zValidator } from "@hono/zod-validator";
 import { paginacionSchema } from "@shared/zodSchemas/query"
 import { categoriaSchema } from "@shared/zodSchemas/categoria";
 import { sql, eq } from "drizzle-orm"
 import z from "zod";
 import { db } from "../db/client"
+import * as schema from "../db/schemas"
 
 export const categorias =  new Hono()
     .get('/api/categorias', zValidator('query', paginacionSchema), async (c) => {
