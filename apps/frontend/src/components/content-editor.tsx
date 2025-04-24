@@ -7,14 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { BloquePersonalizadoSchema, InmueblePage, getDefaultInmueblePage } from "@shared/schemas/inmueble";
+import { BloquePersonalizadoSchema, Inmueble, getDefaultInmueblePage } from "@shared/zodSchemas/inmueble";
 import { Plus, Trash2, Image, Video, MapPin, Youtube } from "lucide-react";
 
 export function ContentEditor() {
-  const [inmueblePage, setInmueblePage] = useState<InmueblePage>(getDefaultInmueblePage());
+  const [inmuebleData, setInmuebleData] = useState<Inmueble>(getDefaultInmueblePage());
   
   const saveMutation = useMutation({
-    mutationFn: async (data: InmueblePage) => {
+    mutationFn: async (data: Inmueble) => {
       const response = await fetch("/api/inmueble", {
         method: "POST",
         headers: {
@@ -32,7 +32,7 @@ export function ContentEditor() {
   });
   
   const addBlock = (blockType: BloquePersonalizadoSchema["tipo"]) => {
-    const newContent = [...inmueblePage.contenido];
+    const newContent = [...inmuebleData.contenido];
     
     switch (blockType) {
       case "Titulo":
@@ -52,35 +52,35 @@ export function ContentEditor() {
         break;
     }
     
-    setInmueblePage({
-      ...inmueblePage,
+    setInmuebleData({
+      ...inmuebleData,
       contenido: newContent,
     });
   };
   
   const updateBlockContent = (index: number, content: any) => {
-    const newContent = [...inmueblePage.contenido];
+    const newContent = [...inmuebleData.contenido];
     newContent[index] = { ...newContent[index], ...content };
     
-    setInmueblePage({
-      ...inmueblePage,
+    setInmuebleData({
+      ...inmuebleData,
       contenido: newContent,
     });
   };
   
   const removeBlock = (index: number) => {
-    const newContent = [...inmueblePage.contenido];
+    const newContent = [...inmuebleData.contenido];
     newContent.splice(index, 1);
     
-    setInmueblePage({
-      ...inmueblePage,
+    setInmuebleData({
+      ...inmuebleData,
       contenido: newContent,
     });
   };
   
   const handleSave = () => {
-    console.log(inmueblePage);
-    saveMutation.mutate(inmueblePage);
+    console.log(inmuebleData);
+    saveMutation.mutate(inmuebleData);
   };
   
   return (
@@ -98,7 +98,7 @@ export function ContentEditor() {
       
       <div className="grid grid-cols-3 gap-4">
         <div className="col-span-2">
-          {inmueblePage.contenido.map((block, index) => (
+          {inmuebleData.contenido.map((block, index) => (
             <Card key={index} className="mb-4 overflow-hidden">
               <CardContent className="p-4">
                 {block.tipo === "Titulo" && (
@@ -252,10 +252,10 @@ export function ContentEditor() {
                   <Label htmlFor="ubicacion">Ubicación</Label>
                   <Input
                     id="ubicacion"
-                    value={inmueblePage.metadata.ubicacion}
-                    onChange={(e) => setInmueblePage({
-                      ...inmueblePage,
-                      metadata: { ...inmueblePage.metadata, ubicacion: e.target.value }
+                    value={inmuebleData.metadata.ubicacion}
+                    onChange={(e) => setInmuebleData({
+                      ...inmuebleData,
+                      metadata: { ...inmuebleData.metadata, ubicacion: e.target.value }
                     })}
                     className="mt-1"
                   />
@@ -265,10 +265,10 @@ export function ContentEditor() {
                   <Input
                     id="precio"
                     type="number"
-                    value={inmueblePage.metadata.precio}
-                    onChange={(e) => setInmueblePage({
-                      ...inmueblePage,
-                      metadata: { ...inmueblePage.metadata, precio: Number(e.target.value) }
+                    value={inmuebleData.metadata.precio}
+                    onChange={(e) => setInmuebleData({
+                      ...inmuebleData,
+                      metadata: { ...inmuebleData.metadata, precio: Number(e.target.value) }
                     })}
                     className="mt-1"
                   />
@@ -277,10 +277,10 @@ export function ContentEditor() {
                   <Label htmlFor="portada">URL de Portada</Label>
                   <Input
                     id="portada"
-                    value={inmueblePage.metadata.portadaUrl}
-                    onChange={(e) => setInmueblePage({
-                      ...inmueblePage,
-                      metadata: { ...inmueblePage.metadata, portadaUrl: e.target.value }
+                    value={inmuebleData.metadata.portadaUrl}
+                    onChange={(e) => setInmuebleData({
+                      ...inmuebleData,
+                      metadata: { ...inmuebleData.metadata, portadaUrl: e.target.value }
                     })}
                     className="mt-1"
                   />
@@ -289,10 +289,10 @@ export function ContentEditor() {
                   <Label htmlFor="videoUrl">URL de Video</Label>
                   <Input
                     id="videoUrl"
-                    value={inmueblePage.metadata.videoUrl || ""}
-                    onChange={(e) => setInmueblePage({
-                      ...inmueblePage,
-                      metadata: { ...inmueblePage.metadata, videoUrl: e.target.value }
+                    value={inmuebleData.metadata.videoUrl || ""}
+                    onChange={(e) => setInmuebleData({
+                      ...inmuebleData,
+                      metadata: { ...inmuebleData.metadata, videoUrl: e.target.value }
                     })}
                     className="mt-1"
                   />
