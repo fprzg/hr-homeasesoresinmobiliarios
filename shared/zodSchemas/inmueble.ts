@@ -32,7 +32,7 @@ const metadataSchema = z.object({
   tags: z.array(z.string()).optional(),
 });
 
-export const inmueblePageSchema = z.object({
+export const inmuebleSchema = z.object({
   id: z.string(),
   slug: z.string(),
   categoria: z.string(),
@@ -42,9 +42,9 @@ export const inmueblePageSchema = z.object({
 });
 
 export type BloquePersonalizadoSchema = z.infer<typeof bloquePersonalizadoSchema>;
-export type InmueblePage = z.infer<typeof inmueblePageSchema>;
+export type Inmueble = z.infer<typeof inmuebleSchema>;
 
-export function getDefaultInmueblePage() : InmueblePage{
+export function getDefaultInmueblePage() : Inmueble{
   return {
   	id: crypto.randomUUID(),
   	slug: "nuevo-inmueble",
