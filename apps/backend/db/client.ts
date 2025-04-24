@@ -41,4 +41,4 @@ export async function initializeDatabase() {
   UsuarioModel.create("mememe", "11001100")
 }
 
-//await initializeDatabase();
+await initializeDatabase();
