@@ -17,7 +17,7 @@ function RootLayout() {
             </div>
             <div className="hidden md:flex space-x-8">
               <Link to="/" className="[&.active]:font-bold text-gray-800 hover:text-blue-600 transition">Inicio</Link>
-              <Link to="/inmuebles" className="[&.active]:font-bold text-gray-800 hover:text-blue-600 transition">Propiedades</Link>
+              <Link to="/inmuebles" className="[&.active]:font-bold text-gray-800 hover:text-blue-600 transition">Inmuebles</Link>
               <Link to="/about" className="[&.active]:font-bold text-gray-800 hover:text-blue-600 transition">Servicios</Link>
               <Link to="/about" className="[&.active]:font-bold text-gray-800 hover:text-blue-600 transition">Equipo</Link>
               <Link to="/about" className="[&.active]:font-bold text-gray-800 hover:text-blue-600 transition">Contacto</Link>

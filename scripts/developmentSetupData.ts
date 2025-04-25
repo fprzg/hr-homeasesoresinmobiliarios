@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
-import { db } from "../db/client"
-import * as schema from "../db/schemas"
-import { type Inmueble } from "@shared/zodSchemas/inmueble";
+import { db } from "../apps/backend/db/client"
+import * as schema from "../apps/backend/db/schemas"
+import { type Inmueble } from "../shared/zodSchemas/inmueble";
 
 const username = process.env.DEV_DB_USERNAME || "admin";
 const password = process.env.DEV_DB_PASSWORD || "pa55word";
@@ -32,7 +32,7 @@ const fakeInmuebles: Inmueble[] = [
             ubicacion: "Palermo, Buenos Aires",
             precio: 120000,
             fechaPublicacion: "2025-04-22T00:00:00Z",
-            portadaUrl: "https://s3.example.com/portada.jpg",
+            portadaUrl: "https://placehold.co/600x400/000000/FFF",
             tags: ["jardín", "cochera"],
         },
         contenido: [
@@ -56,7 +56,7 @@ const fakeInmuebles: Inmueble[] = [
             ubicacion: "Recoleta, Buenos Aires",
             precio: 85000,
             fechaPublicacion: "2025-04-20T00:00:00Z",
-            portadaUrl: "https://s3.example.com/portada_depto1.jpg",
+            portadaUrl: "https://placehold.co/600x400/000066/FFF",
             tags: ["balcón", "piscina"],
         },
         contenido: [
@@ -83,7 +83,7 @@ const fakeInmuebles: Inmueble[] = [
             ubicacion: "Belgrano, Buenos Aires",
             precio: 150000,
             fechaPublicacion: "2025-04-18T00:00:00Z",
-            portadaUrl: "https://s3.example.com/portada_casa2.jpg",
+            portadaUrl: "https://placehold.co/600x400/006600/FFF",
             tags: ["patio", "quincho"],
         },
         contenido: [
@@ -107,7 +107,7 @@ const fakeInmuebles: Inmueble[] = [
             ubicacion: "San Telmo, Buenos Aires",
             precio: 65000,
             fechaPublicacion: "2025-04-21T00:00:00Z",
-            portadaUrl: "https://s3.example.com/portada_loft.jpg",
+            portadaUrl: "https://placehold.co/600x400/660000/FFF",
             tags: ["terraza", "estilo industrial"],
         },
         contenido: [
@@ -131,7 +131,7 @@ const fakeInmuebles: Inmueble[] = [
             ubicacion: "Villa Urquiza, Buenos Aires",
             precio: 95000,
             fechaPublicacion: "2025-04-19T00:00:00Z",
-            portadaUrl: "https://s3.example.com/portada_ph.jpg",
+            portadaUrl: "https://placehold.co/600x400/666600/FFF",
             tags: ["terraza", "parilla"],
         },
         contenido: [
@@ -155,7 +155,7 @@ const fakeInmuebles: Inmueble[] = [
             ubicacion: "Núñez, Buenos Aires",
             precio: 180000,
             fechaPublicacion: "2025-04-17T00:00:00Z",
-            portadaUrl: "https://s3.example.com/portada_casa3.jpg",
+            portadaUrl: "https://placehold.co/600x400/660066/FFF",
             tags: ["piscina", "gimnasio"],
         },
         contenido: [

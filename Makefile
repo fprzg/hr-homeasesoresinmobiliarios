@@ -44,7 +44,7 @@ db/create: db/confirm_db_path
 dev/setup: db/confirm_db_path
 	@echo Creating the database...
 	@$(MAKE) db/create
-	@./apps/backend/scripts/developmentSetupData.ts
+	@./scripts/developmentSetupData.ts
 
 
 ## prod/deploy: Deploys the app to production. Requires server's ssh key.
