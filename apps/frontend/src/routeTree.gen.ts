@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
@@ -15,9 +17,21 @@ import { Route as InmueblesImport } from './routes/inmuebles'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashIndexImport } from './routes/dash/index'
+import { Route as DashLogoutImport } from './routes/dash/logout'
 import { Route as DashLoginImport } from './routes/dash/login'
+import { Route as DashAuthenticatedImport } from './routes/dash/_authenticated'
+
+// Create Virtual Routes
+
+const DashImport = createFileRoute('/dash')()
 
 // Create/Update Routes
+
+const DashRoute = DashImport.update({
+  id: '/dash',
+  path: '/dash',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const InmueblesRoute = InmueblesImport.update({
   id: '/inmuebles',
@@ -38,15 +52,26 @@ const IndexRoute = IndexImport.update({
 } as any)
 
 const DashIndexRoute = DashIndexImport.update({
-  id: '/dash/',
-  path: '/dash/',
-  getParentRoute: () => rootRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashRoute,
+} as any)
+
+const DashLogoutRoute = DashLogoutImport.update({
+  id: '/logout',
+  path: '/logout',
+  getParentRoute: () => DashRoute,
 } as any)
 
 const DashLoginRoute = DashLoginImport.update({
-  id: '/dash/login',
-  path: '/dash/login',
-  getParentRoute: () => rootRoute,
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => DashRoute,
+} as any)
+
+const DashAuthenticatedRoute = DashAuthenticatedImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => DashRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -74,39 +99,79 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InmueblesImport
       parentRoute: typeof rootRoute
     }
+    '/dash': {
+      id: '/dash'
+      path: '/dash'
+      fullPath: '/dash'
+      preLoaderRoute: typeof DashImport
+      parentRoute: typeof rootRoute
+    }
+    '/dash/_authenticated': {
+      id: '/dash/_authenticated'
+      path: '/dash'
+      fullPath: '/dash'
+      preLoaderRoute: typeof DashAuthenticatedImport
+      parentRoute: typeof DashRoute
+    }
     '/dash/login': {
       id: '/dash/login'
-      path: '/dash/login'
+      path: '/login'
       fullPath: '/dash/login'
       preLoaderRoute: typeof DashLoginImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof DashImport
+    }
+    '/dash/logout': {
+      id: '/dash/logout'
+      path: '/logout'
+      fullPath: '/dash/logout'
+      preLoaderRoute: typeof DashLogoutImport
+      parentRoute: typeof DashImport
     }
     '/dash/': {
       id: '/dash/'
-      path: '/dash'
-      fullPath: '/dash'
+      path: '/'
+      fullPath: '/dash/'
       preLoaderRoute: typeof DashIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof DashImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface DashRouteChildren {
+  DashAuthenticatedRoute: typeof DashAuthenticatedRoute
+  DashLoginRoute: typeof DashLoginRoute
+  DashLogoutRoute: typeof DashLogoutRoute
+  DashIndexRoute: typeof DashIndexRoute
+}
+
+const DashRouteChildren: DashRouteChildren = {
+  DashAuthenticatedRoute: DashAuthenticatedRoute,
+  DashLoginRoute: DashLoginRoute,
+  DashLogoutRoute: DashLogoutRoute,
+  DashIndexRoute: DashIndexRoute,
+}
+
+const DashRouteWithChildren = DashRoute._addFileChildren(DashRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/inmuebles': typeof InmueblesRoute
+  '/dash': typeof DashAuthenticatedRoute
   '/dash/login': typeof DashLoginRoute
-  '/dash': typeof DashIndexRoute
+  '/dash/logout': typeof DashLogoutRoute
+  '/dash/': typeof DashIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/inmuebles': typeof InmueblesRoute
-  '/dash/login': typeof DashLoginRoute
   '/dash': typeof DashIndexRoute
+  '/dash/login': typeof DashLoginRoute
+  '/dash/logout': typeof DashLogoutRoute
 }
 
 export interface FileRoutesById {
@@ -114,16 +179,35 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/inmuebles': typeof InmueblesRoute
+  '/dash': typeof DashRouteWithChildren
+  '/dash/_authenticated': typeof DashAuthenticatedRoute
   '/dash/login': typeof DashLoginRoute
+  '/dash/logout': typeof DashLogoutRoute
   '/dash/': typeof DashIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/inmuebles' | '/dash/login' | '/dash'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/inmuebles'
+    | '/dash'
+    | '/dash/login'
+    | '/dash/logout'
+    | '/dash/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/inmuebles' | '/dash/login' | '/dash'
-  id: '__root__' | '/' | '/about' | '/inmuebles' | '/dash/login' | '/dash/'
+  to: '/' | '/about' | '/inmuebles' | '/dash' | '/dash/login' | '/dash/logout'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/inmuebles'
+    | '/dash'
+    | '/dash/_authenticated'
+    | '/dash/login'
+    | '/dash/logout'
+    | '/dash/'
   fileRoutesById: FileRoutesById
 }
 
@@ -131,16 +215,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   InmueblesRoute: typeof InmueblesRoute
-  DashLoginRoute: typeof DashLoginRoute
-  DashIndexRoute: typeof DashIndexRoute
+  DashRoute: typeof DashRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   InmueblesRoute: InmueblesRoute,
-  DashLoginRoute: DashLoginRoute,
-  DashIndexRoute: DashIndexRoute,
+  DashRoute: DashRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -156,8 +238,7 @@ export const routeTree = rootRoute
         "/",
         "/about",
         "/inmuebles",
-        "/dash/login",
-        "/dash/"
+        "/dash"
       ]
     },
     "/": {
@@ -169,11 +250,30 @@ export const routeTree = rootRoute
     "/inmuebles": {
       "filePath": "inmuebles.tsx"
     },
+    "/dash": {
+      "filePath": "dash",
+      "children": [
+        "/dash/_authenticated",
+        "/dash/login",
+        "/dash/logout",
+        "/dash/"
+      ]
+    },
+    "/dash/_authenticated": {
+      "filePath": "dash/_authenticated.tsx",
+      "parent": "/dash"
+    },
     "/dash/login": {
-      "filePath": "dash/login.tsx"
+      "filePath": "dash/login.tsx",
+      "parent": "/dash"
+    },
+    "/dash/logout": {
+      "filePath": "dash/logout.tsx",
+      "parent": "/dash"
     },
     "/dash/": {
-      "filePath": "dash/index.tsx"
+      "filePath": "dash/index.tsx",
+      "parent": "/dash"
     }
   }
 }
