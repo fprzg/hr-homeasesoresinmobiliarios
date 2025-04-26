@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { client } from '@/api';
 import { useEffect, useState } from 'react';
 import { Inmueble } from '@shared/zodSchemas/inmueble';
-import { InmuebleBlock } from '@/components/inmueble';
+import { InmueblePreview } from '@/components/inmueble';
 
 export const Route = createFileRoute('/inmuebles/')({
   component: AllInmuebles,
@@ -39,7 +39,7 @@ function AllInmuebles() {
     <div className='mx-auto w-[80%] md:w-[80%] lg:w-[65%] xl:w-[50%] gap-4'>
       {inmuebles.length > 0 ? (
         inmuebles.map((inmueble) => (
-          <InmuebleBlock key={inmueble.id} {...inmueble} />
+          <InmueblePreview key={inmueble.id} {...inmueble} />
         ))
       ) : (
         <div>No se encontraron inmuebles.</div>

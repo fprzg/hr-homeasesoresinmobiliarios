@@ -2,69 +2,45 @@ import { z } from "zod";
 
 export const bloquePersonalizadoSchema = z.discriminatedUnion("tipo", [
   z.object({
-    tipo: z.literal("Titulo"),
-    texto: z.string(),
-  }),
-  z.object({
-    tipo: z.literal("Descripcion"),
+    tipo: z.literal("Texto"),
     texto: z.string(),
   }),
   z.object({
     tipo: z.literal("CarruselImagenes"),
     imagenes: z.array(z.string().url()),
   }),
-  z.object({
-    tipo: z.literal("VideoEmbebido"),
-    video: z.string().url(),
-  }),
-  z.object({
-    tipo: z.literal("Localizacion"),
-    texto: z.string(),
-  }),
 ]);
 
 const metadataSchema = z.object({
-  ubicacion: z.string(),
-  precio: z.number(),
+  portadaUrl: z.string().url(),
+  descripcion: z.string().optional(),
   fechaPublicacion: z.string().datetime(),
-  portadaUrl: z.string().url().optional(),
-  videoUrl: z.string().url().optional(),
+  ubicacion: z.string(),
+  precio: z.number().optional(),
   tags: z.array(z.string()).optional(),
 });
 
 export const inmuebleSchema = z.object({
   id: z.string(),
-  slug: z.string(),
   categoria: z.string(),
   titulo: z.string(),
   metadata: metadataSchema,
   contenido: z.array(bloquePersonalizadoSchema),
 });
 
-export type BloquePersonalizadoSchema = z.infer<typeof bloquePersonalizadoSchema>;
+export type BloquePersonalizado = z.infer<typeof bloquePersonalizadoSchema>;
 export type Inmueble = z.infer<typeof inmuebleSchema>;
 
-export function getDefaultInmueblePage() : Inmueble{
+export function crearInmuebleBase(): Inmueble {
   return {
-  	id: crypto.randomUUID(),
-  	slug: "nuevo-inmueble",
-  	categoria: "casas",
-  	titulo: "",
-  	metadata: {
-    	ubicacion: "",
-    	precio: 0,
-    	fechaPublicacion: new Date().toISOString(),
-			portadaUrl: "",
-  	},
-  	contenido: [
-      {
-        tipo: "Titulo",
-        texto: "Nueva página",
-      },
-      {
-        tipo: "Descripcion",
-        texto: "Agregar una descripción...",
-      }
-    ],
+    id: crypto.randomUUID(),
+    categoria: "",
+    titulo: "",
+    metadata: {
+      portadaUrl: "https://placehold.co/600x400/666600/FFF",
+      fechaPublicacion: new Date().toISOString(),
+      ubicacion: "",
+    },
+    contenido: [],
   };
 }

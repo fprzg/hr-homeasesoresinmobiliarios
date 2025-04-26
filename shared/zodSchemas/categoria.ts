@@ -6,4 +6,4 @@ export const categoriaSchema = z.object({
   descripcion: z.string().min(8),
 });
 
-export type CategoriaSchema = z.infer<typeof categoriaSchema>;
+export type Categoria = z.infer<typeof categoriaSchema>;

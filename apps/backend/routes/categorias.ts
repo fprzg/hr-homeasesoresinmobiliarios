@@ -1,14 +1,15 @@
 import { Hono, type MiddlewareHandler } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { paginacionSchema } from "@shared/zodSchemas/query"
-import { categoriaSchema } from "@shared/zodSchemas/categoria";
+import { categoriaSchema, type Categoria } from "@shared/zodSchemas/categoria";
 import { sql, eq } from "drizzle-orm"
 import z from "zod";
 import { db } from "../db/client"
 import * as schema from "../db/schemas"
 
 export const categorias =  new Hono()
-    .get('/api/categorias', zValidator('query', paginacionSchema), async (c) => {
+    .get('/', async (c) => {
+        /*
         const { page, limit } = c.req.valid('query');
         const offset = (page - 1) * limit;
 
@@ -16,8 +17,25 @@ export const categorias =  new Hono()
         const count = await db.select({ count: sql`count(*)` }).from(schema.categorias);
 
         return c.json({ data: categorias, total: count, page, limit }, 200);
+        */
+       const categoria: Categoria = {
+        id: 1,
+        nombre: "casas",
+        descripcion: "casas",
+       }
+       return c.json([categoria], 200)
     })
-    .get('/api/categorias/:id', zValidator('query', paginacionSchema), async (c) => {
+    .post(
+        '/',
+        //jwtMiddleware,
+        zValidator('json', categoriaSchema),
+        async (c) => {
+            const data = c.req.valid('json');
+            const categoria = await db.insert(schema.categorias).values(data).returning().get();
+            return c.json(categoria, 201);
+        }
+    )
+    .get('/:id', zValidator('query', paginacionSchema), async (c) => {
         const id = z.number().int().parse(Number(c.req.param('id')));
         const { page, limit } = c.req.valid('query');
         const offset = (page - 1) * limit;
@@ -41,18 +59,8 @@ export const categorias =  new Hono()
 
         return c.json({ data: inmuebles, total: count, page, limit }, 200);
     })
-    .post(
-        '/api/categorias',
-        //jwtMiddleware,
-        zValidator('json', categoriaSchema),
-        async (c) => {
-            const data = c.req.valid('json');
-            const categoria = await db.insert(schema.categorias).values(data).returning().get();
-            return c.json(categoria, 201);
-        }
-    )
     .put(
-        '/api/categorias/:id',
+        '/:id',
         //jwtMiddleware,
         zValidator('json', categoriaSchema.partial()),
         async (c) => {
@@ -72,7 +80,7 @@ export const categorias =  new Hono()
             return c.json(categoria, 200);
         }
     )
-    .delete('/api/categorias/:id', //jwtMiddleware,
+    .delete('/:id', //jwtMiddleware,
     async (c) => {
         const id = z.number().int().parse(Number(c.req.param('id')));
         const result = await db.delete(schema.categorias).where(eq(schema.categorias.id, id)).returning().get();

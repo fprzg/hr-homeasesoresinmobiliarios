@@ -1,9 +1,9 @@
-import { Inmueble as InmuebleType } from "@shared/zodSchemas/inmueble";
+import { BloquePersonalizado, inmuebleSchema, Inmueble as InmuebleType } from "@shared/zodSchemas/inmueble";
 import { Button } from "./ui/button";
 import { useNavigate } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
-const precioLegible = (cantidad: number) => {
+function precioLegible(cantidad: number) {
     const numero = Number(cantidad);
     return numero.toLocaleString('es-MX', {
         style: 'currency',
@@ -13,7 +13,7 @@ const precioLegible = (cantidad: number) => {
     });
 }
 
-const fechaLegible = (fechaOriginal: string) => {
+function fechaLegible(fechaOriginal: string) {
     const fecha = new Date(fechaOriginal);
     const legible = fecha.toLocaleDateString('es-ES', {
         weekday: 'long',
@@ -24,7 +24,29 @@ const fechaLegible = (fechaOriginal: string) => {
     return legible;
 };
 
-export function InmuebleBlock(inmueble: InmuebleType) {
+function renderBloque(bloque: BloquePersonalizado, key?: number, className?: string) {
+    className = `mb-6 ${className}`
+    switch (bloque.tipo) {
+        case "CarruselImagenes":
+            return (
+                <div key={key} className={className}>
+                    <h3 className="text-xl font-semibold mb-2">Galería de imágenes</h3>
+                    <div className="flex overflow-x-auto gap-4 pb-4">
+                        {bloque.imagenes.map((imagenUrl, imgIndex) => (
+                            <div key={imgIndex} className="flex-shrink-0">
+                                <img src={imagenUrl} alt={`Imagen ${imgIndex + 1}`} className="rounded-lg shadow-md" />
+                                <p className="text-xs text-center mt-1 text-gray-500">Imagen {imgIndex + 1}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        default:
+            return null;
+    }
+};
+
+export function InmueblePreview(inmueble: InmuebleType) {
     const navigate = useNavigate();
 
     const handleClick = () => {
@@ -35,12 +57,32 @@ export function InmuebleBlock(inmueble: InmuebleType) {
         <div key={inmueble.id} className='text-center flex flex-col justify-center p-8 gap-4'>
             <h1 className="text-3xl">{inmueble.titulo}</h1>
             <p>Publicación: {fechaLegible(inmueble.metadata.fechaPublicacion)}</p>
-            <p>Precio: {precioLegible(inmueble.metadata.precio)}</p>
+            {inmueble.metadata.precio &&
+                <p>Precio: {precioLegible(inmueble.metadata.precio)}</p>
+            }
             <img src={inmueble.metadata.portadaUrl} alt="" />
             <Button onClick={handleClick} className="w-30 mx-auto bg-blue-600">
                 <span>Ver más</span>
                 <ArrowRight />
             </Button>
+        </div>
+    );
+}
+
+export function InmueblePage(inmueble: InmuebleType) {
+    return (
+        <div key={inmueble.id} className='text-center flex flex-col justify-center p-8 gap-4'>
+            <h1 className="text-3xl">{inmueble.titulo}</h1>
+            <p>Publicación: {fechaLegible(inmueble.metadata.fechaPublicacion)}</p>
+            {inmueble.metadata.precio &&
+                <p>Precio: {precioLegible(inmueble.metadata.precio)}</p>
+            }
+            <img src={inmueble.metadata.portadaUrl} alt="" />
+            {inmueble.contenido.map((bloque, index) => (
+                <>
+                    {renderBloque(bloque, index)}
+                </>
+            ))}
         </div>
     );
 }

@@ -29,6 +29,7 @@ const fakeInmuebles: Inmueble[] = [
         categoria: "casas",
         titulo: "Casa estilo colonial en Palermo",
         metadata: {
+            descripcion: "Hermosa propiedad de tres habitaciones...",
             ubicacion: "Palermo, Buenos Aires",
             precio: 120000,
             fechaPublicacion: "2025-04-22T00:00:00Z",
@@ -36,23 +37,21 @@ const fakeInmuebles: Inmueble[] = [
             tags: ["jardín", "cochera"],
         },
         contenido: [
-            { tipo: "Descripcion", texto: "Hermosa propiedad de tres habitaciones..." },
             {
                 tipo: "CarruselImagenes",
                 imagenes: [
-                    "https://s3.example.com/foto1.jpg",
-                    "https://s3.example.com/foto2.jpg",
+                    "https://placehold.co/600x400/000ff0/FFF",
+                    "https://placehold.co/600x400/000000/FFF",
                 ],
             },
-            { tipo: "Descripcion", texto: "Ideal para familias numerosas." },
         ],
     },
     {
         id: "124",
-        slug: "depto-recoletas",
         categoria: "departamentos",
         titulo: "Departamento moderno en Recoleta",
         metadata: {
+                descripcion: "Exclusivo departamento con vista al parque...",
             ubicacion: "Recoleta, Buenos Aires",
             precio: 85000,
             fechaPublicacion: "2025-04-20T00:00:00Z",
@@ -61,22 +60,16 @@ const fakeInmuebles: Inmueble[] = [
         },
         contenido: [
             {
-                tipo: "Descripcion",
-                texto: "Exclusivo departamento con vista al parque...",
-            },
-            {
                 tipo: "CarruselImagenes",
                 imagenes: [
-                    "https://s3.example.com/depto_foto1.jpg",
-                    "https://s3.example.com/depto_foto2.jpg",
+                    "https://placehold.co/600x400/000ff0/FFF",
+                    "https://placehold.co/600x400/0ff000/FFF",
                 ],
             },
-            { tipo: "Descripcion", texto: "Perfecto para profesionales jóvenes." },
         ],
     },
     {
         id: "125",
-        slug: "casa-belgrano",
         categoria: "casas",
         titulo: "Casa espaciosa en Belgrano",
         metadata: {
@@ -85,25 +78,24 @@ const fakeInmuebles: Inmueble[] = [
             fechaPublicacion: "2025-04-18T00:00:00Z",
             portadaUrl: "https://placehold.co/600x400/006600/FFF",
             tags: ["patio", "quincho"],
+            descripcion: "Ideal para reuniones familiares.",
         },
         contenido: [
-            { tipo: "Descripcion", texto: "Amplia casa con cuatro dormitorios..." },
             {
                 tipo: "CarruselImagenes",
                 imagenes: [
-                    "https://s3.example.com/casa_foto1.jpg",
-                    "https://s3.example.com/casa_foto2.jpg",
+                    "https://placehold.co/600x400/00fff0/FFF",
+                    "https://placehold.co/600x400/0f0000/FFF",
                 ],
             },
-            { tipo: "Descripcion", texto: "Ideal para reuniones familiares." },
         ],
     },
     {
         id: "126",
-        slug: "loft-san-telmo",
         categoria: "departamentos",
         titulo: "Loft industrial en San Telmo",
         metadata: {
+            descripcion: "Moderno loft con diseño abierto...",
             ubicacion: "San Telmo, Buenos Aires",
             precio: 65000,
             fechaPublicacion: "2025-04-21T00:00:00Z",
@@ -111,63 +103,13 @@ const fakeInmuebles: Inmueble[] = [
             tags: ["terraza", "estilo industrial"],
         },
         contenido: [
-            { tipo: "Descripcion", texto: "Moderno loft con diseño abierto..." },
             {
                 tipo: "CarruselImagenes",
                 imagenes: [
-                    "https://s3.example.com/loft_foto1.jpg",
-                    "https://s3.example.com/loft_foto2.jpg",
+                    "https://placehold.co/600x400/00f0f0/FFF",
+                    "https://placehold.co/600x400/0f00f0/FFF",
                 ],
             },
-            { tipo: "Descripcion", texto: "Perfecto para artistas y creativos." },
-        ],
-    },
-    {
-        id: "127",
-        slug: "ph-villa-urquiza",
-        categoria: "ph",
-        titulo: "PH con terraza en Villa Urquiza",
-        metadata: {
-            ubicacion: "Villa Urquiza, Buenos Aires",
-            precio: 95000,
-            fechaPublicacion: "2025-04-19T00:00:00Z",
-            portadaUrl: "https://placehold.co/600x400/666600/FFF",
-            tags: ["terraza", "parilla"],
-        },
-        contenido: [
-            { tipo: "Descripcion", texto: "PH con amplia terraza y parrilla..." },
-            {
-                tipo: "CarruselImagenes",
-                imagenes: [
-                    "https://s3.example.com/ph_foto1.jpg",
-                    "https://s3.example.com/ph_foto2.jpg",
-                ],
-            },
-            { tipo: "Descripcion", texto: "Ideal para disfrutar al aire libre." },
-        ],
-    },
-    {
-        id: "128",
-        slug: "casa-nunez",
-        categoria: "casas",
-        titulo: "Casa contemporánea en Núñez",
-        metadata: {
-            ubicacion: "Núñez, Buenos Aires",
-            precio: 180000,
-            fechaPublicacion: "2025-04-17T00:00:00Z",
-            portadaUrl: "https://placehold.co/600x400/660066/FFF",
-            tags: ["piscina", "gimnasio"],
-        },
-        contenido: [
-            { tipo: "Descripcion", texto: "Espectacular casa con diseño moderno..." },
-            {
-                tipo: "CarruselImagenes",
-                imagenes: [
-                    "https://s3.example.com/nunez_foto1.jpg",
-                    "https://s3.example.com/nunez_foto2.jpg",
-                ],
-            },
-            { tipo: "Descripcion", texto: "Perfecta para un estilo de vida premium." },
         ],
     },
 ];

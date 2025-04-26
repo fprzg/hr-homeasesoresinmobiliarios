@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { client } from '@/api';
 import { useEffect, useState } from 'react';
 import { Inmueble } from '@shared/zodSchemas/inmueble';
-import { InmuebleBlock } from '@/components/inmueble';
+import { InmueblePage } from '@/components/inmueble';
 
 export const Route = createFileRoute('/inmuebles/$id')({
   component: InmuebleById,
@@ -37,7 +37,7 @@ function InmuebleById() {
 
   return (
     <div className='mx-auto w-[80%] md:w-[80%] lg:w-[65%] xl:w-[50%] gap-4'>
-      <InmuebleBlock {...inmueble} />
+      <InmueblePage {...inmueble} />
     </div>
   );
 }
