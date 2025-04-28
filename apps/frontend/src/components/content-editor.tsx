@@ -120,13 +120,14 @@ export function ContentEditor() {
               <CardContent className="p-4">
                 {block.tipo === "Texto" && (
                   <div>
-                    <Label htmlFor={`titulo-${index}`}>Título</Label>
-                    <Input
+                    <Label htmlFor={`texto-${index}`}>Texto</Label>
+                    <Textarea
                       id={`texto-${index}`}
                       value={block.texto}
                       onChange={(e) => updateBlockContent(index, { texto: e.target.value })}
                       placeholder="Agregar texto..."
                       className="mt-1"
+                      rows={4}
                     />
                   </div>
                 )}
@@ -221,7 +222,7 @@ export function ContentEditor() {
                   <Input
                     id="titulo"
                     type="text"
-                    value={inmuebleData.metadata.ubicacion}
+                    value={inmuebleData.titulo}
                     onChange={(e) => setInmuebleData({
                       ...inmuebleData,
                       titulo: e.target.value,
@@ -246,7 +247,7 @@ export function ContentEditor() {
                         <SelectItem value="loading" disabled>Cargando categorías...</SelectItem>
                       ) : (
                         categorias.map((categoria) => (
-                          <SelectItem key={categoria.id} value={""+categoria.id}>
+                          <SelectItem key={categoria.id} value={"" + categoria.id}>
                             {categoria.nombre}
                           </SelectItem>
                         ))
@@ -294,7 +295,7 @@ export function ContentEditor() {
                   <Input
                     id="precio"
                     type="number"
-                    value={inmuebleData.metadata.precio}
+                    value={inmuebleData.metadata.precio || ""}
                     onChange={(e) => setInmuebleData({
                       ...inmuebleData,
                       metadata: { ...inmuebleData.metadata, precio: Number(e.target.value) }

@@ -13,7 +13,8 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as AboutImport } from './routes/about'
+import { Route as ServiciosImport } from './routes/servicios'
+import { Route as EquipoImport } from './routes/equipo'
 import { Route as IndexImport } from './routes/index'
 import { Route as InmueblesIndexImport } from './routes/inmuebles/index'
 import { Route as DashIndexImport } from './routes/dash/index'
@@ -34,9 +35,15 @@ const DashRoute = DashImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AboutRoute = AboutImport.update({
-  id: '/about',
-  path: '/about',
+const ServiciosRoute = ServiciosImport.update({
+  id: '/servicios',
+  path: '/servicios',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const EquipoRoute = EquipoImport.update({
+  id: '/equipo',
+  path: '/equipo',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -92,11 +99,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
+    '/equipo': {
+      id: '/equipo'
+      path: '/equipo'
+      fullPath: '/equipo'
+      preLoaderRoute: typeof EquipoImport
+      parentRoute: typeof rootRoute
+    }
+    '/servicios': {
+      id: '/servicios'
+      path: '/servicios'
+      fullPath: '/servicios'
+      preLoaderRoute: typeof ServiciosImport
       parentRoute: typeof rootRoute
     }
     '/dash': {
@@ -171,7 +185,8 @@ const DashRouteWithChildren = DashRoute._addFileChildren(DashRouteChildren)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/equipo': typeof EquipoRoute
+  '/servicios': typeof ServiciosRoute
   '/dash': typeof DashAuthenticatedRoute
   '/dash/login': typeof DashLoginRoute
   '/dash/logout': typeof DashLogoutRoute
@@ -182,7 +197,8 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/equipo': typeof EquipoRoute
+  '/servicios': typeof ServiciosRoute
   '/dash': typeof DashIndexRoute
   '/dash/login': typeof DashLoginRoute
   '/dash/logout': typeof DashLogoutRoute
@@ -193,7 +209,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/equipo': typeof EquipoRoute
+  '/servicios': typeof ServiciosRoute
   '/dash': typeof DashRouteWithChildren
   '/dash/_authenticated': typeof DashAuthenticatedRoute
   '/dash/login': typeof DashLoginRoute
@@ -207,7 +224,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
+    | '/equipo'
+    | '/servicios'
     | '/dash'
     | '/dash/login'
     | '/dash/logout'
@@ -217,7 +235,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
+    | '/equipo'
+    | '/servicios'
     | '/dash'
     | '/dash/login'
     | '/dash/logout'
@@ -226,7 +245,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/about'
+    | '/equipo'
+    | '/servicios'
     | '/dash'
     | '/dash/_authenticated'
     | '/dash/login'
@@ -239,7 +259,8 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
+  EquipoRoute: typeof EquipoRoute
+  ServiciosRoute: typeof ServiciosRoute
   DashRoute: typeof DashRouteWithChildren
   InmueblesIdRoute: typeof InmueblesIdRoute
   InmueblesIndexRoute: typeof InmueblesIndexRoute
@@ -247,7 +268,8 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
+  EquipoRoute: EquipoRoute,
+  ServiciosRoute: ServiciosRoute,
   DashRoute: DashRouteWithChildren,
   InmueblesIdRoute: InmueblesIdRoute,
   InmueblesIndexRoute: InmueblesIndexRoute,
@@ -264,7 +286,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about",
+        "/equipo",
+        "/servicios",
         "/dash",
         "/inmuebles/$id",
         "/inmuebles/"
@@ -273,8 +296,11 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.tsx"
     },
-    "/about": {
-      "filePath": "about.tsx"
+    "/equipo": {
+      "filePath": "equipo.tsx"
+    },
+    "/servicios": {
+      "filePath": "servicios.tsx"
     },
     "/dash": {
       "filePath": "dash",

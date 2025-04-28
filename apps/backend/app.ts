@@ -11,10 +11,11 @@ const apiRotues = app.basePath("/api")
   .route("/inmuebles", routes.inmuebles)
   .route("/categorias", routes.categorias)
   .route("/usuarios", routes.usuarios)
-  .route("/stats", routes.stats);
+  .route("/stats", routes.stats)
+  .route("/archivos", routes.archivos)
 
 app.get("/api/test", (c) => {
-  return c.json({ "message": "test" });
+  return c.json({ "message": "test" })
 })
 
 app.get("*", serveStatic({ root: "./frontend/dist" }))

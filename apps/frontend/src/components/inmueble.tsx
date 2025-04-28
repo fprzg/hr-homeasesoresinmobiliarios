@@ -27,6 +27,12 @@ function fechaLegible(fechaOriginal: string) {
 function renderBloque(bloque: BloquePersonalizado, key?: number, className?: string) {
     className = `mb-6 ${className}`
     switch (bloque.tipo) {
+        case "Texto":
+            return (
+                <div key={key} className={className}>
+                    <p className="text-xl">{bloque.texto}</p>
+                </div>
+            )
         case "CarruselImagenes":
             return (
                 <div key={key} className={className}>

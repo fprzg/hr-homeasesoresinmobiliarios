@@ -1,6 +1,6 @@
-import { db } from "db/client";
+import { db } from "@/db/client";
 import { type Inmueble } from "@shared/zodSchemas/inmueble";
-import * as schema from "../schemas";
+import * as schema from "@/db/schemas";
 import { eq } from "drizzle-orm";
 import * as query from "@shared/zodSchemas/query"
 import { sql } from "drizzle-orm"

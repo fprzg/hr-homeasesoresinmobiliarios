@@ -1,7 +1,0 @@
-{
-  "dependencies": {},
-  "devDependencies": {
-    "@types/bun": "^1.2.10",
-    "drizzle-kit": "^0.31.0"
-  }
-}

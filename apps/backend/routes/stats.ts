@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
-import * as schema from "../db/schemas"
-import { db } from "../db/client"
+import * as schema from "@/db/schemas"
+import { db } from "@/db/client"
 
 export const stats = new Hono()
   .get('/', async (c) => {
