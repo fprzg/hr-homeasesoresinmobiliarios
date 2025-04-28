@@ -7,12 +7,12 @@ export const bloquePersonalizadoSchema = z.discriminatedUnion("tipo", [
   }),
   z.object({
     tipo: z.literal("CarruselImagenes"),
-    imagenes: z.array(z.string().url()),
+    imagenes: z.array(z.string()),
   }),
 ]);
 
 const metadataSchema = z.object({
-  portadaUrl: z.string().url(),
+  portada: z.string(),
   descripcion: z.string().optional(),
   fechaPublicacion: z.string().datetime(),
   ubicacion: z.string(),
@@ -37,7 +37,7 @@ export function crearInmuebleBase(): Inmueble {
     categoria: "",
     titulo: "",
     metadata: {
-      portadaUrl: "https://placehold.co/600x400/666600/FFF",
+      portada: "",
       fechaPublicacion: new Date().toISOString(),
       ubicacion: "",
     },

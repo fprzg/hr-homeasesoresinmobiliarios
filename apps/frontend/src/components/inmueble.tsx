@@ -34,15 +34,27 @@ function renderBloque(bloque: BloquePersonalizado, key?: number, className?: str
                 </div>
             )
         case "CarruselImagenes":
+            /*
             return (
                 <div key={key} className={className}>
                     <h3 className="text-xl font-semibold mb-2">Galería de imágenes</h3>
                     <div className="flex overflow-x-auto gap-4 pb-4">
                         {bloque.imagenes.map((imagenUrl, imgIndex) => (
                             <div key={imgIndex} className="flex-shrink-0">
-                                <img src={imagenUrl} alt={`Imagen ${imgIndex + 1}`} className="rounded-lg shadow-md" />
+                                <img src={`/api/archivos/${imagenUrl}`} alt={`Imagen ${imgIndex + 1}`} className="rounded-lg shadow-md" />
                                 <p className="text-xs text-center mt-1 text-gray-500">Imagen {imgIndex + 1}</p>
                             </div>
+                        ))}
+                    </div>
+                </div>
+            );
+            */
+            return (
+                <div key={key} className={className}>
+                    <h3 className="text-xl font-semibold mb-2">Galería de imágenes</h3>
+                    <div className="grid gap-4 pb-4">
+                        {bloque.imagenes.map((imagenUrl, imgIndex) => (
+                            <img src={`/api/archivos/${imagenUrl}`} alt={`Imagen ${imgIndex + 1}`} className="rounded-lg shadow-md" />
                         ))}
                     </div>
                 </div>
@@ -66,7 +78,7 @@ export function InmueblePreview(inmueble: InmuebleType) {
             {inmueble.metadata.precio &&
                 <p>Precio: {precioLegible(inmueble.metadata.precio)}</p>
             }
-            <img src={inmueble.metadata.portadaUrl} alt="" />
+            <img src={`/api/archivos/${inmueble.metadata.portada}`} alt="" />
             <Button onClick={handleClick} className="w-30 mx-auto bg-blue-600">
                 <span>Ver más</span>
                 <ArrowRight />
@@ -83,7 +95,7 @@ export function InmueblePage(inmueble: InmuebleType) {
             {inmueble.metadata.precio &&
                 <p>Precio: {precioLegible(inmueble.metadata.precio)}</p>
             }
-            <img src={inmueble.metadata.portadaUrl} alt="" />
+            <img src={`/api/archivos/${inmueble.metadata.portada}`} alt="" />
             {inmueble.contenido.map((bloque, index) => (
                 <>
                     {renderBloque(bloque, index)}

@@ -8,6 +8,7 @@
     "dev": "bun --watch ./index.ts"
   },
   "devDependencies": {
+    "@types/bun": "^1.2.10",
     "drizzle-kit": "^0.31.0"
   },
   "peerDependencies": {
@@ -19,6 +20,7 @@
     "bcrypt": "^5.1.1",
     "drizzle-orm": "^0.42.0",
     "hono": "^4.7.7",
+    "nanoid": "^5.1.5",
     "sqlite3": "^5.1.7",
     "zod": "^3.24.3"
   }

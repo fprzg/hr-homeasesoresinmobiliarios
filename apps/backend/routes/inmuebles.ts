@@ -35,6 +35,7 @@ export const inmuebles = new Hono()
         zValidator('json', inmueble.inmuebleSchema),
         async (c) => {
             const data = c.req.valid('json');
+            console.log(data);
             const inmueble = await InmuebleModel.insert(data)
             return c.json(inmueble, 201);
         }

@@ -22,10 +22,14 @@ export const archivos = new Hono()
         const formData = await c.req.formData();
         const file = formData.get('file') as File;
         const inmuebleId = formData.get('inmuebleId') as string;
-        const server = (formData.get('server') || 's3') as 's3' | 'local';
+        //const server = (formData.get('server') || 's3') as 's3' | 'local';
+        const server = 'local';
 
-        if (!file || !inmuebleId) {
-            return c.text('Faltan datos necesarios', 400);
+        if (!file) {
+            return c.json({ message: 'request sin archivo adjunto'}, 400);
+        }
+        else if (!inmuebleId) {
+            return c.json({ message: 'request sin inmuebleId'}, 400);
         }
 
         try {
