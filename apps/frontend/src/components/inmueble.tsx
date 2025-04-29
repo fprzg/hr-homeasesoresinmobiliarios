@@ -24,61 +24,53 @@ function fechaLegible(fechaOriginal: string) {
     return legible;
 };
 
-function renderBloque(bloque: BloquePersonalizado, key?: number, className?: string) {
-    className = `mb-6 ${className}`
-    switch (bloque.tipo) {
-        case "Texto":
-            return (
-                <div key={key} className={className}>
-                    <p className="text-xl">{bloque.texto}</p>
-                </div>
-            )
-        case "CarruselImagenes":
-            /*
-            return (
-                <div key={key} className={className}>
-                    <h3 className="text-xl font-semibold mb-2">Galería de imágenes</h3>
-                    <div className="flex overflow-x-auto gap-4 pb-4">
-                        {bloque.imagenes.map((imagenUrl, imgIndex) => (
-                            <div key={imgIndex} className="flex-shrink-0">
-                                <img src={`/api/archivos/${imagenUrl}`} alt={`Imagen ${imgIndex + 1}`} className="rounded-lg shadow-md" />
-                                <p className="text-xs text-center mt-1 text-gray-500">Imagen {imgIndex + 1}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            );
-            */
-            return (
-                <div key={key} className={className}>
-                    <h3 className="text-xl font-semibold mb-2">Galería de imágenes</h3>
-                    <div className="grid gap-4 pb-4">
-                        {bloque.imagenes.map((imagenUrl, imgIndex) => (
-                            <img src={`/api/archivos/${imagenUrl}`} alt={`Imagen ${imgIndex + 1}`} className="rounded-lg shadow-md" />
-                        ))}
-                    </div>
-                </div>
-            );
-        default:
-            return null;
-    }
-};
-
-export function InmueblePreview(inmueble: InmuebleType) {
-    const navigate = useNavigate();
-
-    const handleClick = () => {
-        navigate({ to: `/inmuebles/${inmueble.id}` })
+function PageBloque({ bloqueContent, keyName, className }: { bloqueContent: BloquePersonalizado, keyName?: any, className?: string }) {
+    const ComponentContent = () => {
+        switch (bloqueContent.tipo) {
+            case "Texto":
+                return (
+                        <p className="text-xl">{bloqueContent.texto}</p>
+                )
+            case "CarruselImagenes":
+                return (
+                    <>
+                        <h3 className="text-xl font-semibold mb-2">Galería de imágenes</h3>
+                        <div className="grid gap-4 pb-4">
+                            {bloqueContent.imagenes.map((id, idx) => (
+                                <img src={`/api/archivos/${id}`} alt={`Imagen ${idx + 1}`} className="rounded-lg shadow-md" key={idx} />
+                            ))}
+                        </div>
+                    </>
+                );
+            default:
+                return null;
+        }
     };
 
     return (
-        <div key={inmueble.id} className='text-center flex flex-col justify-center p-8 gap-4'>
-            <h1 className="text-3xl">{inmueble.titulo}</h1>
-            <p>Publicación: {fechaLegible(inmueble.metadata.fechaPublicacion)}</p>
-            {inmueble.metadata.precio &&
-                <p>Precio: {precioLegible(inmueble.metadata.precio)}</p>
+        <div key={keyName} className={`mb-6 ${className}`}>
+            <ComponentContent/>
+        </div>
+    )
+
+};
+
+export const InmueblePreview = ({ inmuebleContent, keyName, className }: { inmuebleContent: InmuebleType, keyName?: any, className?: string }) => {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate({ to: `/inmuebles/${inmuebleContent.id}` })
+    };
+    console.log(inmuebleContent);
+
+    return (
+        <div key={keyName} className={`text-center flex flex-col justify-center p-2 gap-4 shadow-xl ${className}`}>
+            <h1 className="text-lg">{inmuebleContent.titulo}</h1>
+            <p>Publicación: {fechaLegible(inmuebleContent.metadata.fechaPublicacion)}</p>
+            {inmuebleContent.metadata.precio &&
+                <p>Precio: {precioLegible(inmuebleContent.metadata.precio)}</p>
             }
-            <img src={`/api/archivos/${inmueble.metadata.portada}`} alt="" />
+            {inmuebleContent.metadata.portada || <img src={`/api/archivos/${inmuebleContent.metadata.portada}`} alt="" />}
             <Button onClick={handleClick} className="w-30 mx-auto bg-blue-600">
                 <span>Ver más</span>
                 <ArrowRight />
@@ -87,19 +79,17 @@ export function InmueblePreview(inmueble: InmuebleType) {
     );
 }
 
-export function InmueblePage(inmueble: InmuebleType) {
+export function InmueblePage({ inmuebleContent, className }: { inmuebleContent: InmuebleType, className: string | undefined }) {
     return (
-        <div key={inmueble.id} className='text-center flex flex-col justify-center p-8 gap-4'>
-            <h1 className="text-3xl">{inmueble.titulo}</h1>
-            <p>Publicación: {fechaLegible(inmueble.metadata.fechaPublicacion)}</p>
-            {inmueble.metadata.precio &&
-                <p>Precio: {precioLegible(inmueble.metadata.precio)}</p>
+        <div className={`text-center flex flex-col justify-center p-8 gap-4 ${className}`}>
+            <h1 className="text-3xl">{inmuebleContent.titulo}</h1>
+            <p>Publicación: {fechaLegible(inmuebleContent.metadata.fechaPublicacion)}</p>
+            {inmuebleContent.metadata.precio &&
+                <p>Precio: {precioLegible(inmuebleContent.metadata.precio)}</p>
             }
-            <img src={`/api/archivos/${inmueble.metadata.portada}`} alt="" />
-            {inmueble.contenido.map((bloque, index) => (
-                <>
-                    {renderBloque(bloque, index)}
-                </>
+            {inmuebleContent.metadata.portada || <img src={`/api/archivos/${inmuebleContent.metadata.portada}`} alt="" />}
+            {inmuebleContent.contenido.map((bloque, index) => (
+                <PageBloque bloqueContent={bloque} key={index} />
             ))}
         </div>
     );

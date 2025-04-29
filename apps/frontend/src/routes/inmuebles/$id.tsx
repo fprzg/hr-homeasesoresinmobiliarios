@@ -37,7 +37,7 @@ function InmuebleById() {
 
   return (
     <div className='mx-auto w-[80%] md:w-[80%] lg:w-[65%] xl:w-[50%] gap-4'>
-      <InmueblePage {...inmueble} />
+      <InmueblePage inmuebleContent={inmueble} className=""/>
     </div>
   );
 }

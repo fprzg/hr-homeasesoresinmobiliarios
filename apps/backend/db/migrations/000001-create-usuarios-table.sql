@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE
     usuarios (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

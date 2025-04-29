@@ -14,7 +14,6 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as ServiciosImport } from './routes/servicios'
-import { Route as EquipoImport } from './routes/equipo'
 import { Route as IndexImport } from './routes/index'
 import { Route as InmueblesIndexImport } from './routes/inmuebles/index'
 import { Route as DashIndexImport } from './routes/dash/index'
@@ -38,12 +37,6 @@ const DashRoute = DashImport.update({
 const ServiciosRoute = ServiciosImport.update({
   id: '/servicios',
   path: '/servicios',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const EquipoRoute = EquipoImport.update({
-  id: '/equipo',
-  path: '/equipo',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -97,13 +90,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/equipo': {
-      id: '/equipo'
-      path: '/equipo'
-      fullPath: '/equipo'
-      preLoaderRoute: typeof EquipoImport
       parentRoute: typeof rootRoute
     }
     '/servicios': {
@@ -185,7 +171,6 @@ const DashRouteWithChildren = DashRoute._addFileChildren(DashRouteChildren)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/equipo': typeof EquipoRoute
   '/servicios': typeof ServiciosRoute
   '/dash': typeof DashAuthenticatedRoute
   '/dash/login': typeof DashLoginRoute
@@ -197,7 +182,6 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/equipo': typeof EquipoRoute
   '/servicios': typeof ServiciosRoute
   '/dash': typeof DashIndexRoute
   '/dash/login': typeof DashLoginRoute
@@ -209,7 +193,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/equipo': typeof EquipoRoute
   '/servicios': typeof ServiciosRoute
   '/dash': typeof DashRouteWithChildren
   '/dash/_authenticated': typeof DashAuthenticatedRoute
@@ -224,7 +207,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/equipo'
     | '/servicios'
     | '/dash'
     | '/dash/login'
@@ -235,7 +217,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/equipo'
     | '/servicios'
     | '/dash'
     | '/dash/login'
@@ -245,7 +226,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/equipo'
     | '/servicios'
     | '/dash'
     | '/dash/_authenticated'
@@ -259,7 +239,6 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  EquipoRoute: typeof EquipoRoute
   ServiciosRoute: typeof ServiciosRoute
   DashRoute: typeof DashRouteWithChildren
   InmueblesIdRoute: typeof InmueblesIdRoute
@@ -268,7 +247,6 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  EquipoRoute: EquipoRoute,
   ServiciosRoute: ServiciosRoute,
   DashRoute: DashRouteWithChildren,
   InmueblesIdRoute: InmueblesIdRoute,
@@ -286,7 +264,6 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/equipo",
         "/servicios",
         "/dash",
         "/inmuebles/$id",
@@ -295,9 +272,6 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.tsx"
-    },
-    "/equipo": {
-      "filePath": "equipo.tsx"
     },
     "/servicios": {
       "filePath": "servicios.tsx"

@@ -1,7 +1,5 @@
-import { inmuebles } from "./inmuebles";
-import { categorias } from "./categorias";
-import { usuarios } from "./usuarios";
-import { stats } from "./stats";
+import { documentos } from "./documentos";
 import { archivos } from "./archivos";
+import { usuarios } from "./usuarios";
 
-export const routes = { inmuebles, categorias, usuarios, stats, archivos };
+export const routes = { documentos, archivos, usuarios };

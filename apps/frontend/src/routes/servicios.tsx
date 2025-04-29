@@ -99,19 +99,6 @@ function RouteComponent() {
           {/* Servicio 2: Asesoría Financiera */}
           <div>
             <div className="flex flex-col md:flex-row gap-12 items-center">
-              <div className="md:w-1/2 order-2 md:order-1">
-                <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4">Colaboramos con las principales entidades</h3>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-gray-100 p-4 rounded-md flex items-center justify-center h-20">Banco 1</div>
-                    <div className="bg-gray-100 p-4 rounded-md flex items-center justify-center h-20">Banco 2</div>
-                    <div className="bg-gray-100 p-4 rounded-md flex items-center justify-center h-20">Banco 3</div>
-                    <div className="bg-gray-100 p-4 rounded-md flex items-center justify-center h-20">Banco 4</div>
-                    <div className="bg-gray-100 p-4 rounded-md flex items-center justify-center h-20">Banco 5</div>
-                    <div className="bg-gray-100 p-4 rounded-md flex items-center justify-center h-20">Banco 6</div>
-                  </div>
-                </div>
-              </div>
               <div className="md:w-1/2 order-1 md:order-2">
                 <div className="bg-blue-100 p-2 inline-block rounded-lg mb-4">
                   <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

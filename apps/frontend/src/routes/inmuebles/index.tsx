@@ -36,14 +36,12 @@ function AllInmuebles() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className='mx-auto w-[80%] md:w-[80%] lg:w-[65%] xl:w-[50%] gap-4'>
-      {inmuebles.length > 0 ? (
-        inmuebles.map((inmueble) => (
-          <InmueblePreview key={inmueble.id} {...inmueble} />
-        ))
-      ) : (
-        <div>No se encontraron inmuebles.</div>
-      )}
+    <div className='mx-auto w-[95%] gap-4 grid grid-cols-3 p-4 '>
+      {inmuebles.map((elem, idx) => (
+        <div key={idx}>
+          <InmueblePreview inmuebleContent={elem} className="bg-pink-300" />
+        </div>
+      ))}
     </div>
   );
 }

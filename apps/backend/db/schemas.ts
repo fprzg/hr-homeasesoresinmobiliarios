@@ -1,4 +1,3 @@
-import { KeyObject } from 'crypto';
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
 export const usuarios = sqliteTable('usuarios', {
@@ -13,18 +12,20 @@ export const categorias = sqliteTable('categorias', {
   descripcion: text('descripcion'),
 });
 
-export const inmuebles = sqliteTable('inmuebles', {
+export const documentos = sqliteTable('documentos', {
   id: text('id').primaryKey(),
   categoria: text('categoria').notNull(),
   titulo: text('titulo').notNull(),
+  portada: text('portada').notNull(),
   metadata: text('metadata', { mode: 'json' }).notNull(),
   contenido: text('contenido', { mode: 'json' }).notNull(),
 });
 
 export const archivos = sqliteTable('archivos', {
   id: text('id').primaryKey(),
-  inmuebleId: text('inmueble_id').notNull().references(() => inmuebles.id),
-  handle: text('handle').notNull().unique(),
-  handleServer: text('handle_server', { enum: ['s3', 'local']}).notNull(),
-  estado: text('estado', { enum: ['recibido', 'en_uso']}),
+  filename: text('filename').notNull(),
+  mimetype: text('mimetype').notNull(),
+  size: integer('size').notNull(),
+  createdAt: integer('created_at').default(Date.now()),
+  documento_id: text('documento_id').references(() => documentos.id, { onDelete: 'cascade' }),
 });

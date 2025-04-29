@@ -8,15 +8,9 @@ const app = new Hono();
 app.use("*", logger());
 
 const apiRotues = app.basePath("/api")
-  .route("/inmuebles", routes.inmuebles)
-  .route("/categorias", routes.categorias)
-  .route("/usuarios", routes.usuarios)
-  .route("/stats", routes.stats)
+  .route("/documentos", routes.documentos)
   .route("/archivos", routes.archivos)
-
-app.get("/api/test", (c) => {
-  return c.json({ "message": "test" })
-})
+  .route("/usuarios", routes.usuarios)
 
 app.get("*", serveStatic({ root: "./frontend/dist" }))
 app.get("*", serveStatic({ path: "./frontend/dist/index.html" }))

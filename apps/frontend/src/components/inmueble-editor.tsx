@@ -10,11 +10,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { type BloquePersonalizado, crearInmuebleBase, Inmueble } from "@shared/zodSchemas/inmueble";
 import { Plus, Trash2, Image, Upload, MoveVertical } from "lucide-react";
 import { Categoria } from "@shared/zodSchemas/categoria";
-import { redirect } from "@tanstack/react-router";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { CSS } from '@dnd-kit/utilities';
+import { Link as RouterLink } from '@tanstack/react-router'
+import { router } from "@/router";
 
 // Definimos la interfaz para los archivos seleccionados
 interface FileWithPreview {
@@ -622,9 +623,10 @@ export function ContentEditor() {
         </div>
       )}
 
-      {saveMutation.isSuccess && (
-        <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
-          Contenido guardado exitosamente
+{saveMutation.isSuccess && (
+        <div className="mt-4 p-2 bg-green-100 text-green-700 rounded flex gap-4">
+          <span>Contenido guardado exitosamente</span>
+          <a href={`/inmuebles/${inmuebleData.id}`}>Ver</a>
         </div>
       )}
 

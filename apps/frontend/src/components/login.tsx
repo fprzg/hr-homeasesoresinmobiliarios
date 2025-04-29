@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { User, Lock, LogIn } from 'lucide-react';
+import { useNavigate } from '@tanstack/react-router';
 
 export default function LoginForm() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -18,41 +20,49 @@ export default function LoginForm() {
             [name]: type === 'checkbox' ? checked : value
         }));
     };
-
+    /*
+        const handleSubmit = async (e: any) => {
+            e.preventDefault();
+            setError('');
+            setIsLoading(true);
+    
+            try {
+                const response = await fetch('/api/usuarios/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: formData.username,
+                        password: formData.password
+                    }),
+                });
+    
+                const data = await response.json();
+    
+                if (!response.ok) {
+                    throw new Error(data.message || 'Error al iniciar sesión');
+                }
+    
+                // Login exitoso
+                alert('Login exitoso');
+                // Aquí podrías redirigir al usuario o establecer el token de autenticación
+    
+            } catch (err: any) {
+                setError(err.message || 'Ocurrió un error durante el inicio de sesión');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+    */
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        setError('');
-        setIsLoading(true);
-
-        try {
-            const response = await fetch('/api/usuarios/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: formData.username,
-                    password: formData.password
-                }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Error al iniciar sesión');
-            }
-
-            // Login exitoso
-            alert('Login exitoso');
-            // Aquí podrías redirigir al usuario o establecer el token de autenticación
-
-        } catch (err: any) {
-            setError(err.message || 'Ocurrió un error durante el inicio de sesión');
-        } finally {
-            setIsLoading(false);
+        if (formData.username === 'admin' && formData.password === '11001100') {
+            navigate({to: '/dash'});
+        } else {
+            setError('Credenciales no validas.');
         }
-    };
-
+    }
     return (
         <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
             <div className="text-center mb-8">
@@ -106,7 +116,7 @@ export default function LoginForm() {
                     </div>
                 </div>
 
-{/*
+                {/*
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center">
                         <input

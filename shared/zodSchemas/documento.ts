@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const bloquePersonalizadoSchema = z.discriminatedUnion("tipo", [
+export const bloqueDocumentoSchema = z.discriminatedUnion("tipo", [
   z.object({
     tipo: z.literal("Texto"),
     texto: z.string(),
@@ -12,7 +12,6 @@ export const bloquePersonalizadoSchema = z.discriminatedUnion("tipo", [
 ]);
 
 const metadataSchema = z.object({
-  portada: z.string(),
   descripcion: z.string().optional(),
   fechaPublicacion: z.string().datetime(),
   ubicacion: z.string(),
@@ -20,24 +19,24 @@ const metadataSchema = z.object({
   tags: z.array(z.string()).optional(),
 });
 
-export const inmuebleSchema = z.object({
+export const documentoSchema = z.object({
   id: z.string(),
   categoria: z.string(),
   titulo: z.string(),
+  portada: z.string(),
   metadata: metadataSchema,
-  contenido: z.array(bloquePersonalizadoSchema),
+  contenido: z.array(bloqueDocumentoSchema),
 });
 
-export type BloquePersonalizado = z.infer<typeof bloquePersonalizadoSchema>;
-export type Inmueble = z.infer<typeof inmuebleSchema>;
+export type BloqueDocumento = z.infer<typeof bloqueDocumentoSchema>;
+export type Documento = z.infer<typeof documentoSchema>;
 
-export function crearInmuebleBase(): Inmueble {
+export function crearDocumentoBase(): Omit<Documento, "id"> {
   return {
-    id: crypto.randomUUID(),
-    categoria: "",
+    categoria: "casa",
     titulo: "",
+    portada: "",
     metadata: {
-      portada: "",
       fechaPublicacion: new Date().toISOString(),
       ubicacion: "",
     },

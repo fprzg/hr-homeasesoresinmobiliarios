@@ -6,6 +6,6 @@
 
 curl \
     -H "Content-Type: application/json" \
-    -d '{ "username": "mememe", "password": "11001100"}' \
+    -d '{ "username": "alice", "password": "11001100"}' \
     --cookie-jar - \
     -X POST localhost:3000/api/usuarios/login
