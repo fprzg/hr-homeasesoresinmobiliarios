@@ -35,12 +35,12 @@ export const DocumentosAPI = {
       body: JSON.stringify(documento),
     });
 
-    const json = response.json();    
+    const json = response.json();
     if (!response.ok) {
       console.log(json)
       throw new Error('Error al crear documento');
     }
-    
+
     return json;
   },
 
@@ -53,7 +53,7 @@ export const DocumentosAPI = {
       },
       body: JSON.stringify(documento),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Error al actualizar documento con ID ${id}`);
     }
@@ -64,7 +64,7 @@ export const DocumentosAPI = {
     const response = await fetch(`/api/documentos/${id}`, {
       method: 'DELETE',
     });
-    
+
     if (!response.ok) {
       throw new Error(`Error al eliminar documento con ID ${id}`);
     }
@@ -80,22 +80,23 @@ export const ArchivosAPI = {
   // Subir imágenes
   subir: async (files: File[]): Promise<ArchivoResponse[]> => {
     const formData = new FormData();
-    
+
     // Añadir cada archivo al FormData
     files.forEach(file => {
       formData.append('imagenes', file);
     });
-    
+
     const response = await fetch('/api/archivos', {
       method: 'POST',
       body: formData,
     });
-    
+
     if (!response.ok) {
       throw new Error('Error al subir archivos');
     }
-    
+
     const data = await response.json();
+    console.log(data);
     return data.imagenes;
   },
 

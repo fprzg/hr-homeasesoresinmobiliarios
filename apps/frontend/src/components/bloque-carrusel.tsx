@@ -33,6 +33,7 @@ export default function BloqueCarrusel({
             setIsUploading(true);
             const files = Array.from(e.target.files);
             const imagenesIds = await onUploadImages(files);
+            console.log("after upload", imagenesIds)
 
             // Actualizar el estado local y el bloque padre
             const nuevasImagenes = [...imagenes, ...imagenesIds];

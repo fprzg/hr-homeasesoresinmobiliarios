@@ -6,14 +6,17 @@ import { eq } from 'drizzle-orm';
 
 export const archivos = new Hono()
     .post('/', async (c) => {
-        const body = await c.req.parseBody();
-        const files = Object.values(body).filter(f => f instanceof File) as File[];
+        const body = await c.req.formData();
+        //const files = Object.values(body).filter(f => f instanceof File) as File[];
+        const files = [] as File[]
+        body.forEach((f) => files.push(f as File))
 
         const results = [];
 
         for (const file of files) {
             try {
                 const image = await ArchivosService.save(file);
+                console.log(image.filename);
                 await db.insert(archivosDBSchema).values({ ...image });
                 results.push({ id: image.id, originalName: image.filename });
             } catch (err) {

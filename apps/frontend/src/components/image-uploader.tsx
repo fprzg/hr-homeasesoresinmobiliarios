@@ -20,8 +20,9 @@ export default function ImageUploader({
 
         try {
             setIsUploading(true);
-            const file = e.target.files[0];
-            const result = await ArchivosAPI.subir([file]);
+            //const file = e.target.files[0];
+            const files = [...e.target.files];
+            const result = await ArchivosAPI.subir(files);
 
             if (result.length > 0) {
                 const { id, originalName } = result[0];

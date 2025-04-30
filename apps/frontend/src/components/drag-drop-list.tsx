@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 interface DragDropListProps<T> {
   items: T[];
   renderItem: (item: T, index: number) => React.ReactNode;
-  keyExtractor: (item: T) => string;
+  keyExtractor: ((item: T) => string);
   onReorder: (items: T[]) => void;
 }
 
@@ -56,8 +56,10 @@ export default function DragDropList<T>({
     setDraggedIndex(index);
   };
 
+  console.log(items);
+
   return (
-    <div className="drag-drop-list">
+    <div className="grid grid-cols-1">
       {items.map((item, index) => (
         <div
           key={keyExtractor(item)}
