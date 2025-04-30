@@ -65,7 +65,6 @@ export const DocumentoPreview = ({ documentoContent, keyName, className }: { doc
     return (
         <div key={keyName} className={`text-center flex flex-col justify-center p-2 gap-4 shadow-xl ${className}`}>
             <h1 className="text-lg">{documentoContent.titulo}</h1>
-            <h1 className="text-lg">asfasfdsf</h1>
             <p>Publicación: {fechaLegible(documentoContent.metadata.fechaPublicacion)}</p>
             {documentoContent.metadata.precio &&
                 <p>Precio: {precioLegible(documentoContent.metadata.precio)}</p>
