@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { client } from '@/api';
 import { useEffect, useState } from 'react';
-import { Inmueble } from '@shared/zodSchemas/inmueble';
-import { InmueblePage } from '@/components/inmueble';
+import { Documento } from '@shared/zodSchemas/documento';
+import { DocumentoPage } from '@/components/documento';
 
 export const Route = createFileRoute('/inmuebles/$id')({
   component: InmuebleById,
@@ -10,16 +10,17 @@ export const Route = createFileRoute('/inmuebles/$id')({
 
 function InmuebleById() {
   const { id } = Route.useParams();
-  const [inmueble, setInmueble] = useState<Inmueble | null>(null);
+  const [documento, setDocumento] = useState<Documento | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchInmueble() {
       try {
-        const res = await client.api.inmuebles[":id"].$get({ param: { id } });
+        //const res = await client.api.documentos.$get({ param: { id } });
+        const res = await fetch(`/api/documentos/${id}`)
         const data = await res.json();
-        setInmueble(data);
+        setDocumento(data.documento);
       } catch (err) {
         console.error(err);
         setError("No se pudo cargar el inmueble.");
@@ -33,11 +34,11 @@ function InmuebleById() {
 
   if (loading) return <div>Cargando inmueble...</div>;
   if (error) return <div>{error}</div>;
-  if (!inmueble) return <div>No se encontró el inmueble.</div>;
+  if (!documento) return <div>No se encontró el inmueble.</div>;
 
   return (
     <div className='mx-auto w-[80%] md:w-[80%] lg:w-[65%] xl:w-[50%] gap-4'>
-      <InmueblePage inmuebleContent={inmueble} className=""/>
+      <DocumentoPage documentoContent={documento} className=""/>
     </div>
   );
 }

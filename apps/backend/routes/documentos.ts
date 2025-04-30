@@ -9,6 +9,8 @@ import { ArchivosService } from '@/services/archivosService';
 export const documentos = new Hono()
   .post('/', async (c) => {
     const body = await c.req.json();
+    body.id = nanoid();
+    console.log(body);
     const parse = documentoSchema.safeParse(body);
 
     if (!parse.success) {
@@ -46,13 +48,14 @@ export const documentos = new Hono()
   })
   .get('/', async (c) => {
     const data = await db.select().from(documentosDBSchema);
-    return c.json(data);
+    return c.json({ documentos: data });
   })
   .get('/:id', async (c) => {
     const id = c.req.param('id');
+    console.log(id);
     const doc = await db.query.documentos.findFirst({ where: eq(documentosDBSchema.id, id) });
     if (!doc) return c.notFound();
-    return c.json(doc);
+    return c.json({ documento: doc });
   })
   .put('/:id', async (c) => {
     const id = c.req.param('id');
@@ -110,5 +113,5 @@ export const documentos = new Hono()
 
     await db.delete(documentosDBSchema).where(eq(documentosDBSchema.id, id));
     return c.json({ ok: true, id });
-  });
+  })
 

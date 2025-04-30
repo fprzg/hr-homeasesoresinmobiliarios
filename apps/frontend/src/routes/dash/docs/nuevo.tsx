@@ -1,0 +1,15 @@
+// src/routes/dash/documentos/nuevo.lazy.tsx
+import { createFileRoute } from '@tanstack/react-router';
+import DocumentForm from '@/components/document-form';
+
+export const Route = createFileRoute('/dash/docs/nuevo')({
+  component: NuevoDocumento,
+});
+
+function NuevoDocumento() {
+  return (
+    <div className="nuevo-documento">
+      <DocumentForm modo="crear" />
+    </div>
+  );
+}

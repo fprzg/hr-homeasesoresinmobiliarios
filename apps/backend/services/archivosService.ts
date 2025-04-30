@@ -29,9 +29,7 @@ async function get(id: string) {
   const buffer = await file.arrayBuffer()
 
   return {
-    id,
     buffer,
-    mimetype: file?.type || 'application/octet-stream',
     size: file.size,
   };
 }

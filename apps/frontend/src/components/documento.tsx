@@ -1,4 +1,4 @@
-import { BloquePersonalizado, inmuebleSchema, Inmueble as InmuebleType } from "@shared/zodSchemas/inmueble";
+import { BloqueDocumento, documentoSchema, Documento as DocumentoType } from "@shared/zodSchemas/documento";
 import { Button } from "./ui/button";
 import { useNavigate } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
@@ -24,7 +24,7 @@ function fechaLegible(fechaOriginal: string) {
     return legible;
 };
 
-function PageBloque({ bloqueContent, keyName, className }: { bloqueContent: BloquePersonalizado, keyName?: any, className?: string }) {
+function DocumentoBloque({ bloqueContent, keyName, className }: { bloqueContent: BloqueDocumento, keyName?: any, className?: string }) {
     const ComponentContent = () => {
         switch (bloqueContent.tipo) {
             case "Texto":
@@ -55,22 +55,22 @@ function PageBloque({ bloqueContent, keyName, className }: { bloqueContent: Bloq
 
 };
 
-export const InmueblePreview = ({ inmuebleContent, keyName, className }: { inmuebleContent: InmuebleType, keyName?: any, className?: string }) => {
+export const DocumentoPreview = ({ documentoContent, keyName, className }: { documentoContent: DocumentoType, keyName?: any, className?: string }) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate({ to: `/inmuebles/${inmuebleContent.id}` })
+        navigate({ to: `/inmuebles/${documentoContent.id}` })
     };
-    console.log(inmuebleContent);
 
     return (
         <div key={keyName} className={`text-center flex flex-col justify-center p-2 gap-4 shadow-xl ${className}`}>
-            <h1 className="text-lg">{inmuebleContent.titulo}</h1>
-            <p>Publicación: {fechaLegible(inmuebleContent.metadata.fechaPublicacion)}</p>
-            {inmuebleContent.metadata.precio &&
-                <p>Precio: {precioLegible(inmuebleContent.metadata.precio)}</p>
+            <h1 className="text-lg">{documentoContent.titulo}</h1>
+            <h1 className="text-lg">asfasfdsf</h1>
+            <p>Publicación: {fechaLegible(documentoContent.metadata.fechaPublicacion)}</p>
+            {documentoContent.metadata.precio &&
+                <p>Precio: {precioLegible(documentoContent.metadata.precio)}</p>
             }
-            {inmuebleContent.metadata.portada || <img src={`/api/archivos/${inmuebleContent.metadata.portada}`} alt="" />}
+            <img src={`/api/archivos/${documentoContent.portada}`} alt="" />
             <Button onClick={handleClick} className="w-30 mx-auto bg-blue-600">
                 <span>Ver más</span>
                 <ArrowRight />
@@ -79,17 +79,20 @@ export const InmueblePreview = ({ inmuebleContent, keyName, className }: { inmue
     );
 }
 
-export function InmueblePage({ inmuebleContent, className }: { inmuebleContent: InmuebleType, className: string | undefined }) {
+export function DocumentoPage({ documentoContent, className }: { documentoContent: DocumentoType, className?: string }) {
     return (
         <div className={`text-center flex flex-col justify-center p-8 gap-4 ${className}`}>
-            <h1 className="text-3xl">{inmuebleContent.titulo}</h1>
-            <p>Publicación: {fechaLegible(inmuebleContent.metadata.fechaPublicacion)}</p>
-            {inmuebleContent.metadata.precio &&
-                <p>Precio: {precioLegible(inmuebleContent.metadata.precio)}</p>
+            <h1 className="text-3xl">{documentoContent.titulo}</h1>
+            <p>Publicación: {fechaLegible(documentoContent.metadata.fechaPublicacion)}</p>
+            
+            <img src={`/api/archivos/${documentoContent.portada}`} alt="" />
+
+            {documentoContent.metadata.precio &&
+                <p>Precio: {precioLegible(documentoContent.metadata.precio)}</p>
             }
-            {inmuebleContent.metadata.portada || <img src={`/api/archivos/${inmuebleContent.metadata.portada}`} alt="" />}
-            {inmuebleContent.contenido.map((bloque, index) => (
-                <PageBloque bloqueContent={bloque} key={index} />
+            
+            {documentoContent.contenido.map((bloque, index) => (
+                <DocumentoBloque bloqueContent={bloque} key={index} />
             ))}
         </div>
     );

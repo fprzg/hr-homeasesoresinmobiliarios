@@ -12,7 +12,6 @@ export const bloqueDocumentoSchema = z.discriminatedUnion("tipo", [
 ]);
 
 const metadataSchema = z.object({
-  descripcion: z.string().optional(),
   fechaPublicacion: z.string().datetime(),
   ubicacion: z.string(),
   precio: z.number().optional(),
@@ -21,7 +20,7 @@ const metadataSchema = z.object({
 
 export const documentoSchema = z.object({
   id: z.string(),
-  categoria: z.string(),
+  categoria: z.enum(["casa", "terreno"]),
   titulo: z.string(),
   portada: z.string(),
   metadata: metadataSchema,
@@ -31,8 +30,9 @@ export const documentoSchema = z.object({
 export type BloqueDocumento = z.infer<typeof bloqueDocumentoSchema>;
 export type Documento = z.infer<typeof documentoSchema>;
 
-export function crearDocumentoBase(): Omit<Documento, "id"> {
+export function crearDocumentoBase(): Documento {
   return {
+    id: "",
     categoria: "casa",
     titulo: "",
     portada: "",

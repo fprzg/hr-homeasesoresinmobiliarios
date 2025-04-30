@@ -27,5 +27,12 @@ export const archivos = new Hono()
         const id = c.req.param('id');
         const doc = await db.query.archivos.findFirst({ where: eq(documentosDBSchema.id, id) });
         if (!doc) return c.notFound();
-        return c.json(doc);
+        const file = await ArchivosService.get(doc.id);
+        if (!file) return c.notFound();
+
+        return c.body(file.buffer, { headers: {
+            'Content-Type': doc.mimetype,
+            'Content-Length': file.size.toString(),
+            'Content-Disposition': `inline; filename="${doc.filename}"`,
+        }})
     })
