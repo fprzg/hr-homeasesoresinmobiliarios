@@ -1,12 +1,52 @@
-import type { MiddlewareHandler } from "hono";
-import { jwt } from "hono/jwt";
+import { createMiddleware } from "hono/factory";
+import { verify } from "hono/jwt";
+import { HTTPException } from "hono/http-exception";
+import { type Variables as AppEnvVariables, envVariables } from '../factory';
+import { jwtPayloadSchema, type JwtPayload } from "@/zod/jwt";
 
-export const JWT_SECRET = process.env.JWT_SECRET || 'clave_secreta_super_insegura_para_desarrollo';
+export type Variables = AppEnvVariables & {
+    jwtPayload: JwtPayload;
+};
 
-export const authMiddleware: MiddlewareHandler = async (c, next) => {
-    const jwtMiddleware = jwt({
-        secret: JWT_SECRET,
-    });
-
-    return jwtMiddleware(c, next);
+interface Options {
+    requireServiceRole?: boolean;
 }
+
+function validateApiKey(apiKey: string) {
+    return apiKey === envVariables.JWT_SECRET;
+}
+
+export function auth({ requireServiceRole = false }: Options = {}) {
+    return createMiddleware<{ Variables: Variables }>(async (c, next) => {
+        const apiKey = c.req.header('apiKey');
+        if (!apiKey || !validateApiKey(apiKey)) {
+            throw new HTTPException(401, {
+                res: Response.json({ error: 'Unauthorized' }, { status: 401 }),
+            });
+        }
+
+        const jwtToken = c.req.header('authorization')?.replace('Bearer ', '') as string
+
+        let jwtPayload: JwtPayload;
+        try {
+            jwtPayload = jwtPayloadSchema.parse(
+                await verify(jwtToken, envVariables.JWT_SECRET)
+            );
+        } catch (error) {
+            console.error(error);
+            throw new HTTPException(401, {
+                res: Response.json({error: 'Unauthorized'}, { status: 401}),
+            });
+        }
+
+        if (requireServiceRole && jwtPayload.role != 'service') {
+            throw new HTTPException(403, {
+                res: Response.json({ error: 'Forbidden'}, { status: 403}),
+            });
+        }
+
+        c.set('jwtPayload', jwtPayload);
+        await next();
+    });
+}
+

@@ -21,7 +21,7 @@ confirm:
 
 ## db/db_path: Asegura
 db/confirm_db_path:
-	@if [ -z "$(DB_PATH)" ]; then \
+	@if [ -z "$(DB_DIR)" ]; then \
 		echo "La variable DB_PATH no está definida en .env"; \
 		exit 1; \
 	fi
@@ -31,7 +31,7 @@ db/confirm_db_path:
 db/create: db/confirm_db_path
 	@for file in $(MIGRATIONS); do \
 		echo "Ejecutando migración: $$file"; \
-		sqlite3 $(DB_PATH) < "$$file"; \
+		sqlite3 $(DB_DIR) < "$$file"; \
 		if [ $$? -ne 0 ]; then \
 			echo "Error al ejecutar $$file"; \
 			exit 1; \
@@ -51,4 +51,10 @@ dev/setup: db/confirm_db_path
 prod/deploy: confirm
 	@echo Deploying...
 	@sudo apt -y update && echo System updated
+
+
+## run/api: Runs the api
+run/api:
+	@echo Starting api...
+	bun --watch apps/backend/index.ts
 

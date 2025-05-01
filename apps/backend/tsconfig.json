@@ -2,12 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@shared/*":[
-        "../../shared/*"
-      ],
-      "@/*":[
-        "./*"
-      ]
+      "@shared/api":["../../shared/api"],
+      "@shared/zod":["../../shared/zod"],
+      "@/*":["./*"]
     },
 
     // Environment setup & latest features

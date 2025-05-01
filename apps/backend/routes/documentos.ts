@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { type Documento, documentoSchema } from '@shared/zodSchemas/documento';
+import { type Documento, documentoSchema } from '@shared/zod';
 import { db } from '@/db/client';
 import { documentos as documentosDBSchema, archivos } from '@/db/schemas';
 import { nanoid } from 'nanoid';

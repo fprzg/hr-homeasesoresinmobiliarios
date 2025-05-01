@@ -1,0 +1,14 @@
+{
+  "name": "@shared/zod",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "zod": "^3.24.3"
+  },
+  "scripts": {
+    "test": "vitest run"
+  }
+}

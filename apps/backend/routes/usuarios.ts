@@ -2,11 +2,13 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { sign } from "hono/jwt";
 import { UsuarioModel } from "db/models/usuariosModel";
-import { authMiddleware, JWT_SECRET } from "middleware/auth";
-import { loginUsuarioSchema } from "@shared/zodSchemas/usuario";
+//import { authMiddleware, JWT_SECRET } from "middleware/auth";
+import { loginUsuarioSchema } from "../../../shared/zod/src/usuario";
 import { setCookie } from "hono/cookie";
 
 export const usuarios = new Hono()
+
+/*
     .post('/login', zValidator('json', loginUsuarioSchema), async (c) => {
         const loginUsuario = c.req.valid('json');
         const usuario = await UsuarioModel.findByUsername(loginUsuario.username)
@@ -43,7 +45,6 @@ export const usuarios = new Hono()
     .use('/protected/*', authMiddleware)
     .get('/protected/resource', async (c) => {
     })
-/*
 .get('/api/usuarios/:id', jwtMiddleware, async (c) => {
     const id = z.number().int().parse(Number(c.req.param('id')));
     const user = await db.select().from(schema.usuarios).where(eq(schema.usuarios.id, id)).get();
