@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { BloqueDocumento, Documento, crearDocumentoBase } from '@shared/zod';
 import { DocumentosAPI, ArchivosAPI } from '@/api';
-import BloqueTexto from './bloque-texto';
-import BloqueCarrusel from './bloque-carrusel';
-import ImageUploader from './image-uploader';
-import DragDropList from './drag-drop-list';
+import BloqueTexto from '@/components/bloque-texto';
+import BloqueCarrusel from '@/components/bloque-carrusel';
+import ImageUploader from '@/components/image-uploader';
+import DragDropList from '@/components/drag-drop-list';
 
 export default function DocumentForm({ documentoInicial, modo }: { documentoInicial?: Documento, modo: 'crear' | 'editar' }) {
     const navigate = useNavigate();

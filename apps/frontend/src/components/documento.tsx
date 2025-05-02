@@ -1,5 +1,5 @@
-import { BloqueDocumento, documentoSchema, Documento as DocumentoType } from "@shared/zodSchemas/documento";
-import { Button } from "./ui/button";
+import { BloqueDocumento, documentoSchema, Documento as DocumentoType } from "@shared/zod";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 

@@ -1,6 +1,6 @@
 // src/components/BloqueTexto.tsx
 import { useState, useEffect } from 'react';
-import { BloqueDocumento } from '@shared/zodSchemas/documento';
+import { BloqueDocumento } from '@shared/zod';
 
 interface BloqueTextoProps {
   bloque: Extract<BloqueDocumento, { tipo: 'Texto' }>;

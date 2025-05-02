@@ -56,7 +56,7 @@ prod/deploy: confirm
 ## run/api: Runs the api
 run/api:
 	@echo Starting api...
-	bun --watch apps/backend/src/index.ts
+	bun apps/backend/src/index.ts
 
 
 ## run/api: Runs the api

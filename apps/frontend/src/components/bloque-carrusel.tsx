@@ -1,8 +1,8 @@
 // src/components/BloqueCarrusel.tsx
 import { useState, useEffect } from 'react';
-import { BloqueDocumento } from '@shared/zodSchemas/documento';
+import { BloqueDocumento } from '@shared/zod';
 import { ArchivosAPI } from '@/api';
-import DragDropList from './drag-drop-list';
+import DragDropList from '@/components/drag-drop-list';
 
 interface BloqueCarruselProps {
     bloque: Extract<BloqueDocumento, { tipo: 'CarruselImagenes' }>;
