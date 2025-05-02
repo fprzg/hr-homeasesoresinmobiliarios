@@ -7,6 +7,6 @@ export const Route = createFileRoute('/dash/login')({
 
 function RouteComponent() {
   return (
-    <LoginForm/>
+    <LoginForm to="/dash" />
   )
 }

@@ -25,7 +25,7 @@ function Index() {
         <div className="container mx-auto px-6 relative z-10">
           <div className="md:w-2/3">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Tu hogar ideal está a solo un paso de distancia
+              Tu hogar ideal está a un paso de distancia
             </h1>
             <p className="text-xl mb-8">
               Somos un equipo de asesores inmobiliarios profesionales dedicados a encontrar la propiedad perfecta para ti y tu familia.

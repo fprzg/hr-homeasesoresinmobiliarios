@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function LoginForm() {
+export default function LoginForm({ to }: { to: string }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -11,8 +11,6 @@ export default function LoginForm() {
     setLoading(true);
     setError(null);
 
-      window.location.href = "/dash/docs/listar";
-    /*
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -29,14 +27,12 @@ export default function LoginForm() {
       }
 
       // Puedes redirigir o actualizar el estado de autenticación aquí
-      //window.location.href = "/dash";
-      window.location.href = "/dash/docs/listar";
+      window.location.href = to;
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-      */
   };
 
   return (

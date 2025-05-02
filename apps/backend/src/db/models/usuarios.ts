@@ -23,8 +23,8 @@ async function insertar(username: string, password: string) {
 
 async function autenticar(username: string, password: string) {
     const usuario = await db.query.usuarios.findFirst({ where: eq(schemas.usuarios.username, username) });
-    console.log(username);
     if (!usuario) {
+    console.log("asdf")
         return false;
     }
 

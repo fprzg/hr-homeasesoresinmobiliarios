@@ -59,5 +59,11 @@ export const auth = new Hono()
     })
     .get("/me", getUser, async (c) => {
         const usuario = c.var.usuario;
-        return c.json({ usuario });
+        return c.json({
+            usuario: {
+                id: usuario.id,
+                username: usuario.username,
+                createdAt: usuario.createdAt
+            }
+        });
     })
