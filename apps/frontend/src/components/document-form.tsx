@@ -1,7 +1,7 @@
 // src/components/DocumentForm.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { BloqueDocumento, Documento, crearDocumentoBase } from '@shared/zodSchemas/documento';
+import { BloqueDocumento, Documento, crearDocumentoBase } from '@shared/zod';
 import { DocumentosAPI, ArchivosAPI } from '@/api';
 import BloqueTexto from './bloque-texto';
 import BloqueCarrusel from './bloque-carrusel';

@@ -41,10 +41,8 @@ function Footer() {
             <h4 className="text-lg font-semibold mb-4">Enlaces rápidos</h4>
             <ul className="space-y-2">
               <li><Link to="/" className="text-gray-400 hover:text-white transition">Inicio</Link></li>
-              <li><Link to="/inmuebles" className="text-gray-400 hover:text-white transition">Propiedades</Link></li>
-              <li><Link to="/" className="text-gray-400 hover:text-white transition">Servicios</Link></li>
-              <li><Link to="/" className="text-gray-400 hover:text-white transition">Sobre nosotros</Link></li>
-              <li><Link to="/" className="text-gray-400 hover:text-white transition">Contacto</Link></li>
+              <li><Link to="/inmuebles" className="text-gray-400 hover:text-white transition">Inmuebles</Link></li>
+              <li><Link to="/servicios" className="text-gray-400 hover:text-white transition">Servicios</Link></li>
             </ul>
           </div>
 

@@ -58,3 +58,10 @@ run/api:
 	@echo Starting api...
 	bun --watch apps/backend/index.ts
 
+
+## run/api: Runs the api
+run/frontend:
+	@echo Starting api...
+	@cd ./apps/frontend
+	@bun run dev
+	@cd -

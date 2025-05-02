@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { db } from "../apps/backend/db/client"
+import { db } from "../apps/backend/app"
 import * as schema from "../apps/backend/db/schemas"
 
 const username = process.env.DEV_DB_USERNAME || "admin";

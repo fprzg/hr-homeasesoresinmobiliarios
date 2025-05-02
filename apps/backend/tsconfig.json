@@ -4,7 +4,7 @@
     "paths": {
       "@shared/api":["../../shared/api"],
       "@shared/zod":["../../shared/zod"],
-      "@/*":["./*"]
+      "@/*":["./src/*"]
     },
 
     // Environment setup & latest features
