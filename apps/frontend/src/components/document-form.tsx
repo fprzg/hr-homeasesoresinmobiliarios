@@ -8,20 +8,13 @@ import BloqueCarrusel from './bloque-carrusel';
 import ImageUploader from './image-uploader';
 import DragDropList from './drag-drop-list';
 
-interface DocumentFormProps {
-    documentoInicial?: Documento;
-    modo: 'crear' | 'editar';
-}
-
-export default function DocumentForm({ documentoInicial, modo }: DocumentFormProps) {
+export default function DocumentForm({ documentoInicial, modo }: { documentoInicial?: Documento, modo: 'crear' | 'editar' }) {
     const navigate = useNavigate();
     const [documento, setDocumento] = useState<Documento>(crearDocumentoBase());
     const [portadaFileName, setPortadaFileName] = useState<string>('');
     const [imageFileNames, setImageFileNames] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isBloqueModalOpen, setIsBloqueModalOpen] = useState(false);
-
-    console.log(documentoInicial);
 
     // Cargar nombres de archivos si estamos en modo editar
     useEffect(() => {
@@ -33,6 +26,8 @@ export default function DocumentForm({ documentoInicial, modo }: DocumentFormPro
 
         // Obtener nombres de archivos para las imágenes en carruseles
         if (documentoInicial) {
+            setDocumento(documentoInicial);
+
             const fileNames: Record<string, string> = {};
             documentoInicial.contenido.forEach(bloque => {
                 if (bloque.tipo === 'CarruselImagenes') {

@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { type Documento, documentoSchema } from '@shared/zod';
 import { db } from '@/app';
-import { documentos as documentosDBSchema, archivos } from '@/db/schemas';
+import { schemas } from '@/db/schemas';
 import { nanoid } from 'nanoid';
 import { eq, inArray } from 'drizzle-orm';
 import { ArchivosService } from '@/services/archivosService';
@@ -19,14 +19,14 @@ export const documentos = new Hono()
 
     const data = parse.data;
 
-    const portada = await db.query.archivos.findFirst({ where: eq(archivos.id, data.portada) });
+    const portada = await db.query.archivos.findFirst({ where: eq(schemas.archivos.id, data.portada) });
     if (!portada) return c.json({ error: 'Portada no encontrada' }, 400);
 
     const documentoImagenes = data.contenido
       .filter(b => b.tipo === 'CarruselImagenes')
       .flatMap((b) => b.imagenes);
 
-    const encontrados = await db.select().from(archivos).where(inArray(archivos.id, documentoImagenes));
+    const encontrados = await db.select().from(schemas.archivos).where(inArray(schemas.archivos.id, documentoImagenes));
     const encontradosSet = new Set(encontrados.map(img => img.id));
     const faltantes = documentoImagenes.filter(id => !encontradosSet.has(id));
 
@@ -42,18 +42,18 @@ export const documentos = new Hono()
       metadata: data.metadata,
       contenido: data.contenido,
     };
-    await db.insert(documentosDBSchema).values(nuevoDocumento);
+    await db.insert(schemas.documentos).values(nuevoDocumento);
 
     return c.json({ ok: true });
   })
   .get('/', async (c) => {
-    const data = await db.select().from(documentosDBSchema);
+    const data = await db.select().from(schemas.documentos);
     return c.json({ documentos: data });
   })
   .get('/:id', async (c) => {
     const id = c.req.param('id');
-    console.log(id);
-    const doc = await db.query.documentos.findFirst({ where: eq(documentosDBSchema.id, id) });
+
+    const doc = await db.query.documentos.findFirst({ where: eq(schemas.documentos.id, id) });
     if (!doc) return c.notFound();
     return c.json({ documento: doc });
   })
@@ -68,16 +68,18 @@ export const documentos = new Hono()
       )
     ]);
 
-    const dbImages = await db.select().from(archivos).where(inArray(archivos.id, [...documentoNuevoImagenes]));
+    const dbImages = await db.select().from(schemas.archivos).where(inArray(schemas.archivos.id, [...documentoNuevoImagenes]));
     const invalid = dbImages.filter(img => img.documento_id !== null && img.documento_id !== id);
     if (dbImages.length !== documentoNuevoImagenes.size || invalid.length > 0) {
       return c.json({ error: "Una o más imágenes no son válidas o pertenecen a otro documento" }, 400);
     }
 
-    const documentoAnterior = await db.query.documentos.findFirst({ where: eq(documentosDBSchema.id, id) });
-    if (!documentoAnterior) return c.notFound(); // TODO: Mejorar este error
+    const documentoAnterior = await db.query.documentos.findFirst({ where: eq(schemas.documentos.id, id) });
+    if (!documentoAnterior) {
+      return c.notFound(); // TODO: Mejorar este error
+    }
 
-    const documentoAnteriorContenido = JSON.parse(documentoAnterior.contenido as any as string);
+    const documentoAnteriorContenido = documentoAnterior.contenido as any;
     const documentoAnteriorImagenes = new Set<string>([
       documentoAnterior.portada,
       ...documentoAnteriorContenido.flatMap(
@@ -87,17 +89,17 @@ export const documentos = new Hono()
 
     const imagenesHuerfanas = [...documentoAnteriorImagenes].filter(imgId => !documentoNuevoImagenes.has(imgId));
 
-    await db.update(documentosDBSchema).set({ ...data }).where(eq(documentosDBSchema.id, id));
+    await db.update(schemas.documentos).set({ ...data }).where(eq(schemas.documentos.id, id));
 
-    await db.update(archivos)
+    await db.update(schemas.archivos)
       .set({ documento_id: id })
-      .where(inArray(archivos.id, [...documentoNuevoImagenes]))
+      .where(inArray(schemas.archivos.id, [...documentoNuevoImagenes]))
 
     for (const imgId of imagenesHuerfanas) {
-      const img = await db.query.archivos.findFirst({ where: eq(archivos.id, imgId) });
+      const img = await db.query.archivos.findFirst({ where: eq(schemas.archivos.id, imgId) });
       if (img) {
         ArchivosService.delete(img.id)
-        await db.delete(archivos).where(eq(archivos.id, imgId));
+        await db.delete(schemas.archivos).where(eq(schemas.archivos.id, imgId));
       }
     }
 
@@ -106,12 +108,12 @@ export const documentos = new Hono()
   .delete('/:id', async (c) => {
     const id = c.req.param('id');
 
-    const imgs = await db.select().from(archivos).where(eq(archivos.documento_id, id));
+    const imgs = await db.select().from(schemas.archivos).where(eq(schemas.archivos.documento_id, id));
     for (const img of imgs) {
       ArchivosService.delete(img.id);
     }
 
-    await db.delete(documentosDBSchema).where(eq(documentosDBSchema.id, id));
+    await db.delete(schemas.documentos).where(eq(schemas.documentos.id, id));
     return c.json({ ok: true, id });
   })
 

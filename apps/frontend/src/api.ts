@@ -31,7 +31,6 @@ export const DocumentosAPI = {
 
     const json = response.json();
     if (!response.ok) {
-      console.log(json)
       throw new Error('Error al crear documento');
     }
 
@@ -90,7 +89,6 @@ export const ArchivosAPI = {
     }
 
     const data = await response.json();
-    console.log(data);
     return data.imagenes;
   },
 

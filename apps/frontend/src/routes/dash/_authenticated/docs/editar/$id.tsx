@@ -1,16 +1,16 @@
 // src/routes/dash/documentos/editar/$id.lazy.tsx
 import { useState, useEffect } from 'react';
 import { createFileRoute, useParams } from '@tanstack/react-router';
-import { Documento } from '@shared/zodSchemas/documento';
+import { Documento } from '@shared/zod';
 import { DocumentosAPI } from '@/api';
 import DocumentForm from '@/components/document-form';
 
-export const Route = createFileRoute('/dash/ _authenticated/docs/editar/$id')({
+export const Route = createFileRoute('/dash/_authenticated/docs/editar/$id')({
   component: EditarDocumento,
 });
 
 function EditarDocumento() {
-  const { id } = useParams({ from: '/dash/docs/editar/$id' });
+  const { id } = useParams({ from: '/dash/_authenticated/docs/editar/$id' });
   const [documento, setDocumento] = useState<Documento | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +49,7 @@ function EditarDocumento() {
 
   return (
     <div className="editar-documento">
-      <DocumentForm documentoInicial  ={documento} modo="editar" />
+      <DocumentForm documentoInicial={documento} modo="editar" />
     </div>
   );
 }

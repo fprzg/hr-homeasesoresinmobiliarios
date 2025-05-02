@@ -1,27 +1,32 @@
 import { createMiddleware } from "hono/factory";
-import { type UserType } from "@kinde-oss/kinde-typescript-sdk";
-import { sessionManager } from "@/session";
-
-export type Variables = {
-    user: UserType;
-}
+import { getCookie } from "hono/cookie";
+import { verifyJwt } from "@/lib/jwt";
+import { db } from "@/app"
+import { schemas } from "@/db/schemas"
+import { eq } from "drizzle-orm";
 
 type Env = {
-    Variables: Variables
-}
+    Variables: { usuario: any },
+};
 
 export const getUser = createMiddleware<Env>(async (c, next) => {
+    const token = getCookie(c, 'auth_token');
+    if (!token) {
+        return c.json({ error: 'Unauthorized' }, 401);
+    }
+
     try {
-        const manager = sessionManager(c);
-        const isAuthenticated = await kindeClient.isAuthenticated(manager);
-        if (!isAuthenticated) {
-            return c.json({ error: "Unauthorizated" }, 401);
+        const payload = await verifyJwt(token);
+        const usuario = await db.query.usuarios.findFirst({ where: eq(schemas.usuarios.username, payload.sub) });
+
+        if (!usuario) {
+            return c.json({ error: 'Unauthorized' }, 401);
         }
-        const user = await kindeClient.getUserProfile(manager);
-        c.set("user", user);
+
+        c.set('usuario', usuario);
         await next();
     } catch (e) {
         console.error(e);
-        return c.json({ error: 'Unauthorized' }, { status: 401 })
+        return c.json({ error: 'Invalid token' }, { status: 401 })
     }
 });

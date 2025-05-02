@@ -2,18 +2,7 @@ import { hc } from 'hono/client'
 import { type ApiRoutes } from '@shared/types';
 import { queryOptions } from '@tanstack/react-query';
 
-export const client = hc<ApiRoutes>('/', {
-    headers: async () => {
-        //const apiKey = process.env.API_KEY || "";
-        const apiKey = "";
-        const accessToken = 'jwt';
-
-        return {
-            apiKey,
-            authorization: `Bearer ${accessToken}`,
-        };
-    },
-});
+export const client = hc<ApiRoutes>('/');
 
 export const api = client.api;
 

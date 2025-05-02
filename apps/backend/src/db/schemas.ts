@@ -1,18 +1,20 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
 
-export const usuarios = sqliteTable('usuarios', {
+const usuarios = sqliteTable('usuarios', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   username: text('username').notNull().unique(),
   password: text('password').notNull(),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
-export const categorias = sqliteTable('categorias', {
+const categorias = sqliteTable('categorias', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   nombre: text('nombre').notNull(),
   descripcion: text('descripcion'),
 });
 
-export const documentos = sqliteTable('documentos', {
+const documentos = sqliteTable('documentos', {
   id: text('id').primaryKey(),
   categoria: text('categoria').notNull(),
   titulo: text('titulo').notNull(),
@@ -21,7 +23,7 @@ export const documentos = sqliteTable('documentos', {
   contenido: text('contenido', { mode: 'json' }).notNull(),
 });
 
-export const archivos = sqliteTable('archivos', {
+const archivos = sqliteTable('archivos', {
   id: text('id').primaryKey(),
   filename: text('filename').notNull(),
   mimetype: text('mimetype').notNull(),
@@ -29,3 +31,5 @@ export const archivos = sqliteTable('archivos', {
   createdAt: integer('created_at').default(Date.now()),
   documento_id: text('documento_id').references(() => documentos.id, { onDelete: 'cascade' }),
 });
+
+export const schemas = { usuarios, categorias, documentos, archivos };

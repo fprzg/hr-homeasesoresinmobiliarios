@@ -1,6 +1,6 @@
 import { serveStatic } from "hono/bun";
 import { routes } from "./routes";
-import { auth } from "@/middleware/auth";
+import { getUser } from "@/middleware/auth";
 import { logger } from "@/middleware/logger";
 import { createDB } from "@/db";
 import { createFactory } from "hono/factory";
@@ -30,10 +30,12 @@ export function getApp() {
     .route("/archivos", routes.archivos)
     .route("/auth", routes.auth)
 
-  app.get('/protected', auth(), (c) => {
+    /*
+  app.get('/protected', getUser, (c) => {
     const jwtPayload = c.get('jwtPayload');
     return c.json({ message: 'You have access', user: jwtPayload.sub });
   })
+    */
 
   //app.get("*", serveStatic({ root: "./frontend/dist" }))
   //app.get("*", serveStatic({ path: "./frontend/dist/index.html" }))

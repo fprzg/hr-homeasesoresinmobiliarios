@@ -1,14 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Navigate } from '@tanstack/react-router'
 import { Outlet } from '@tanstack/react-router'
-
-function Login() {
-    return <div>You have to login!</div>
-}
+import { userQueryOptions } from '@/lib/api'
+import LoginForm from '@/components/login'
 
 const Component = () => {
-    const { user } = Route.useRouteContext();
-    if (!user) {
-        return <Login />;
+    const context = Route.useRouteContext();
+    if (!context.user) {
+        return <LoginForm />;
     }
 
     return <Outlet />;
@@ -19,9 +17,10 @@ export const Route = createFileRoute('/dash/_authenticated')({
         const queryClient = context.queryClient;
 
         try {
-            const data = queryClient.fetchQuery(useQueryOptions);
-            return data;
-        } catch (e) {
+            //const data = await queryClient.fetchQuery(userQueryOptions);
+            //return data;
+            return { user: "alicia" };
+        } catch (error) {
             return { user: null };
         }
     },

@@ -2,7 +2,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import DocumentForm from '@/components/document-form';
 
-export const Route = createFileRoute('/dash/ _authenticated/docs/nuevo')({
+export const Route = createFileRoute('/dash/_authenticated/docs/nuevo')({
   component: NuevoDocumento,
 });
 

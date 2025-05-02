@@ -1,11 +1,11 @@
 // src/routes/dash/documentos/listar.lazy.tsx
 import { useState, useEffect } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Documento } from '@shared/zodSchemas/documento';
+import { Documento } from '@shared/zod';
 import { DocumentosAPI, ArchivosAPI } from '@/api';
 import Sidebar from '@/components/dash-sidebar';
 
-export const Route = createFileRoute('/dash/ _authenticated/docs/listar')({
+export const Route = createFileRoute('/dash/_authenticated/docs/listar')({
   component: ListarDocumentos,
 });
 

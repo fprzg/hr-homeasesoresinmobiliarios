@@ -1,4 +1,4 @@
-import { useLocation, createRootRoute, Link, Outlet } from '@tanstack/react-router'
+import { useLocation, createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router'
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { type QueryClient } from '@tanstack/react-query';
 
@@ -6,7 +6,7 @@ interface MyRouterContext {
   queryClient: QueryClient
 }
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: Root,
 })
 

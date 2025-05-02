@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { client } from '@/api';
+import { api } from '@/lib/api';
 import { useEffect, useState } from 'react';
-import { Documento } from '@shared/zodSchemas/documento';
+import { Documento } from '@shared/zod';
 import { DocumentoPage } from '@/components/documento';
 
 export const Route = createFileRoute('/inmuebles/$id')({

@@ -56,8 +56,6 @@ export default function DragDropList<T>({
     setDraggedIndex(index);
   };
 
-  console.log(items);
-
   return (
     <div className="grid grid-cols-1">
       {items.map((item, index) => (

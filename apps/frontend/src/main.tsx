@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import './main.css'
+import './dash.css'
 
 const queryClient = new QueryClient();
 
@@ -13,12 +14,6 @@ const router = createRouter({ routeTree, context: { queryClient } });
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router
-  }
-}
-
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
   }
 }
 

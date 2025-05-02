@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { api } from '@/api';
+import { api } from '@/lib/api';
 import { useEffect, useState } from 'react';
 import { Documento } from '@shared/zod';
 import { DocumentoPreview } from '@/components/documento';
@@ -26,7 +26,6 @@ function AllInmuebles() {
 
   if (isPending) return <div>Cargando inmuebles...</div>;
   if (error) return <div>{error.message}</div>;
-  console.log(data.inmuebles);
 
   const docs = data.documentos as Documento[];
 
