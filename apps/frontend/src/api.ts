@@ -1,21 +1,3 @@
-import { hc } from 'hono/client'
-import { type ApiRoutes } from '@shared/types';
-
-export const client = hc<ApiRoutes>('/', {
-    headers: async () => {
-        //const apiKey = process.env.API_KEY || "";
-        const apiKey = "";
-        const accessToken = 'jwt';
-
-        return {
-            apiKey,
-            authorization: `Bearer ${accessToken}`,
-        };
-    },
-});
-
-export const api = client.api;
-
 import { Documento } from '@shared/zod'
 
 export const DocumentosAPI = {

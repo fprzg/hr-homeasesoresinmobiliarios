@@ -4,7 +4,7 @@ include .env.dev
 export 
 
 # Variable con lista ordenada de migraciones
-MIGRATIONS := $(shell find ./apps/backend/db/migrations -type f -name '*.sql' | sort)
+MIGRATIONS := $(shell find ./apps/backend/src/db/migrations -type f -name '*.sql' | sort)
 
 ## help: shows this message.
 .PHONY: help
@@ -56,7 +56,7 @@ prod/deploy: confirm
 ## run/api: Runs the api
 run/api:
 	@echo Starting api...
-	bun --watch apps/backend/index.ts
+	bun --watch apps/backend/src/index.ts
 
 
 ## run/api: Runs the api

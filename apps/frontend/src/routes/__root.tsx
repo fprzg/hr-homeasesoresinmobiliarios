@@ -1,8 +1,13 @@
 import { useLocation, createRootRoute, Link, Outlet } from '@tanstack/react-router'
 import { MapPin, Phone, Mail } from 'lucide-react';
+import { type QueryClient } from '@tanstack/react-query';
+
+interface MyRouterContext {
+  queryClient: QueryClient
+}
 
 export const Route = createRootRoute({
-  component: RootLayout,
+  component: Root,
 })
 
 function Nav() {
@@ -98,7 +103,7 @@ function Footer() {
   );
 }
 
-function RootLayout() {
+function Root() {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dash');
 

@@ -5,7 +5,7 @@ import { Documento } from '@shared/zodSchemas/documento';
 import { DocumentosAPI, ArchivosAPI } from '@/api';
 import Sidebar from '@/components/dash-sidebar';
 
-export const Route = createFileRoute('/dash/docs/listar')({
+export const Route = createFileRoute('/dash/ _authenticated/docs/listar')({
   component: ListarDocumentos,
 });
 

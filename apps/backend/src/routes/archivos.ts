@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { db } from '@/app';
-import { archivos as archivosDBSchema, documentos as documentosDBSchema } from '@/src/db/schemas';
-import { ArchivosService } from '@/src/services/archivosService';
+import { archivos as archivosDBSchema, documentos as documentosDBSchema } from '@/db/schemas';
+import { ArchivosService } from '@/services/archivosService';
 import { eq } from 'drizzle-orm';
 
 export const archivos = new Hono()

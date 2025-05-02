@@ -5,7 +5,7 @@ import { Documento } from '@shared/zodSchemas/documento';
 import { DocumentosAPI } from '@/api';
 import DocumentForm from '@/components/document-form';
 
-export const Route = createFileRoute('/dash/docs/editar/$id')({
+export const Route = createFileRoute('/dash/ _authenticated/docs/editar/$id')({
   component: EditarDocumento,
 });
 

@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useNavigate } from '@tanstack/react-router'
 import './dash.css'
 
-export const Route = createFileRoute('/dash/')({
+export const Route = createFileRoute('/dash/ _authenticated/')({
   component: RouteComponent,
 })
 
