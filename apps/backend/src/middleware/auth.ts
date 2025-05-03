@@ -4,6 +4,7 @@ import { verifyJwt } from "@/lib/jwt";
 import { db } from "@/app"
 import { schemas } from "@/db/schemas"
 import { eq } from "drizzle-orm";
+import { UsuariosModel } from "@/db/models/usuarios";
 
 type Env = {
     Variables: { usuario: any },
@@ -17,8 +18,8 @@ export const getUser = createMiddleware<Env>(async (c, next) => {
 
     try {
         const payload = await verifyJwt(token);
-        const usuario = await db.query.usuarios.findFirst({ where: eq(schemas.usuarios.username, payload.sub) });
-
+        console.log(payload)
+        const usuario = await UsuariosModel.get(payload.sub);
         if (!usuario) {
             return c.json({ error: 'Unauthorized' }, 401);
         }

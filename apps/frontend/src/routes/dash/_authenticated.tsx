@@ -5,7 +5,7 @@ import LoginForm from '@/components/login'
 
 const Component = () => {
     const context = Route.useRouteContext();
-    if (context.usuario) {
+    if (!context.usuario) {
         return <LoginForm to="/dash" />;
     }
 
@@ -19,9 +19,11 @@ export const Route = createFileRoute('/dash/_authenticated')({
         try {
             const data = await queryClient.fetchQuery(userQueryOptions);
             console.log(data)
-            return data;
+            return { usuario: data };
+            //return { usuario: null };
+            //return data;
         } catch (error) {
-            return { user: null };
+            return { usuario: null };
         }
     },
     component: Component,

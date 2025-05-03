@@ -4,8 +4,13 @@ import { db } from "@/app";
 import { schemas } from "@/db/schemas";
 import { eq } from "drizzle-orm";
 
+async function get(username: string) {
+    const usuario = await db.query.usuarios.findFirst({ where: eq(schemas.usuarios.username, username) });
+    return usuario;
+}
+
 async function existe(username: string) {
-    const existing = await db.query.usuarios.findFirst({ where: eq(schemas.usuarios.username, username) });
+    const existing = await get(username)
     if (existing) {
         return true;
     }
@@ -22,9 +27,8 @@ async function insertar(username: string, password: string) {
 }
 
 async function autenticar(username: string, password: string) {
-    const usuario = await db.query.usuarios.findFirst({ where: eq(schemas.usuarios.username, username) });
+    const usuario = await get(username)
     if (!usuario) {
-    console.log("asdf")
         return false;
     }
 
@@ -32,4 +36,4 @@ async function autenticar(username: string, password: string) {
     return comparison;
 }
 
-export const UsuariosModel = { existe, insertar, autenticar };
+export const UsuariosModel = { existe, get, insertar, autenticar, };
