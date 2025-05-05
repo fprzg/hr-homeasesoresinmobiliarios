@@ -1,5 +1,5 @@
 CREATE TABLE
-    documentos (
+    inmueble (
         id TEXT PRIMARY KEY,
         categoria TEXT CHECK (categoria IN ('casa', 'terreno')),
         titulo TEXT NOT NULL,
