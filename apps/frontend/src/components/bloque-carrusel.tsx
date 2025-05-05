@@ -1,7 +1,7 @@
 // src/components/BloqueCarrusel.tsx
 import { useState, useEffect } from 'react';
 import { BloqueDocumento } from '@shared/zod';
-import { ArchivosAPI } from '@/api';
+import { ArchivosApi } from '@/api';
 import DragDropList from '@/components/drag-drop-list';
 
 interface BloqueCarruselProps {
@@ -78,7 +78,7 @@ export default function BloqueCarrusel({
                         renderItem={(imagenId, index) => (
                             <div className="imagen-item">
                                 <img
-                                    src={ArchivosAPI.getImagenUrl(imagenId)}
+                                    src={ArchivosApi.getImagenUrl(imagenId)}
                                     alt={`Imagen ${index + 1}`}
                                     width="150"
                                 />

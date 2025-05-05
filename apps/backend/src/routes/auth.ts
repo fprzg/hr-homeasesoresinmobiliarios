@@ -12,7 +12,8 @@ export const auth = new Hono()
         const body = await c.req.json();
         const parsed = loginUsuarioSchema.safeParse(body);
         if (!parsed.success) {
-            return c.json({ error: parsed.error.flatten() }, 400);
+            const parseError = parsed.error.flatten();
+            return c.json({ error: parseError }, 400);
         }
 
         const { username, password } = parsed.data;

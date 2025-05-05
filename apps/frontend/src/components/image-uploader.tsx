@@ -1,6 +1,6 @@
 // src/components/ImageUploader.tsx
 import { useState } from 'react';
-import { ArchivosAPI } from '@/api';
+import { ArchivosApi } from '@/api';
 
 interface ImageUploaderProps {
     onImageUploaded: (imageId: string, fileName: string) => void;
@@ -22,7 +22,7 @@ export default function ImageUploader({
             setIsUploading(true);
             //const file = e.target.files[0];
             const files = [...e.target.files];
-            const result = await ArchivosAPI.subir(files);
+            const result = await ArchivosApi.subir(files);
 
             if (result.length > 0) {
                 const { id, originalName } = result[0];

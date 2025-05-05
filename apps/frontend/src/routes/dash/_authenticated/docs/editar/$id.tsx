@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { createFileRoute, useParams } from '@tanstack/react-router';
 import { Documento } from '@shared/zod';
-import { DocumentosAPI } from '@/api';
+import { DocumentosApi } from '@/api';
 import DocumentForm from '@/components/document-form';
 
 export const Route = createFileRoute('/dash/_authenticated/docs/editar/$id')({
@@ -19,7 +19,7 @@ function EditarDocumento() {
     const cargarDocumento = async () => {
       try {
         setIsLoading(true);
-        //const data = await DocumentosAPI.obtener(id);
+        //const data = await DocumentosApi.obtener(id);
         const res = await fetch(`/api/documentos/${id}`)
         const data = await res.json();
         setDocumento(data.documento);

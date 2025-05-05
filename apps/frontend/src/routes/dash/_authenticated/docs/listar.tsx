@@ -1,136 +1,252 @@
-// src/routes/dash/documentos/listar.lazy.tsx
-import { useState, useEffect } from 'react';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, Navigate, useNavigate } from '@tanstack/react-router';
+import React from 'react';
 import { Documento } from '@shared/zod';
-import { DocumentosAPI, ArchivosAPI } from '@/api';
-import Sidebar from '@/components/dash-sidebar';
+import { DocumentosApi, ArchivosApi } from '@/api';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { useReducer } from 'react';
+import { api } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
+
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table"
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
 
 export const Route = createFileRoute('/dash/_authenticated/docs/listar')({
-  component: ListarDocumentos,
+  component: ComponentLayout,
 });
 
-function ListarDocumentos() {
-  const [documentos, setDocumentos] = useState<Documento[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+function ComponentLayout() {
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const cargarDocumentos = async () => {
-      try {
-        setIsLoading(true);
-        //const data = await DocumentosAPI.listar();
-        const res = await fetch(`/api/documentos`)
-        const data = await res.json();
-        setDocumentos(data.documentos);
-        setError(null);
-      } catch (err) {
-        console.error('Error al cargar documentos:', err);
-        setError('Error al cargar la lista de documentos. Inténtalo de nuevo.');
-      } finally {
-        setIsLoading(false);
-      }
+  function makeRedirectHandler(target: string) {
+    const handler = () => {
+      navigate({ to: target });
     };
+    return handler;
+  }
 
-    cargarDocumentos();
-  }, []);
+  const columns: ColumnDef<Documento>[] = [
+    {
+      accessorKey: "titulo",
+      header: "Título",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("titulo")}</div>
+      ),
+    },
+    {
+      accessorKey: "categoria",
+      header: "Categoría",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("categoria")}</div>
+      ),
+    },
+    {
+      accessorKey: "precio",
+      header: () => <div className="text-right">Previo</div>,
+      cell: ({ row }) => {
+        const precio = parseFloat(row.getValue("precio"));
+        console.log(precio)
+        const formateado = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(precio);
 
-  const handleEliminar = async (id: string) => {
-    if (window.confirm('¿Estás seguro de eliminar este documento? Esta acción no se puede deshacer.')) {
-      try {
-        await DocumentosAPI.eliminar(id);
-        // Actualizar la lista después de eliminar
-        setDocumentos(documentos.filter(doc => doc.id !== id));
-      } catch (error) {
-        console.error('Error al eliminar documento:', error);
-        alert('Error al eliminar el documento. Inténtalo de nuevo.');
+        return <div className="text-right font-medium">{formateado}</div>
       }
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const btnClassName = "h-8 rounded-md px-0";
+        const documentoId = row.getValue("id");
+
+        return (
+          <div className='grid grid-cols-2 gap-4 mx-auto'>
+            <Button className={btnClassName} onClick={makeRedirectHandler(`/dash/docs/editar${documentoId}`)}>Editar</Button>
+            <Button variant="destructive" className={btnClassName}>Eliminar</Button>
+          </div>
+        )
+
+        /*
+        const payment = row.original
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+              <DropdownMenuItem>Editar</DropdownMenuItem>
+              <DropdownMenuItem>Eliminar</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+        */
+      },
+    },
+  ];
+
+  async function getDocumentos() {
+    const res = await api.documentos.$get();
+    if (!res.ok) {
+      throw new Error('server error');
     }
-  };
+    const data = await res.json();
+    return data;
+  }
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ['get-all-documentos-x'],
+    queryFn: getDocumentos,
+  });
+
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = React.useState({})
+
+  const table = useReactTable<Documento>({
+    data: (isPending ? [] : data?.documentos) as Documento[],
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  })
+
+
+  //if (isPending) return <div>Cargando inmuebles...</div>;
+  if (error) return <div>{error.message}</div>;
 
   return (
-    <div className="documentos-listar">
+    <div className="">
       <div className="page-header">
         <h2>Documentos</h2>
-        <Link to="/dash/docs/nuevo" className="btn-crear">
+        <Button onClick={() => makeRedirectHandler("/dash/docs/nuevo")}>
           Crear
-        </Link>
+        </Button>
       </div>
 
-      {isLoading ? (
-        <div className="loading">Cargando documentos...</div>
-      ) : error ? (
-        <div className="error">{error}</div>
-      ) : documentos.length === 0 ? (
-        <div className="sin-documentos">
-          <p>No hay documentos disponibles.</p>
-          <Link to="/dash/docs/nuevo">Crear el primer documento</Link>
-        </div>
-      ) : (
-        <div className="documentos-tabla">
-          <table>
-            <thead>
-              <tr>
-                <th>Portada</th>
-                <th>Título</th>
-                <th>Categoría</th>
-                <th>Ubicación</th>
-                <th>Fecha</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {documentos.map((documento) => (
-                <tr key={documento.id}>
-                  <td className="portada-cell">
-                    <img
-                      src={ArchivosAPI.getImagenUrl(documento.portada)}
-                      alt={documento.titulo}
-                      width="70"
-                      height="70"
-                    />
-                  </td>
-                  <td>
-                    <Link
-                      to="/dash/docs/editar/$id"
-                      params={{ id: documento.id }}
-                      className="documento-link"
-                    >
-                      {documento.titulo}
-                    </Link>
-                  </td>
-                  <td>{documento.categoria === 'casa' ? 'Casa' : 'Terreno'}</td>
-                  <td>{documento.metadata.ubicacion}</td>
-                  <td>{new Date(documento.metadata.fechaPublicacion).toLocaleDateString()}</td>
-                  <td className="acciones">
-                    <Link
-                      to="/dash/docs/editar/$id"
-                      params={{ id: documento.id }}
-                      className="btn-editar"
-                    >
-                      Editar
-                    </Link>
-                    <button
-                      className="btn-eliminar"
-                      onClick={() => handleEliminar(documento.id)}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    </TableHead>
+                  )
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
-function Layout() {
-  return (
-    <>
-        
-      <ListarDocumentos />
-    </>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { BloqueDocumento, Documento, crearDocumentoBase } from '@shared/zod';
-import { DocumentosAPI, ArchivosAPI } from '@/api';
+import { DocumentosApi, ArchivosApi } from '@/api';
 import BloqueTexto from '@/components/bloque-texto';
 import BloqueCarrusel from '@/components/bloque-carrusel';
 import ImageUploader from '@/components/image-uploader';
@@ -151,7 +151,7 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
 
     const uploadImages = async (files: File[]): Promise<string[]> => {
         try {
-            const result = await ArchivosAPI.subir(files);
+            const result = await ArchivosApi.subir(files);
 
             // Actualizar el mapeo de nombres de archivos
             const newImageFileNames = { ...imageFileNames };
@@ -186,12 +186,12 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
 
             if (modo === 'crear') {
                 // Crear nuevo documento
-                const result = await DocumentosAPI.crear(documento);
+                const result = await DocumentosApi.crear(documento);
                 alert('Documento creado exitosamente.');
                 navigate({ to: '/dash/docs/listar' });
             } else if ('id' in documento) {
                 // Actualizar documento existente
-                await DocumentosAPI.actualizar(documento.id, documento);
+                await DocumentosApi.actualizar(documento.id, documento);
                 alert('Documento actualizado exitosamente.');
                 navigate({ to: '/dash/docs/listar' });
             }
@@ -208,7 +208,7 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
 
         if (window.confirm('¿Estás seguro de eliminar este documento? Esta acción no se puede deshacer.')) {
             try {
-                await DocumentosAPI.eliminar(documento.id);
+                await DocumentosApi.eliminar(documento.id);
                 alert('Documento eliminado exitosamente.');
                 navigate({ to: '/dash/docs/listar' });
             } catch (error) {
@@ -316,7 +316,7 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
                         {documento.portada ? (
                             <div className="portada-preview">
                                 <img
-                                    src={ArchivosAPI.getImagenUrl(documento.portada)}
+                                    src={ArchivosApi.getImagenUrl(documento.portada)}
                                     alt="Portada"
                                     width="200"
                                 />

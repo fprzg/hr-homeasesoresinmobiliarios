@@ -11,6 +11,7 @@ type Env = {
 };
 
 export const getUser = createMiddleware<Env>(async (c, next) => {
+    console.log("from getUser middleware")
     const token = getCookie(c, 'auth_token');
     if (!token) {
         return c.json({ error: 'Unauthorized' }, 401);

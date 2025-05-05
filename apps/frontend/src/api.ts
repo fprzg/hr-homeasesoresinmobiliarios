@@ -1,13 +1,22 @@
 import { Documento } from '@shared/zod'
+import { api } from './lib/api';
+import { useQuery } from '@tanstack/react-query';
 
-export const DocumentosAPI = {
-  // Obtener lista de documentos
-  listar: async (): Promise<Documento[]> => {
-    const response = await fetch('/api/documentos');
-    if (!response.ok) {
-      throw new Error('Error al obtener documentos');
+export const DocumentosApi = {
+  listar: () => {
+    async function getDocumentos() {
+      const res = await api.documentos.$get();
+      if (!res.ok) {
+        throw new Error('server error');
+      }
+      const data = await res.json();
+      return data;
     }
-    return response.json();
+
+    return useQuery({
+      queryKey: ['get-all-documentos'],
+      queryFn: getDocumentos,
+    });
   },
 
   // Obtener un documento por ID
@@ -69,7 +78,7 @@ export interface ArchivoResponse {
   originalName: string;
 }
 
-export const ArchivosAPI = {
+export const ArchivosApi = {
   // Subir imágenes
   subir: async (files: File[]): Promise<ArchivoResponse[]> => {
     const formData = new FormData();
