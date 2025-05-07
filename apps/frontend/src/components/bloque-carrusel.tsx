@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react';
 import { BloqueDocumento } from '@shared/zod';
 import { ArchivosApi } from '@/api';
 import DragDropList from '@/components/drag-drop-list';
+import { Input } from './ui/input';
+import { Label } from '@radix-ui/react-label';
+import { Button } from './ui/button';
 
 interface BloqueCarruselProps {
     bloque: Extract<BloqueDocumento, { tipo: 'CarruselImagenes' }>;
@@ -61,15 +64,15 @@ export default function BloqueCarrusel({
     const identifier = Math.random();
 
     return (
-        <div className="bloque-carrusel">
-            <div className="bloque-header">
-                <h4>Carrusel de Imágenes</h4>
-                <button type="button" className="btn-eliminar" onClick={onDelete}>
+        <div className="">
+            <div className="">
+                <Label>Imagenes</Label>
+                <Button type="button" className="btn-eliminar" onClick={onDelete}>
                     Eliminar
-                </button>
+                </Button>
             </div>
 
-            <div className="carrusel-content">
+            <div className="">
                 {imagenes.length > 0 ? (
                     <DragDropList
                         items={imagenes}
@@ -83,24 +86,24 @@ export default function BloqueCarrusel({
                                     width="150"
                                 />
                                 <div className="imagen-info">
-                                    <span className="imagen-nombre">{imageFileNames[imagenId] || `Imagen ${index + 1}`}</span>
-                                    <button
+                                    <span className="">{imageFileNames[imagenId] || `Imagen ${index + 1}`}</span>
+                                    <Button
                                         type="button"
                                         className="btn-quitar"
                                         onClick={() => handleRemoveImage(index)}
                                     >
                                         Quitar
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
                         )}
                     />
                 ) : (
-                    <div className="sin-imagenes">No hay imágenes en este carrusel</div>
+                    <div className="">No hay imágenes en este carrusel</div>
                 )}
 
-                <div className="upload-section">
-                    <input
+                <div className="">
+                    <Input
                         type="file"
                         id={`carrusel-upload-${identifier}`}
                         multiple
@@ -108,9 +111,9 @@ export default function BloqueCarrusel({
                         onChange={handleImagenChange}
                         disabled={isUploading}
                     />
-                    <label htmlFor={`carrusel-upload-${identifier}`} className="btn-upload">
+                    <Label htmlFor={`carrusel-upload-${identifier}`} className="btn-upload">
                         {isUploading ? 'Subiendo...' : 'Añadir imágenes'}
-                    </label>
+                    </Label>
                 </div>
             </div>
         </div>

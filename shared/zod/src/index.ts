@@ -1,83 +1,97 @@
 import { z } from "zod";
 
-export const bloqueDocumentoSchema = z.discriminatedUnion("tipo", [
-  z.object({
-    tipo: z.literal("Texto"),
-    texto: z.string(),
-  }),
-  z.object({
-    tipo: z.literal("CarruselImagenes"),
-    imagenes: z.array(z.string()),
-  }),
+export const bloqueSchema = z.object({
+  imagen: z.string(),
+  descripcion: z.string(),
+})
+
+export const inmuebleBaseSchema = z.object({
+  id: z.string(),
+  estado: z.string(),
+  asentamiento: z.string(),
+  precio: z.number().int().gt(0),
+  area_total: z.number().int().gt(0),
+  fechaPublicacion: z.string().datetime(),
+  fechaActualizacion: z.string().datetime(),
+  portada: z.string(),
+  contenido: z.array(bloqueSchema),
+});
+
+export const casaSchema = inmuebleBaseSchema.extend({
+  tipo: z.literal("casa"),
+  area_construida: z.number().int().gte(0),
+  num_banos: z.number().int().gte(0),
+  num_recamaras: z.number().int().gte(0),
+  num_pisos: z.number().int().gte(0),
+  num_cocheras: z.number().int().gte(0),
+  piscina: z.boolean().default(false),
+});
+
+export const terrenoSchema = inmuebleBaseSchema.extend({
+  tipo: z.literal("terreno"),
+  metros_frente: z.number().int().gt(0),
+  metros_fondo: z.number().int().gt(0),
+  tipo_propiedad: z.enum(["privada", "comunal", "ejidal",]),
+});
+
+export const inmuebleSchema = z.discriminatedUnion("tipo", [
+  casaSchema,
+  terrenoSchema,
 ]);
 
-const metadataSchema = z.object({
-  fechaPublicacion: z.string().datetime(),
-  ubicacion: z.string(),
-  precio: z.number().optional(),
-  tags: z.array(z.string()).optional(),
-});
+export type BloqueType = z.infer<typeof bloqueSchema>;
 
-export const documentoSchema = z.object({
-  id: z.string(),
-  categoria: z.enum(["casa", "terreno"]),
-  titulo: z.string(),
-  portada: z.string(),
-  metadata: metadataSchema,
-  contenido: z.array(bloqueDocumentoSchema),
-});
+export type InmuebleBaseType = z.infer<typeof inmuebleBaseSchema>;
+export type CasaType = z.infer<typeof casaSchema>;
+export type TerrenoType = z.infer<typeof terrenoSchema>;
+export type InmuebleType = z.infer<typeof inmuebleSchema>;
 
-export type BloqueDocumento = z.infer<typeof bloqueDocumentoSchema>;
-export type Documento = z.infer<typeof documentoSchema>;
-
-export function crearDocumentoBase(): Documento {
+function crearInmuebleBase(): InmuebleBaseType {
   return {
     id: "",
-    categoria: "casa",
-    titulo: "",
+    estado: "",
+    asentamiento: "",
+    precio: 0,
+    area_total: 0,
+    fechaPublicacion: "",
+    fechaActualizacion: "",
     portada: "",
-    metadata: {
-      fechaPublicacion: new Date().toISOString(),
-      ubicacion: "",
-    },
     contenido: [],
+  };
+}
+
+export function crearCasa(): CasaType {
+  const base = crearInmuebleBase();
+  return {
+    ...base,
+    tipo: "casa",
+    area_construida: 0,
+    num_banos: 0,
+    num_recamaras: 0,
+    num_pisos: 0,
+    num_cocheras: 0,
+    piscina: false,
+  };
+}
+
+export function crearTerreno(): TerrenoType {
+  const base = crearInmuebleBase();
+  return {
+    ...base,
+    tipo: "terreno",
+    metros_frente: 0,
+    metros_fondo: 0,
+    tipo_propiedad: "privada",
   };
 }
 
 
 
-export const paginacionSchema = z.object({
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(10),
-  categoria: z.string().optional(),
-});
-
-export type PaginacionSchema = z.infer<typeof paginacionSchema>
-
 
 
 export const usuarioSchema = z.object({
-  id: z.number().int(),
-  username: z.string().min(1),
-  password: z.string().min(8).max(80),
-});
-
-export const loginUsuarioSchema = z.object({
-  username: z.string().min(1),
-  password: z.string(),
-});
-
-export type UsuarioSchema = z.infer<typeof usuarioSchema>;
-export type LoginUsuarioSchema = z.infer<typeof loginUsuarioSchema>;
-
-
-
-export const usuarioLoginSchema = z.object({
   username: z.string().email(),
   password: z.string().min(8),
 });
 
-export const usuarioRegisterSchema = z.object({
-  username: z.string().email(),
-  password: z.string().min(8),
-})
+export type usuarioSchema = z.infer<typeof usuarioSchema>;

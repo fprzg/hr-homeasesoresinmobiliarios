@@ -1,33 +1,29 @@
-// src/components/DocumentForm.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { BloqueDocumento, Documento, crearDocumentoBase } from '@shared/zod';
+import { BloqueType, InmuebleType, crearBloqueBase, crearDocumentoBase } from '@shared/zod';
 import { DocumentosApi, ArchivosApi } from '@/api';
 import BloqueTexto from '@/components/bloque-texto';
 import BloqueCarrusel from '@/components/bloque-carrusel';
 import ImageUploader from '@/components/image-uploader';
 import DragDropList from '@/components/drag-drop-list';
+import { Button } from '@/components/ui/button';
+import { Label } from './ui/label';
+import { Input } from './ui/input';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from './ui/select';
 
-export default function DocumentForm({ documentoInicial, modo }: { documentoInicial?: Documento, modo: 'crear' | 'editar' }) {
+export default function InmuebletForm({ documentoInicial, modo }: { documentoInicial?: InmuebleType, modo: 'crear' | 'editar' }) {
     const navigate = useNavigate();
-    const [documento, setDocumento] = useState<Documento>(crearDocumentoBase());
-    const [portadaFileName, setPortadaFileName] = useState<string>('');
+    const [documento, setDocumento] = useState<InmuebleType>(crearDocumentoBase());
     const [imageFileNames, setImageFileNames] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isBloqueModalOpen, setIsBloqueModalOpen] = useState(false);
 
+    /*
     // Cargar nombres de archivos si estamos en modo editar
     useEffect(() => {
-        // Si hay una portada y estamos en modo editar, intentar obtener su nombre de archivo
-        if (documentoInicial?.portada && modo === 'editar') {
-            // Aquí se podría agregar lógica para recuperar el nombre del archivo
-            setPortadaFileName('Portada cargada');
-        }
-
         // Obtener nombres de archivos para las imágenes en carruseles
         if (documentoInicial) {
             setDocumento(documentoInicial);
-
             const fileNames: Record<string, string> = {};
             documentoInicial.contenido.forEach(bloque => {
                 if (bloque.tipo === 'CarruselImagenes') {
@@ -39,11 +35,13 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
             setImageFileNames(fileNames);
         }
     }, [documentoInicial, modo]);
+    */
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
 
         // Manejar cambios en campos anidados (metadata)
+        /*
         if (name.startsWith('metadata.')) {
             const metadataField = name.split('.')[1];
             setDocumento({
@@ -53,41 +51,11 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
                     [metadataField]: value,
                 },
             });
-        } else {
-            setDocumento({
-                ...documento,
-                [name]: value,
-            });
-        }
-    };
-
-    const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        const numValue = value ? parseFloat(value) : undefined;
-
-        // Asumimos que es un campo de metadata, como precio
-        if (name.startsWith('metadata.')) {
-            const metadataField = name.split('.')[1];
-            setDocumento({
-                ...documento,
-                metadata: {
-                    ...documento.metadata,
-                    [metadataField]: numValue,
-                },
-            });
-        }
-    };
-
-    const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const tagsString = e.target.value;
-        const tagsArray = tagsString ? tagsString.split(',').map(tag => tag.trim()) : [];
-
+        } 
+            */
         setDocumento({
             ...documento,
-            metadata: {
-                ...documento.metadata,
-                tags: tagsArray,
-            },
+            [name]: value,
         });
     };
 
@@ -96,24 +64,11 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
             ...documento,
             portada: imageId,
         });
-        setPortadaFileName(fileName);
+        //setPortadaFileName(fileName);
     };
 
-    const handleAddBloque = (tipo: 'Texto' | 'CarruselImagenes') => {
-        let nuevoBloque: BloqueDocumento;
-
-        if (tipo === 'Texto') {
-            nuevoBloque = {
-                tipo: 'Texto',
-                texto: '',
-            };
-        } else {
-            nuevoBloque = {
-                tipo: 'CarruselImagenes',
-                imagenes: [],
-            };
-        }
-
+    const handleAddBloque = () => {
+        const nuevoBloque = crearBloqueBase();
         setDocumento({
             ...documento,
             contenido: [...documento.contenido, nuevoBloque],
@@ -122,7 +77,7 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
         setIsBloqueModalOpen(false);
     };
 
-    const handleUpdateBloque = (index: number, bloqueActualizado: BloqueDocumento) => {
+    const handleUpdateBloque = (index: number, bloqueActualizado: BloqueType) => {
         const nuevosContenidos = [...documento.contenido];
         nuevosContenidos[index] = bloqueActualizado;
 
@@ -142,7 +97,7 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
         });
     };
 
-    const handleReorderBloques = (nuevosContenidos: BloqueDocumento[]) => {
+    const handleReorderBloques = (nuevosContenidos: BloqueType[]) => {
         setDocumento({
             ...documento,
             contenido: nuevosContenidos,
@@ -170,14 +125,8 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validaciones básicas
-        if (!documento.titulo) {
-            alert('Por favor, ingresa un título para el documento.');
-            return;
-        }
-
         if (!documento.portada) {
-            alert('Por favor, sube una imagen de portada.');
+            alert('Sube una imagen de portada.');
             return;
         }
 
@@ -219,99 +168,82 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
     };
 
     return (
-        <div className="documento-form">
+        <div className="">
             <form onSubmit={handleSubmit}>
-                <div className="form-header">
+                <div className="">
                     <h2>{modo === 'crear' ? 'Crear Nuevo Documento' : 'Editar Documento'}</h2>
 
-                    <div className="form-actions">
-                        <button
+                    <div className="">
+                        <Button
                             type="submit"
-                            className="btn-guardar"
+                            className=""
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? 'Guardando...' : 'Guardar'}
-                        </button>
+                        </Button>
 
                         {modo === 'editar' && (
-                            <button
-                                type="button"
+                            <Button
+                                variant="destructive"
                                 className="btn-eliminar"
                                 onClick={handleEliminar}
                             >
                                 Eliminar
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </div>
 
-                <div className="form-body">
-                    <div className="form-section">
-                        <h3>Información General</h3>
+                {/* form body */}
+                <div className="">
+                    <div className="">
+                        <h3 className="text-xl pb-6">Información General</h3>
 
-                        <div className="form-group">
-                            <label htmlFor="titulo">Título*</label>
-                            <input
-                                type="text"
-                                id="titulo"
-                                name="titulo"
-                                value={documento.titulo}
-                                onChange={handleInputChange}
-                                required
-                            />
+                        <div className="">
+                            <Label htmlFor="categoria">Categoría*</Label>
+
+                            <Select>
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Selecciona una categoría" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel></SelectLabel>
+                                        <SelectItem value="casa">Casa</SelectItem>
+                                        <SelectItem value="terreno">Terreno</SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="categoria">Categoría*</label>
-                            <select
-                                id="categoria"
-                                name="categoria"
-                                value={documento.categoria}
-                                onChange={handleInputChange}
-                                required
-                            >
-                                <option value="casa">Casa</option>
-                                <option value="terreno">Terreno</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="metadata.ubicacion">Ubicación*</label>
-                            <input
+                        {/* TODO: Agregar más detalles para definir el estado */}
+                        <div className="">
+                            <Label htmlFor="metadata.ubicacion">Asentamiento*</Label>
+                            <Input
                                 type="text"
                                 id="metadata.ubicacion"
                                 name="metadata.ubicacion"
-                                value={documento.metadata.ubicacion}
+                                value={documento.asentamiento}
                                 onChange={handleInputChange}
                                 required
                             />
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="metadata.precio">Precio</label>
-                            <input
+                        <div className="">
+                            <Label htmlFor="metadata.precio">Precio</Label>
+                            <Input
                                 type="number"
                                 id="metadata.precio"
                                 name="metadata.precio"
-                                value={documento.metadata.precio || ''}
+                                value={documento.precio || ''}
                                 onChange={handleNumberInputChange}
                             />
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="metadata.tags">Etiquetas (separadas por comas)</label>
-                            <input
-                                type="text"
-                                id="metadata.tags"
-                                name="metadata.tags"
-                                value={documento.metadata.tags?.join(', ') || ''}
-                                onChange={handleTagsChange}
-                            />
-                        </div>
                     </div>
 
-                    <div className="form-section">
-                        <h3>Portada*</h3>
+                    <div className="">
+                        <Label htmlFor=''>Portada</Label>
 
                         {documento.portada ? (
                             <div className="portada-preview">
@@ -320,94 +252,73 @@ export default function DocumentForm({ documentoInicial, modo }: { documentoInic
                                     alt="Portada"
                                     width="200"
                                 />
-                                <p>{portadaFileName}</p>
-                                <button
+                                {/* <p>{portadaFileName}</p> */}
+                                <Button
                                     type="button"
                                     onClick={() => {
                                         setDocumento({ ...documento, portada: '' });
-                                        setPortadaFileName('');
+                                        // setPortadaFileName('');
                                     }}
                                 >
                                     Cambiar imagen
-                                </button>
+                                </Button>
                             </div>
                         ) : (
-                            <ImageUploader
-                                onImageUploaded={handlePortadaUpload}
-                                label="Subir portada*"
-                            />
+                            <Button>
+                                <ImageUploader className=''
+                                    onImageUploaded={handlePortadaUpload}
+                                    label="Subir portada*"
+                                />
+                            </Button>
                         )}
                     </div>
 
-                    <div className="form-section">
-                        <div className="contenido-header">
-                            <h3>Contenido</h3>
-                            <button
+                    <div className="">
+                        <div className="">
+                            <Label>Contenido</Label>
+
+                            <Button
                                 type="button"
                                 onClick={() => setIsBloqueModalOpen(true)}
                             >
                                 Agregar bloque
-                            </button>
+                            </Button>
                         </div>
 
                         {isBloqueModalOpen && (
-                            <div className="bloque-modal">
-                                <div className="bloque-modal-content">
+                            <div className="bg-pink-300">
+                                <div className="">
                                     <h4>Selecciona el tipo de bloque</h4>
                                     <div className="bloque-options">
-                                        <button
+                                        <Button
                                             type="button"
-                                            onClick={() => handleAddBloque('Texto')}
+                                            onClick={() => handleAddBloque()}
                                         >
                                             Texto
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleAddBloque('CarruselImagenes')}
-                                        >
-                                            Carrusel de Imágenes
-                                        </button>
+                                        </Button>
                                     </div>
-                                    <button
+                                    <Button
+                                        variant="secondary"
                                         type="button"
                                         onClick={() => setIsBloqueModalOpen(false)}
                                     >
                                         Cancelar
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
                         )}
 
-                        <DragDropList
-                            items={documento.contenido}
-                            keyExtractor={(item) => `${item.tipo}`}
-                            onReorder={handleReorderBloques}
-                            renderItem={(bloque, index) => (
-                                <div className="bloque-item">
-                                    {bloque.tipo === 'Texto' ? (
-                                        <BloqueTexto
-                                            bloque={bloque}
-                                            onChange={(bloqueActualizado) => handleUpdateBloque(index, bloqueActualizado)}
-                                            onDelete={() => handleDeleteBloque(index)}
-                                        />
-                                    ) : (
-                                        <BloqueCarrusel
-                                            bloque={bloque}
-                                            onChange={(bloqueActualizado) => handleUpdateBloque(index, bloqueActualizado)}
-                                            onDelete={() => handleDeleteBloque(index)}
-                                            onUploadImages={uploadImages}
-                                            imageFileNames={imageFileNames}
-                                        />
-                                    )}
-                                </div>
-                            )}
-                        />
+                        {documento.contenido.map((bloque) => (
+                            <div className="">
+                            </div>
+                        ))}
 
                         {documento.contenido.length === 0 && (
-                            <div className="sin-contenido">
-                                <p>No hay bloques de contenido. Añade uno haciendo clic en "Agregar bloque".</p>
+                            <div className="">
+                                <p className=''>No hay bloques de contenido. Añade uno haciendo clic en "Agregar bloque".</p>
                             </div>
                         )}
+
                     </div>
                 </div>
             </form>

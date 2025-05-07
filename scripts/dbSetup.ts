@@ -1,20 +1,13 @@
 #!/usr/bin/env bun
 
+import { UsuariosModel } from "../apps/backend/src/db/models/usuarios"
+
 const fs = require('fs');
 const path = require('path');
-const readline = require('readline');
 
-// 1. Preguntar al usuario su nombre
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+function insertarLocalidades(localidadesDir) {
+    console.log(`Iniciando parseo de archivos...`);
 
-rl.question('Ingresa tu nombre de usuario: ', (usuario) => {
-    console.log(`Hola, ${usuario}. Iniciando parseo de archivos...`);
-    const localidadesDir = path.resolve(__dirname, '../assets/localidades');
-
-    // 2. Leer todos los archivos .txt en la carpeta
     fs.readdir(localidadesDir, (err, files) => {
         if (err) {
             console.error('Error al leer la carpeta de localidades:', err);
@@ -60,6 +53,16 @@ rl.question('Ingresa tu nombre de usuario: ', (usuario) => {
             console.log(`Archivo procesado: ${file} -> ${outputFileName}`);
         });
 
-        rl.close();
     });
-});
+};
+
+let username = process.env.DEV_DB_USERNAME;
+let password = process.env.DEV_DB_PASSWORD;
+
+if (!username || !password) {
+    process.exit(1);
+}
+
+UsuariosModel.insertar(username, password);
+
+//insertarLocalidades(path.resolve(__dirname, '../assets/localidades'));

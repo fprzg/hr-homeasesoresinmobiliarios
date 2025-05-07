@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Navigate, useNavigate } from '@tanstack/react-router';
 import React from 'react';
-import { Documento } from '@shared/zod';
+import { InmuebleType } from '@shared/zod';
 import { DocumentosApi, ArchivosApi } from '@/api';
 import { Button } from '@/components/ui/button';
 import {
@@ -46,14 +46,7 @@ export const Route = createFileRoute('/dash/_authenticated/docs/listar')({
 function ComponentLayout() {
   const navigate = useNavigate();
 
-  function makeRedirectHandler(target: string) {
-    const handler = () => {
-      navigate({ to: target });
-    };
-    return handler;
-  }
-
-  const columns: ColumnDef<Documento>[] = [
+  const columns: ColumnDef<InmuebleType>[] = [
     {
       accessorKey: "titulo",
       header: "Título",
@@ -91,7 +84,7 @@ function ComponentLayout() {
 
         return (
           <div className='grid grid-cols-2 gap-4 mx-auto'>
-            <Button className={btnClassName} onClick={makeRedirectHandler(`/dash/docs/editar${documentoId}`)}>Editar</Button>
+            <Button className={btnClassName} onClick={() => navigate({ to: `/dash/docs/editar${documentoId}` })}>Editar</Button>
             <Button variant="destructive" className={btnClassName}>Eliminar</Button>
           </div>
         )
@@ -140,8 +133,8 @@ function ComponentLayout() {
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-  const table = useReactTable<Documento>({
-    data: (isPending ? [] : data?.documentos) as Documento[],
+  const table = useReactTable<InmuebleType>({
+    data: (isPending ? [] : data?.documentos) as InmuebleType[],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -164,11 +157,14 @@ function ComponentLayout() {
   if (error) return <div>{error.message}</div>;
 
   return (
-    <div className="">
-      <div className="page-header">
-        <h2>Documentos</h2>
-        <Button onClick={() => makeRedirectHandler("/dash/docs/nuevo")}>
-          Crear
+    <div className="grid gap-4">
+      <div className="text-xl text-center">Inmuebles</div>
+      <div className="">
+        <Button className='' onClick={() => navigate({ to: '/dash/docs/nuevo-casa' })}>
+          Agregar casa
+        </Button>
+        <Button className='' onClick={() => navigate({ to: '/dash/docs/nuevo-terreno' })}>
+          Agregar terreno
         </Button>
       </div>
 

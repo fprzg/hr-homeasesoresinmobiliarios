@@ -1,4 +1,5 @@
 include .env
+include .env.dev
 export
 
 # Variable con lista ordenada de migraciones
@@ -42,7 +43,7 @@ db/create: db/confirm_db_path
 dev/setup: db/confirm_db_path
 	@echo Creating the database...
 	@$(MAKE) db/create
-	@./scripts/developmentSetupData.ts
+	@./scripts/dbSetup.ts
 
 
 ## prod/deploy: Deploys the app to production. Requires server's ssh key.

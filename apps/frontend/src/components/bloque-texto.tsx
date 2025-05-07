@@ -1,6 +1,8 @@
-// src/components/BloqueTexto.tsx
 import { useState, useEffect } from 'react';
 import { BloqueDocumento } from '@shared/zod';
+import { Button } from './ui/button';
+import { Textarea } from './ui/textarea';
+import { Label } from './ui/label';
 
 interface BloqueTextoProps {
   bloque: Extract<BloqueDocumento, { tipo: 'Texto' }>;
@@ -22,21 +24,21 @@ export default function BloqueTexto({ bloque, onChange, onDelete }: BloqueTextoP
   };
 
   return (
-    <div className="bloque-texto">
+    <div className="bg-cyan-300">
       <div className="bloque-header">
-        <h4>Bloque de Texto</h4>
-        <button 
-          type="button" 
-          className="btn-eliminar" 
+        <Label>Bloque de Texto</Label>
+        <Button
+          type="button"
+          className="btn-eliminar"
           onClick={onDelete}
         >
           Eliminar
-        </button>
+        </Button>
       </div>
-      <textarea 
-        value={texto} 
-        onChange={handleChange} 
-        rows={5} 
+      <Textarea
+        value={texto}
+        onChange={handleChange}
+        rows={5}
         placeholder="Escribe el contenido del bloque de texto aquí..."
       />
     </div>

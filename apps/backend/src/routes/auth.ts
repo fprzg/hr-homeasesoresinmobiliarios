@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { generateJwt } from "@/lib/jwt";
 import { setCookie, deleteCookie } from "hono/cookie";
-import { sessionManager } from "@/session";
-import { loginUsuarioSchema } from "@shared/zod";
+//import { sessionManager } from "@/session";
+import { usuarioSchema } from "@shared/zod";
 import { getUser } from "@/middleware/auth";
 
 import { UsuariosModel } from "@/db/models/usuarios";
@@ -10,7 +10,7 @@ import { UsuariosModel } from "@/db/models/usuarios";
 export const auth = new Hono()
     .post("/login", async (c) => {
         const body = await c.req.json();
-        const parsed = loginUsuarioSchema.safeParse(body);
+        const parsed = usuarioSchema.safeParse(body);
         if (!parsed.success) {
             const parseError = parsed.error.flatten();
             return c.json({ error: parseError }, 400);
@@ -34,7 +34,7 @@ export const auth = new Hono()
     })
     .post("/register", async (c) => {
         const body = await c.req.json();
-        const parsed = loginUsuarioSchema.safeParse(body);
+        const parsed = usuarioSchema.safeParse(body);
         if (!parsed.success) {
             return c.json({ error: parsed.error.flatten() }, 400);
         }

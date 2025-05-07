@@ -25,7 +25,7 @@ export function getApp() {
   app.use("*", logger);
 
   const apiRoutes = app.basePath("/api")
-    .route("/documentos", routes.documentos)
+    .route("/inmuebles", routes.inmuebles)
     .route("/archivos", routes.archivos)
     .route("/auth", routes.auth)
 

@@ -20,7 +20,8 @@ import { Route as DashIndexImport } from './routes/dash/index'
 import { Route as InmueblesIdImport } from './routes/inmuebles/$id'
 import { Route as DashLoginImport } from './routes/dash/login'
 import { Route as DashAuthenticatedImport } from './routes/dash/_authenticated'
-import { Route as DashAuthenticatedDocsNuevoImport } from './routes/dash/_authenticated/docs/nuevo'
+import { Route as DashAuthenticatedDocsNuevoTerrenoImport } from './routes/dash/_authenticated/docs/nuevo-terreno'
+import { Route as DashAuthenticatedDocsNuevoCasaImport } from './routes/dash/_authenticated/docs/nuevo-casa'
 import { Route as DashAuthenticatedDocsListarImport } from './routes/dash/_authenticated/docs/listar'
 import { Route as DashAuthenticatedDocsEditarIdImport } from './routes/dash/_authenticated/docs/editar/$id'
 
@@ -77,13 +78,19 @@ const DashAuthenticatedRoute = DashAuthenticatedImport.update({
   getParentRoute: () => DashRoute,
 } as any)
 
-const DashAuthenticatedDocsNuevoRoute = DashAuthenticatedDocsNuevoImport.update(
-  {
-    id: '/docs/nuevo',
-    path: '/docs/nuevo',
+const DashAuthenticatedDocsNuevoTerrenoRoute =
+  DashAuthenticatedDocsNuevoTerrenoImport.update({
+    id: '/docs/nuevo-terreno',
+    path: '/docs/nuevo-terreno',
     getParentRoute: () => DashAuthenticatedRoute,
-  } as any,
-)
+  } as any)
+
+const DashAuthenticatedDocsNuevoCasaRoute =
+  DashAuthenticatedDocsNuevoCasaImport.update({
+    id: '/docs/nuevo-casa',
+    path: '/docs/nuevo-casa',
+    getParentRoute: () => DashAuthenticatedRoute,
+  } as any)
 
 const DashAuthenticatedDocsListarRoute =
   DashAuthenticatedDocsListarImport.update({
@@ -166,11 +173,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashAuthenticatedDocsListarImport
       parentRoute: typeof DashAuthenticatedImport
     }
-    '/dash/_authenticated/docs/nuevo': {
-      id: '/dash/_authenticated/docs/nuevo'
-      path: '/docs/nuevo'
-      fullPath: '/dash/docs/nuevo'
-      preLoaderRoute: typeof DashAuthenticatedDocsNuevoImport
+    '/dash/_authenticated/docs/nuevo-casa': {
+      id: '/dash/_authenticated/docs/nuevo-casa'
+      path: '/docs/nuevo-casa'
+      fullPath: '/dash/docs/nuevo-casa'
+      preLoaderRoute: typeof DashAuthenticatedDocsNuevoCasaImport
+      parentRoute: typeof DashAuthenticatedImport
+    }
+    '/dash/_authenticated/docs/nuevo-terreno': {
+      id: '/dash/_authenticated/docs/nuevo-terreno'
+      path: '/docs/nuevo-terreno'
+      fullPath: '/dash/docs/nuevo-terreno'
+      preLoaderRoute: typeof DashAuthenticatedDocsNuevoTerrenoImport
       parentRoute: typeof DashAuthenticatedImport
     }
     '/dash/_authenticated/docs/editar/$id': {
@@ -187,13 +201,16 @@ declare module '@tanstack/react-router' {
 
 interface DashAuthenticatedRouteChildren {
   DashAuthenticatedDocsListarRoute: typeof DashAuthenticatedDocsListarRoute
-  DashAuthenticatedDocsNuevoRoute: typeof DashAuthenticatedDocsNuevoRoute
+  DashAuthenticatedDocsNuevoCasaRoute: typeof DashAuthenticatedDocsNuevoCasaRoute
+  DashAuthenticatedDocsNuevoTerrenoRoute: typeof DashAuthenticatedDocsNuevoTerrenoRoute
   DashAuthenticatedDocsEditarIdRoute: typeof DashAuthenticatedDocsEditarIdRoute
 }
 
 const DashAuthenticatedRouteChildren: DashAuthenticatedRouteChildren = {
   DashAuthenticatedDocsListarRoute: DashAuthenticatedDocsListarRoute,
-  DashAuthenticatedDocsNuevoRoute: DashAuthenticatedDocsNuevoRoute,
+  DashAuthenticatedDocsNuevoCasaRoute: DashAuthenticatedDocsNuevoCasaRoute,
+  DashAuthenticatedDocsNuevoTerrenoRoute:
+    DashAuthenticatedDocsNuevoTerrenoRoute,
   DashAuthenticatedDocsEditarIdRoute: DashAuthenticatedDocsEditarIdRoute,
 }
 
@@ -223,7 +240,8 @@ export interface FileRoutesByFullPath {
   '/dash/': typeof DashIndexRoute
   '/inmuebles': typeof InmueblesIndexRoute
   '/dash/docs/listar': typeof DashAuthenticatedDocsListarRoute
-  '/dash/docs/nuevo': typeof DashAuthenticatedDocsNuevoRoute
+  '/dash/docs/nuevo-casa': typeof DashAuthenticatedDocsNuevoCasaRoute
+  '/dash/docs/nuevo-terreno': typeof DashAuthenticatedDocsNuevoTerrenoRoute
   '/dash/docs/editar/$id': typeof DashAuthenticatedDocsEditarIdRoute
 }
 
@@ -235,7 +253,8 @@ export interface FileRoutesByTo {
   '/inmuebles/$id': typeof InmueblesIdRoute
   '/inmuebles': typeof InmueblesIndexRoute
   '/dash/docs/listar': typeof DashAuthenticatedDocsListarRoute
-  '/dash/docs/nuevo': typeof DashAuthenticatedDocsNuevoRoute
+  '/dash/docs/nuevo-casa': typeof DashAuthenticatedDocsNuevoCasaRoute
+  '/dash/docs/nuevo-terreno': typeof DashAuthenticatedDocsNuevoTerrenoRoute
   '/dash/docs/editar/$id': typeof DashAuthenticatedDocsEditarIdRoute
 }
 
@@ -250,7 +269,8 @@ export interface FileRoutesById {
   '/dash/': typeof DashIndexRoute
   '/inmuebles/': typeof InmueblesIndexRoute
   '/dash/_authenticated/docs/listar': typeof DashAuthenticatedDocsListarRoute
-  '/dash/_authenticated/docs/nuevo': typeof DashAuthenticatedDocsNuevoRoute
+  '/dash/_authenticated/docs/nuevo-casa': typeof DashAuthenticatedDocsNuevoCasaRoute
+  '/dash/_authenticated/docs/nuevo-terreno': typeof DashAuthenticatedDocsNuevoTerrenoRoute
   '/dash/_authenticated/docs/editar/$id': typeof DashAuthenticatedDocsEditarIdRoute
 }
 
@@ -265,7 +285,8 @@ export interface FileRouteTypes {
     | '/dash/'
     | '/inmuebles'
     | '/dash/docs/listar'
-    | '/dash/docs/nuevo'
+    | '/dash/docs/nuevo-casa'
+    | '/dash/docs/nuevo-terreno'
     | '/dash/docs/editar/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -276,7 +297,8 @@ export interface FileRouteTypes {
     | '/inmuebles/$id'
     | '/inmuebles'
     | '/dash/docs/listar'
-    | '/dash/docs/nuevo'
+    | '/dash/docs/nuevo-casa'
+    | '/dash/docs/nuevo-terreno'
     | '/dash/docs/editar/$id'
   id:
     | '__root__'
@@ -289,7 +311,8 @@ export interface FileRouteTypes {
     | '/dash/'
     | '/inmuebles/'
     | '/dash/_authenticated/docs/listar'
-    | '/dash/_authenticated/docs/nuevo'
+    | '/dash/_authenticated/docs/nuevo-casa'
+    | '/dash/_authenticated/docs/nuevo-terreno'
     | '/dash/_authenticated/docs/editar/$id'
   fileRoutesById: FileRoutesById
 }
@@ -346,7 +369,8 @@ export const routeTree = rootRoute
       "parent": "/dash",
       "children": [
         "/dash/_authenticated/docs/listar",
-        "/dash/_authenticated/docs/nuevo",
+        "/dash/_authenticated/docs/nuevo-casa",
+        "/dash/_authenticated/docs/nuevo-terreno",
         "/dash/_authenticated/docs/editar/$id"
       ]
     },
@@ -368,8 +392,12 @@ export const routeTree = rootRoute
       "filePath": "dash/_authenticated/docs/listar.tsx",
       "parent": "/dash/_authenticated"
     },
-    "/dash/_authenticated/docs/nuevo": {
-      "filePath": "dash/_authenticated/docs/nuevo.tsx",
+    "/dash/_authenticated/docs/nuevo-casa": {
+      "filePath": "dash/_authenticated/docs/nuevo-casa.tsx",
+      "parent": "/dash/_authenticated"
+    },
+    "/dash/_authenticated/docs/nuevo-terreno": {
+      "filePath": "dash/_authenticated/docs/nuevo-terreno.tsx",
       "parent": "/dash/_authenticated"
     },
     "/dash/_authenticated/docs/editar/$id": {

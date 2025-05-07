@@ -4,3 +4,4 @@ media/
 Casas/
 
 .env
+.env.dev

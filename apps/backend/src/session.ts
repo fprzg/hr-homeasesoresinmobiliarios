@@ -1,6 +1,6 @@
+/*
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { type Context } from "hono";
-import { type SessionManager } from "@kinde-oss/kinde-typescript-sdk";
 
 let store: Record<string, unknown> = {};
 
@@ -31,3 +31,4 @@ export const sessionManager = (c: Context): SessionManager => ({
         })
     }
 })
+*/

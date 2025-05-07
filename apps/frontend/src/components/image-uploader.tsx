@@ -1,6 +1,8 @@
 // src/components/ImageUploader.tsx
 import { useState } from 'react';
 import { ArchivosApi } from '@/api';
+import { Label } from './ui/label';
+import { Input } from './ui/input';
 
 interface ImageUploaderProps {
     onImageUploaded: (imageId: string, fileName: string) => void;
@@ -39,8 +41,8 @@ export default function ImageUploader({
     const elementId = Math.random();
 
     return (
-        <div className={`image-uploader ${className}`}>
-            <input
+        <div className={`${className}`}>
+            <Input
                 type="file"
                 id={`image-upload-${elementId}`}
                 accept="image/*"
@@ -48,12 +50,12 @@ export default function ImageUploader({
                 disabled={isUploading}
                 style={{ display: 'none' }}
             />
-            <label
+            <Label
                 htmlFor={`image-upload-${elementId}`}
                 className="btn-upload"
             >
                 {isUploading ? 'Subiendo...' : label}
-            </label>
+            </Label>
         </div>
     );
 }
