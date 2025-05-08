@@ -7,5 +7,5 @@ export const Route = createFileRoute('/dash/')({
 
 function RouteComponent() {
   const navigate = useNavigate();
-  navigate({ to: '/dash/docs/listar' });
+  navigate({ to: '/dash/inmuebles' });
 }

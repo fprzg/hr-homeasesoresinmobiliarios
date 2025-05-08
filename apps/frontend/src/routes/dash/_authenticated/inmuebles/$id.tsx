@@ -5,12 +5,12 @@ import { type InmuebleType } from '@shared/zod';
 import { InmueblesApi } from '@/api';
 import DocumentForm from '@/components/inmueble-form';
 
-export const Route = createFileRoute('/dash/_authenticated/docs/editar/$id')({
+export const Route = createFileRoute('/dash/_authenticated/inmuebles/$id')({
   component: EditarDocumento,
 });
 
 function EditarDocumento() {
-  const { id } = useParams({ from: '/dash/_authenticated/docs/editar/$id' });
+  const { id } = useParams({ from: '/dash/_authenticated/inmuebles/$id' });
   const [inmueble, setInmueble] = useState<InmuebleType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

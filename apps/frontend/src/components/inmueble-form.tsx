@@ -1,69 +1,36 @@
+import { InmueblesApi } from "@/api";
 import { crearCasa, crearTerreno, InmuebleBaseType, InmuebleType } from "@shared/zod/src";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
-// Componente principal del formulario de inmuebles
+async function getDocumentos() {
+  const res = await api.inmuebles.$get();
+  if (!res.ok) {
+    throw new Error('server error');
+  }
+  const data = await res.json();
+  return data;
+}
+
+//export default function InmuebleForm({ inmuebleDefault }: { inmuebleDefault: InmuebleType }) {
 export default function InmuebleForm() {
-  const [inmueble, setInmueble] = useState<InmuebleType>(crearCasa());
+  const { isPending: inmueblesLoading, error: inmueblesErrorMsg, data } = useQuery({
+    queryKey: ['get-all-documentos'],
+    queryFn: getDocumentos,
+  });
 
-  const [inmuebles, setInmuebles] = useState<InmuebleType[]>([]);
+  //const [inmuebles, setInmuebles] = useState<InmuebleType[]>(data ? data.inmuebles : []);
+  const [inmuebles, setInmuebles] = useState<InmuebleType[]>(data?.inmuebles ?? []);
+
+
+  const [inmueble, setInmueble] = useState<InmuebleType>(crearCasa());
   const [isEditing, setIsEditing] = useState(false);
   const [portadaFile, setPortadaFile] = useState(null);
   const [nuevoBloque, setNuevoBloque] = useState({ imagen: "", descripcion: "", });
   const [bloqueImagenFile, setBloqueImagenFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // Función para cargar inmuebles iniciales (simulación)
-  useEffect(() => {
-    // En implementación real, aquí se cargarían los inmuebles desde la API
-    fetch('/api/inmuebles').then((res) => {
-      if (!res.ok) {
-        setError("Error al cargar los inmuebles. Intente de nuevo más tarde")
-      } else {
-        res.json().then((data) => {
-          console.log(data);
-          setInmuebles(data?.inmuebles as InmuebleType[]);
-        });
-      }
-    });
-
-    setInmuebles([
-      {
-        id: "casa1",
-        tipo: "casa",
-        estado: "Yucatán",
-        asentamiento: "Las Américas",
-        precio: 2500000,
-        area_total: 150,
-        fechaPublicacion: new Date().toISOString(),
-        fechaActualizacion: new Date().toISOString(),
-        portada: "portada1",
-        contenido: [{ imagen: "img1", descripcion: "Sala amplia" }],
-        area_construida: 120,
-        num_banos: 2,
-        num_recamaras: 3,
-        num_pisos: 1,
-        num_cocheras: 1,
-        piscina: true,
-      },
-      {
-        id: "terreno1",
-        tipo: "terreno",
-        estado: "Yucatán",
-        asentamiento: "Cholul",
-        precio: 1500000,
-        area_total: 500,
-        fechaPublicacion: new Date().toISOString(),
-        fechaActualizacion: new Date().toISOString(),
-        portada: "portada2",
-        contenido: [{ imagen: "img2", descripcion: "Vista frontal" }],
-        metros_frente: 20,
-        metros_fondo: 25,
-        tipo_propiedad: "privada",
-
-      },
-    ]);
-  }, []);
 
   // Maneja cambios en el formulario
   const handleChange = (e: any) => {
@@ -79,6 +46,7 @@ export default function InmuebleForm() {
         "num_recamaras",
         "num_pisos",
         "num_cocheras",
+        "total_areas",
         "metros_frente",
         "metros_fondo",
       ].includes(name)
@@ -86,31 +54,25 @@ export default function InmuebleForm() {
       const numValue = value === "" ? 0 : parseInt(value, 10);
       setInmueble({ ...inmueble, [name]: numValue });
     }
-    // Manejo para checkbox (boolean)
     else if (type === "checkbox") {
       setInmueble({ ...inmueble, [name]: checked });
     }
-    // Si cambia el tipo, reiniciar ciertos valores
     else if (name === "tipo") {
       if (value === "casa") {
         setInmueble(crearCasa());
       } else {
         setInmueble(crearTerreno());
       }
-    }
-    // Para otros campos de texto
-    else {
+    } else {
       setInmueble({ ...inmueble, [name]: value });
     }
   };
 
-  // Maneja cambios en el bloque nuevo
   const handleBloqueChange = (e: any) => {
     const { name, value } = e.target;
     setNuevoBloque({ ...nuevoBloque, [name]: value });
   };
 
-  // Maneja la subida de la imagen de portada
   const handlePortadaUpload = async (e: any) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -119,18 +81,16 @@ export default function InmuebleForm() {
 
     try {
       setLoading(true);
-      // Simulación de subida de archivo
-      // En implementación real:
-      // const formData = new FormData();
-      // formData.append('file', file);
-      // const response = await fetch('/api/archivos', {
-      //   method: 'POST',
-      //   body: formData
-      // });
-      // const data = await response.json();
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await fetch('/api/archivos', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      console.log(data);
 
-      // Simulamos respuesta del servidor
-      const imageId = `img_${Date.now()}`;
+      const imageId = data.imagenes[0].id;
 
       setInmueble({
         ...inmueble,
@@ -152,18 +112,15 @@ export default function InmuebleForm() {
 
     try {
       setLoading(true);
-      // Simulación de subida de archivo
-      // En implementación real:
-      // const formData = new FormData();
-      // formData.append('file', file);
-      // const response = await fetch('/api/archivos', {
-      //   method: 'POST',
-      //   body: formData
-      // });
-      // const data = await response.json();
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await fetch('/api/archivos', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
 
-      // Simulamos respuesta del servidor
-      const imageId = `bloque_${Date.now()}`;
+      const imageId = data.imagenes[0].id;
 
       setNuevoBloque({
         ...nuevoBloque,
@@ -225,12 +182,11 @@ export default function InmuebleForm() {
           fechaActualizacion: currentDate,
         };
 
-        // En implementación real:
-        // await fetch('/api/inmuebles', {
-        //   method: 'PUT',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify(updatedInmueble)
-        // });
+        await fetch('/api/inmuebles', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedInmueble)
+        });
 
         // Actualizar en la lista local
         setInmuebles(
@@ -244,21 +200,19 @@ export default function InmuebleForm() {
         // Crear nuevo inmueble
         const newInmueble = {
           ...inmueble,
-          id: `inmueble_${Date.now()}`, // En implementación real, el ID vendría del backend
+          //id: `inmueble_${Date.now()}`, // En implementación real, el ID vendría del backend
           fechaPublicacion: currentDate,
           fechaActualizacion: currentDate,
         };
 
-        // En implementación real:
-        // const response = await fetch('/api/inmuebles', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify(newInmueble)
-        // });
-        // const data = await response.json();
+        const response = await fetch('/api/inmuebles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newInmueble)
+        });
+        const data = await response.json();
 
-        // Agregar a la lista local
-        setInmuebles([...inmuebles, newInmueble]);
+        setInmuebles([...inmuebles, data.inmueble]);
       }
 
       // Resetear el formulario
@@ -319,6 +273,61 @@ export default function InmuebleForm() {
     setBloqueImagenFile(null);
     setIsEditing(false);
     setError("");
+  };
+
+  const InmueblesLista = () => {
+    if (inmueblesLoading) {
+      return <p className="text-gray-500">Cargando inmuebles...</p>
+    } else if (inmuebles.length === 0) {
+      return <p className="text-gray-500">No hay inmuebles registrados.</p>
+    }
+
+    return (
+      <div className="space-y-4">
+        {inmuebles.map((item) => (
+          <div
+            key={item.id}
+            className="border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="flex justify-between">
+              <div>
+                <h3 className="font-medium">
+                  {item.tipo === "casa" ? "Casa" : "Terreno"} en {item.asentamiento}, {item.estado}
+                </h3>
+                <p className="text-gray-600">
+                  ${item.precio.toLocaleString()} MXN | Área: {item.area_total} m²
+                </p>
+                {item.tipo === "casa" && (
+                  <p className="text-sm text-gray-500">
+                    {item.num_recamaras} rec. | {item.num_banos} baños | {item.area_construida} m² construidos
+                  </p>
+                )}
+                {item.tipo === "terreno" && (
+                  <p className="text-sm text-gray-500">
+                    {item.metros_frente}m × {item.metros_fondo}m | Propiedad {item.tipo_propiedad}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleEdit(item.id)}
+                  className="text-blue-500 hover:text-blue-700"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -454,6 +463,18 @@ export default function InmuebleForm() {
                 type="number"
                 name="num_cocheras"
                 value={inmueble.num_cocheras || ""}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+                min="0"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Número de áreas</label>
+              <input
+                type="number"
+                name="total_areas"
+                value={inmueble.total_areas || ""}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md"
                 min="0"
@@ -637,59 +658,10 @@ export default function InmuebleForm() {
         </div>
       </div>
 
-      {/* Lista de inmuebles */}
       <div className="mt-8 pt-6 border-t">
         <h2 className="text-xl font-semibold mb-4">Inmuebles Registrados</h2>
-
-        {inmuebles.length === 0 ? (
-          <p className="text-gray-500">No hay inmuebles registrados.</p>
-        ) : (
-          <div className="space-y-4">
-            {inmuebles.map((item) => (
-              <div
-                key={item.id}
-                className="border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="flex justify-between">
-                  <div>
-                    <h3 className="font-medium">
-                      {item.tipo === "casa" ? "Casa" : "Terreno"} en {item.asentamiento}, {item.estado}
-                    </h3>
-                    <p className="text-gray-600">
-                      ${item.precio.toLocaleString()} MXN | Área: {item.area_total} m²
-                    </p>
-                    {item.tipo === "casa" && (
-                      <p className="text-sm text-gray-500">
-                        {item.num_recamaras} rec. | {item.num_banos} baños | {item.area_construida} m² construidos
-                      </p>
-                    )}
-                    {item.tipo === "terreno" && (
-                      <p className="text-sm text-gray-500">
-                        {item.metros_frente}m × {item.metros_fondo}m | Propiedad {item.tipo_propiedad}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleEdit(item.id)}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <InmueblesLista />
       </div>
-    </div>
+    </div >
   );
 }

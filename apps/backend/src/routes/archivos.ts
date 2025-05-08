@@ -39,3 +39,20 @@ export const archivos = new Hono()
             'Content-Disposition': `inline; filename="${doc.filename}"`,
         }})
     })
+    .get('/random', async (c) => {
+        const docs = await db.select().from(schemas.archivos);
+        if (docs.length === 0) return c.notFound();
+
+        const randomDoc = docs[Math.floor(Math.random() * docs.length)];
+        if(!randomDoc) return c.notFound();
+        const file = await ArchivosService.leer(randomDoc.id);
+        if (!file) return c.notFound();
+
+        return c.body(file.buffer, {
+            headers: {
+                'Content-Type': randomDoc.mimetype,
+                'Content-Length': file.size.toString(),
+                'Content-Disposition': `inline; filename="${randomDoc.filename}"`,
+            }
+        });
+    });

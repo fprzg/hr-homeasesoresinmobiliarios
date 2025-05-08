@@ -1,8 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
-
-import { Link } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -44,6 +42,9 @@ function Index() {
           </div>
         </div>
       </section>
+
+      <HexagonGrid />
+
 
       {/* Services */}
       <section className="py-20 bg-white">
@@ -227,6 +228,189 @@ function Index() {
         </div>
       </section>
 
+    </div>
+  );
+}
+
+// Componente para una sola imagen hexagonal
+const HexagonImage = ({
+  fadeTime = 5000,
+  interval = 7000,
+  delay = 0, // Retraso para escalonar las transiciones
+  size = 'md'
+}) => {
+  const [imageUrl, setImageUrl] = useState('/api/placeholder/400/400');
+  const [isFading, setIsFading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Mapeo de tamaños
+  const sizeClasses = {
+    sm: 'w-16 h-16',
+    md: 'w-24 h-24',
+    lg: 'w-32 h-32'
+  };
+
+  const fetchRandomImage = async () => {
+    try {
+      // En un entorno real, esto obtendría una imagen de /api/archivos/random
+      const timestamp = new Date().getTime();
+      const sizes = [300, 400, 500];
+      const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
+      //return `/api/placeholder/${randomSize}/${randomSize}?t=${timestamp}`;
+      return `/api/archivos/random`;
+    } catch (error) {
+      console.error("Error al obtener la imagen:", error);
+      //return '/api/placeholder/400/400';
+    }
+  };
+
+  const changeImage = async () => {
+    setIsFading(true);
+
+    setTimeout(async () => {
+      setIsLoading(true);
+      const newImageUrl = await fetchRandomImage();
+      setImageUrl(newImageUrl);
+      setIsFading(false);
+    }, fadeTime);
+  };
+
+  useEffect(() => {
+    // Retrasar la carga inicial según el parámetro delay
+    const initialLoadTimeout = setTimeout(() => {
+      fetchRandomImage().then(url => {
+        setImageUrl(url);
+        setIsLoading(false);
+      });
+    }, delay);
+
+    // Configurar el intervalo para cambiar la imagen
+    const imageInterval = setInterval(() => {
+      changeImage();
+    }, interval + delay); // Añadir delay al intervalo para escalonar las transiciones
+
+    return () => {
+      clearTimeout(initialLoadTimeout);
+      clearInterval(imageInterval);
+    };
+  }, [interval, fadeTime, delay]);
+
+  const handleImageLoad = () => {
+    setIsLoading(false);
+  };
+
+  return (
+    <div className="relative">
+      <div className={`${sizeClasses[size]} relative overflow-hidden`}>
+        <div
+          className={`
+            absolute inset-0 
+            ${isFading ? 'opacity-0' : 'opacity-100'} 
+            transition-opacity ease-in-out duration-1000
+            bg-gray-100
+          `}
+          style={{
+            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
+          }}
+        >
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+              <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+          )}
+          <img
+            // src={imageUrl}
+            src="/api/archivos/random"
+            alt="Imagen hexagonal"
+            className="w-full h-full object-cover"
+            onLoad={handleImageLoad}
+          />
+        </div>
+      </div>
+
+      <div
+        className={`${sizeClasses[size]} absolute top-0 left-0 border-2 border-gray-300 pointer-events-none`}
+        style={{
+          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
+        }}
+      ></div>
+    </div>
+  );
+};
+
+// Componente principal que crea la cuadrícula de hexágonos
+export default function HexagonGrid({
+  fadeTime = 5000,
+  interval = 7000,
+}) {
+  fadeTime += Math.random() * 4;
+  // Determinar si es móvil o escritorio
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Configuración de la cuadrícula
+  const gridConfig = isMobile
+    ? { rows: 3, cols: 5 } // 5x3 en móvil
+    : { rows: 4, cols: 8 }; // 8x4 en escritorio
+
+  useEffect(() => {
+    // Función para detectar si es móvil basado en el ancho de la pantalla
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // 768px es el breakpoint común para tablets/móviles
+    };
+
+    // Comprobar al cargar y al redimensionar
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Crear la cuadrícula
+  const renderGrid = () => {
+    const grid = [];
+    const { rows, cols } = gridConfig;
+    let index = 0;
+
+    for (let row = 0; row < rows; row++) {
+      const rowItems = [];
+      const isOddRow = row % 2 !== 0;
+      const actualCols = isOddRow ? cols - 1 : cols; // Una columna menos en filas impares para alinear
+
+      for (let col = 0; col < actualCols; col++) {
+        // Calcular un retraso único para cada hexágono para efecto escalonado
+        const delay = (row * cols + col) * 400; // 400ms de retraso entre hexágonos
+
+        rowItems.push(
+          <div
+            key={`hex-${row}-${col}`}
+            className={`inline-block ${isOddRow ? 'ml-6' : ''}`}
+          >
+            <HexagonImage
+              fadeTime={fadeTime}
+              interval={interval}
+              delay={delay}
+              size={isMobile ? 'sm' : 'md'}
+            />
+          </div>
+        );
+        index++;
+      }
+
+      grid.push(
+        <div key={`row-${row}`} className={`flex ${isOddRow ? '-ml-6' : ''} -mt-4 first:mt-0`}>
+          {rowItems}
+        </div>
+      );
+    }
+
+    return grid;
+  };
+
+  return (
+    <div className="p-4">
+      <div className="mx-auto max-w-full overflow-hidden">
+        {renderGrid()}
+      </div>
     </div>
   );
 }

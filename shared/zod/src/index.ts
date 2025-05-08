@@ -24,6 +24,7 @@ export const casaSchema = inmuebleBaseSchema.extend({
   num_recamaras: z.number().int().gte(0),
   num_pisos: z.number().int().gte(0),
   num_cocheras: z.number().int().gte(0),
+  total_areas: z.number().int().gte(0),
   piscina: z.boolean().default(false),
 });
 
@@ -70,6 +71,7 @@ export function crearCasa(): CasaType {
     num_recamaras: 0,
     num_pisos: 0,
     num_cocheras: 0,
+    total_areas: 0,
     piscina: false,
   };
 }

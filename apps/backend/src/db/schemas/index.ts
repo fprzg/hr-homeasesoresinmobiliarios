@@ -154,7 +154,7 @@ const archivos = sqliteTable('archivos', {
   mimetype: text('mimetype').notNull(),
   size: integer('size').notNull(),
   createdAt: integer('created_at').default(Date.now()),
-  documento_id: text('inmueble_id').references(() => inmueble.id, { onDelete: 'cascade' }),
+  //documento_id: text('inmueble_id').references(() => inmueble.id, { onDelete: 'cascade' }),
 });
 
 export const schemas = { usuarios, categorias, inmueble, casas, terrenos, archivos };

@@ -20,10 +20,8 @@ import { Route as DashIndexImport } from './routes/dash/index'
 import { Route as InmueblesIdImport } from './routes/inmuebles/$id'
 import { Route as DashLoginImport } from './routes/dash/login'
 import { Route as DashAuthenticatedImport } from './routes/dash/_authenticated'
-import { Route as DashAuthenticatedDocsNuevoTerrenoImport } from './routes/dash/_authenticated/docs/nuevo-terreno'
-import { Route as DashAuthenticatedDocsNuevoCasaImport } from './routes/dash/_authenticated/docs/nuevo-casa'
-import { Route as DashAuthenticatedDocsListarImport } from './routes/dash/_authenticated/docs/listar'
-import { Route as DashAuthenticatedDocsEditarIdImport } from './routes/dash/_authenticated/docs/editar/$id'
+import { Route as DashAuthenticatedInmueblesIndexImport } from './routes/dash/_authenticated/inmuebles/index'
+import { Route as DashAuthenticatedInmueblesIdImport } from './routes/dash/_authenticated/inmuebles/$id'
 
 // Create Virtual Routes
 
@@ -78,31 +76,17 @@ const DashAuthenticatedRoute = DashAuthenticatedImport.update({
   getParentRoute: () => DashRoute,
 } as any)
 
-const DashAuthenticatedDocsNuevoTerrenoRoute =
-  DashAuthenticatedDocsNuevoTerrenoImport.update({
-    id: '/docs/nuevo-terreno',
-    path: '/docs/nuevo-terreno',
+const DashAuthenticatedInmueblesIndexRoute =
+  DashAuthenticatedInmueblesIndexImport.update({
+    id: '/inmuebles/',
+    path: '/inmuebles/',
     getParentRoute: () => DashAuthenticatedRoute,
   } as any)
 
-const DashAuthenticatedDocsNuevoCasaRoute =
-  DashAuthenticatedDocsNuevoCasaImport.update({
-    id: '/docs/nuevo-casa',
-    path: '/docs/nuevo-casa',
-    getParentRoute: () => DashAuthenticatedRoute,
-  } as any)
-
-const DashAuthenticatedDocsListarRoute =
-  DashAuthenticatedDocsListarImport.update({
-    id: '/docs/listar',
-    path: '/docs/listar',
-    getParentRoute: () => DashAuthenticatedRoute,
-  } as any)
-
-const DashAuthenticatedDocsEditarIdRoute =
-  DashAuthenticatedDocsEditarIdImport.update({
-    id: '/docs/editar/$id',
-    path: '/docs/editar/$id',
+const DashAuthenticatedInmueblesIdRoute =
+  DashAuthenticatedInmueblesIdImport.update({
+    id: '/inmuebles/$id',
+    path: '/inmuebles/$id',
     getParentRoute: () => DashAuthenticatedRoute,
   } as any)
 
@@ -166,32 +150,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InmueblesIndexImport
       parentRoute: typeof rootRoute
     }
-    '/dash/_authenticated/docs/listar': {
-      id: '/dash/_authenticated/docs/listar'
-      path: '/docs/listar'
-      fullPath: '/dash/docs/listar'
-      preLoaderRoute: typeof DashAuthenticatedDocsListarImport
+    '/dash/_authenticated/inmuebles/$id': {
+      id: '/dash/_authenticated/inmuebles/$id'
+      path: '/inmuebles/$id'
+      fullPath: '/dash/inmuebles/$id'
+      preLoaderRoute: typeof DashAuthenticatedInmueblesIdImport
       parentRoute: typeof DashAuthenticatedImport
     }
-    '/dash/_authenticated/docs/nuevo-casa': {
-      id: '/dash/_authenticated/docs/nuevo-casa'
-      path: '/docs/nuevo-casa'
-      fullPath: '/dash/docs/nuevo-casa'
-      preLoaderRoute: typeof DashAuthenticatedDocsNuevoCasaImport
-      parentRoute: typeof DashAuthenticatedImport
-    }
-    '/dash/_authenticated/docs/nuevo-terreno': {
-      id: '/dash/_authenticated/docs/nuevo-terreno'
-      path: '/docs/nuevo-terreno'
-      fullPath: '/dash/docs/nuevo-terreno'
-      preLoaderRoute: typeof DashAuthenticatedDocsNuevoTerrenoImport
-      parentRoute: typeof DashAuthenticatedImport
-    }
-    '/dash/_authenticated/docs/editar/$id': {
-      id: '/dash/_authenticated/docs/editar/$id'
-      path: '/docs/editar/$id'
-      fullPath: '/dash/docs/editar/$id'
-      preLoaderRoute: typeof DashAuthenticatedDocsEditarIdImport
+    '/dash/_authenticated/inmuebles/': {
+      id: '/dash/_authenticated/inmuebles/'
+      path: '/inmuebles'
+      fullPath: '/dash/inmuebles'
+      preLoaderRoute: typeof DashAuthenticatedInmueblesIndexImport
       parentRoute: typeof DashAuthenticatedImport
     }
   }
@@ -200,18 +170,13 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface DashAuthenticatedRouteChildren {
-  DashAuthenticatedDocsListarRoute: typeof DashAuthenticatedDocsListarRoute
-  DashAuthenticatedDocsNuevoCasaRoute: typeof DashAuthenticatedDocsNuevoCasaRoute
-  DashAuthenticatedDocsNuevoTerrenoRoute: typeof DashAuthenticatedDocsNuevoTerrenoRoute
-  DashAuthenticatedDocsEditarIdRoute: typeof DashAuthenticatedDocsEditarIdRoute
+  DashAuthenticatedInmueblesIdRoute: typeof DashAuthenticatedInmueblesIdRoute
+  DashAuthenticatedInmueblesIndexRoute: typeof DashAuthenticatedInmueblesIndexRoute
 }
 
 const DashAuthenticatedRouteChildren: DashAuthenticatedRouteChildren = {
-  DashAuthenticatedDocsListarRoute: DashAuthenticatedDocsListarRoute,
-  DashAuthenticatedDocsNuevoCasaRoute: DashAuthenticatedDocsNuevoCasaRoute,
-  DashAuthenticatedDocsNuevoTerrenoRoute:
-    DashAuthenticatedDocsNuevoTerrenoRoute,
-  DashAuthenticatedDocsEditarIdRoute: DashAuthenticatedDocsEditarIdRoute,
+  DashAuthenticatedInmueblesIdRoute: DashAuthenticatedInmueblesIdRoute,
+  DashAuthenticatedInmueblesIndexRoute: DashAuthenticatedInmueblesIndexRoute,
 }
 
 const DashAuthenticatedRouteWithChildren =
@@ -239,10 +204,8 @@ export interface FileRoutesByFullPath {
   '/inmuebles/$id': typeof InmueblesIdRoute
   '/dash/': typeof DashIndexRoute
   '/inmuebles': typeof InmueblesIndexRoute
-  '/dash/docs/listar': typeof DashAuthenticatedDocsListarRoute
-  '/dash/docs/nuevo-casa': typeof DashAuthenticatedDocsNuevoCasaRoute
-  '/dash/docs/nuevo-terreno': typeof DashAuthenticatedDocsNuevoTerrenoRoute
-  '/dash/docs/editar/$id': typeof DashAuthenticatedDocsEditarIdRoute
+  '/dash/inmuebles/$id': typeof DashAuthenticatedInmueblesIdRoute
+  '/dash/inmuebles': typeof DashAuthenticatedInmueblesIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -252,10 +215,8 @@ export interface FileRoutesByTo {
   '/dash/login': typeof DashLoginRoute
   '/inmuebles/$id': typeof InmueblesIdRoute
   '/inmuebles': typeof InmueblesIndexRoute
-  '/dash/docs/listar': typeof DashAuthenticatedDocsListarRoute
-  '/dash/docs/nuevo-casa': typeof DashAuthenticatedDocsNuevoCasaRoute
-  '/dash/docs/nuevo-terreno': typeof DashAuthenticatedDocsNuevoTerrenoRoute
-  '/dash/docs/editar/$id': typeof DashAuthenticatedDocsEditarIdRoute
+  '/dash/inmuebles/$id': typeof DashAuthenticatedInmueblesIdRoute
+  '/dash/inmuebles': typeof DashAuthenticatedInmueblesIndexRoute
 }
 
 export interface FileRoutesById {
@@ -268,10 +229,8 @@ export interface FileRoutesById {
   '/inmuebles/$id': typeof InmueblesIdRoute
   '/dash/': typeof DashIndexRoute
   '/inmuebles/': typeof InmueblesIndexRoute
-  '/dash/_authenticated/docs/listar': typeof DashAuthenticatedDocsListarRoute
-  '/dash/_authenticated/docs/nuevo-casa': typeof DashAuthenticatedDocsNuevoCasaRoute
-  '/dash/_authenticated/docs/nuevo-terreno': typeof DashAuthenticatedDocsNuevoTerrenoRoute
-  '/dash/_authenticated/docs/editar/$id': typeof DashAuthenticatedDocsEditarIdRoute
+  '/dash/_authenticated/inmuebles/$id': typeof DashAuthenticatedInmueblesIdRoute
+  '/dash/_authenticated/inmuebles/': typeof DashAuthenticatedInmueblesIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -284,10 +243,8 @@ export interface FileRouteTypes {
     | '/inmuebles/$id'
     | '/dash/'
     | '/inmuebles'
-    | '/dash/docs/listar'
-    | '/dash/docs/nuevo-casa'
-    | '/dash/docs/nuevo-terreno'
-    | '/dash/docs/editar/$id'
+    | '/dash/inmuebles/$id'
+    | '/dash/inmuebles'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -296,10 +253,8 @@ export interface FileRouteTypes {
     | '/dash/login'
     | '/inmuebles/$id'
     | '/inmuebles'
-    | '/dash/docs/listar'
-    | '/dash/docs/nuevo-casa'
-    | '/dash/docs/nuevo-terreno'
-    | '/dash/docs/editar/$id'
+    | '/dash/inmuebles/$id'
+    | '/dash/inmuebles'
   id:
     | '__root__'
     | '/'
@@ -310,10 +265,8 @@ export interface FileRouteTypes {
     | '/inmuebles/$id'
     | '/dash/'
     | '/inmuebles/'
-    | '/dash/_authenticated/docs/listar'
-    | '/dash/_authenticated/docs/nuevo-casa'
-    | '/dash/_authenticated/docs/nuevo-terreno'
-    | '/dash/_authenticated/docs/editar/$id'
+    | '/dash/_authenticated/inmuebles/$id'
+    | '/dash/_authenticated/inmuebles/'
   fileRoutesById: FileRoutesById
 }
 
@@ -368,10 +321,8 @@ export const routeTree = rootRoute
       "filePath": "dash/_authenticated.tsx",
       "parent": "/dash",
       "children": [
-        "/dash/_authenticated/docs/listar",
-        "/dash/_authenticated/docs/nuevo-casa",
-        "/dash/_authenticated/docs/nuevo-terreno",
-        "/dash/_authenticated/docs/editar/$id"
+        "/dash/_authenticated/inmuebles/$id",
+        "/dash/_authenticated/inmuebles/"
       ]
     },
     "/dash/login": {
@@ -388,20 +339,12 @@ export const routeTree = rootRoute
     "/inmuebles/": {
       "filePath": "inmuebles/index.tsx"
     },
-    "/dash/_authenticated/docs/listar": {
-      "filePath": "dash/_authenticated/docs/listar.tsx",
+    "/dash/_authenticated/inmuebles/$id": {
+      "filePath": "dash/_authenticated/inmuebles/$id.tsx",
       "parent": "/dash/_authenticated"
     },
-    "/dash/_authenticated/docs/nuevo-casa": {
-      "filePath": "dash/_authenticated/docs/nuevo-casa.tsx",
-      "parent": "/dash/_authenticated"
-    },
-    "/dash/_authenticated/docs/nuevo-terreno": {
-      "filePath": "dash/_authenticated/docs/nuevo-terreno.tsx",
-      "parent": "/dash/_authenticated"
-    },
-    "/dash/_authenticated/docs/editar/$id": {
-      "filePath": "dash/_authenticated/docs/editar/$id.tsx",
+    "/dash/_authenticated/inmuebles/": {
+      "filePath": "dash/_authenticated/inmuebles/index.tsx",
       "parent": "/dash/_authenticated"
     }
   }
