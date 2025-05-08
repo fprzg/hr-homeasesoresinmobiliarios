@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { db } from '@/app';
 import { schemas } from '@/db/schemas';
-import { ArchivosService } from '@/services/archivosService';
+import { ArchivosService } from '@/app';
 import { eq } from 'drizzle-orm';
 
 export const archivos = new Hono()
@@ -15,7 +15,8 @@ export const archivos = new Hono()
 
         for (const file of files) {
             try {
-                const image = await ArchivosService.save(file);
+                const image = await ArchivosService.guardar(file);
+                console.log(image)
                 await db.insert(schemas.archivos).values({ ...image });
                 results.push({ id: image.id, originalName: image.filename });
             } catch (err) {
@@ -27,9 +28,9 @@ export const archivos = new Hono()
     })
     .get('/:id', async (c) => {
         const id = c.req.param('id');
-        const doc = await db.query.archivos.findFirst({ where: eq(schemas.documentos.id, id) });
+        const doc = await db.query.archivos.findFirst({ where: eq(schemas.archivos.id, id) });
         if (!doc) return c.notFound();
-        const file = await ArchivosService.get(doc.id);
+        const file = await ArchivosService.leer(id);
         if (!file) return c.notFound();
 
         return c.body(file.buffer, { headers: {

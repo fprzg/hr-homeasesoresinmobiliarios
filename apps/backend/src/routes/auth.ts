@@ -11,6 +11,7 @@ export const auth = new Hono()
     .post("/login", async (c) => {
         const body = await c.req.json();
         const parsed = usuarioSchema.safeParse(body);
+        console.log(parsed)
         if (!parsed.success) {
             const parseError = parsed.error.flatten();
             return c.json({ error: parseError }, 400);

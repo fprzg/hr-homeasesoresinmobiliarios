@@ -4,6 +4,7 @@ import { logger } from "@/middleware/logger";
 import { createDB } from "@/db";
 import { createFactory } from "hono/factory";
 import { type AppEnvVariables, envSchema } from "./zod/env";
+import { ArchivosServiceFactory } from "./services/archivosService";
 
 export type Variables = Record<string, unknown> & AppEnvVariables;
 export const envVariables = envSchema.parse(process.env);
@@ -38,5 +39,7 @@ export function getApp() {
 const [app, apiRoutes] = getApp();
 
 export const db = createDB(envVariables);
+export const ArchivosService = ArchivosServiceFactory(envVariables);
+
 export default app;
 export type ApiRoutes = typeof apiRoutes;

@@ -90,7 +90,7 @@ export function crearTerreno(): TerrenoType {
 
 
 export const usuarioSchema = z.object({
-  username: z.string().email(),
+  username: z.string(),
   password: z.string().min(8),
 });
 

@@ -1,4 +1,4 @@
-import { createFileRoute, Navigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { Outlet } from '@tanstack/react-router'
 import { userQueryOptions } from '@/lib/api'
 import LoginForm from '@/components/login'

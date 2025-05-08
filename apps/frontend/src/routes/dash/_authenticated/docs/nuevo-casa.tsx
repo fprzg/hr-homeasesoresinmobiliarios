@@ -1,6 +1,6 @@
 // src/routes/dash/documentos/nuevo.lazy.tsx
 import { createFileRoute } from '@tanstack/react-router';
-import DocumentForm from '@/components/document-form';
+import InmuebleForm from '@/components/inmueble-form';
 
 export const Route = createFileRoute('/dash/_authenticated/docs/nuevo-casa')({
   component: NuevoDocumento,
@@ -9,7 +9,7 @@ export const Route = createFileRoute('/dash/_authenticated/docs/nuevo-casa')({
 function NuevoDocumento() {
   return (
     <div className="nuevo-documento">
-      <DocumentForm modo="crear" />
+      <InmuebleForm />
     </div>
   );
 }

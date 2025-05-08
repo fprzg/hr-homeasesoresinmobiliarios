@@ -1,133 +1,83 @@
-import { Label } from "@radix-ui/react-label";
-import { Input } from "./ui/input";
-import { useForm } from "@tanstack/react-form";
-import { AnyFieldApi } from "@tanstack/react-form";
-import { Button } from "./ui/button";
-import { api } from "@/lib/api";
-import { Navigate, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-
-function FieldInfo({ field }: { field: AnyFieldApi }) {
-  return (
-    <>
-      {field.state.meta.isTouched && !field.state.meta.isValid ? (
-        <em>{field.state.meta.errors.join(', ')}</em>
-      ) : null}
-      {field.state.meta.isValidating ? "Validating..." : null}
-    </>
-  )
-}
+import { useNavigate } from "@tanstack/react-router";
+import { Route } from "lucide-react";
+import { useEffect, useState } from "react"
+import { useAuthUser } from "@/lib/hooks/useAuthUser";
 
 export default function LoginForm({ redirectTo }: { redirectTo: string }) {
   const navigate = useNavigate();
-  const [submitError, setSubmitError] = useState("");
 
-  const form = useForm({
-    defaultValues: {
-      username: '',
-      password: '',
-    },
-    onSubmit: async ({ value }) => {
-      setSubmitError("");
-      try {
-        const res = await api.auth["login"].$post({ json: value });
-        if (!res.ok) {
-          if (res.status === 401) {
-            const data = await res.json() as { error: string };
-            setSubmitError(data.error)
-          } else {
-            setSubmitError("Hubo un error en el servidor. Intenta más tarde")
-          }
-        }
-        navigate({ to: redirectTo });
-      } catch (e) {
-        setSubmitError("Hubo un error en el servidor. Intenta más tarde")
-        console.error(e)
+  const { usuario, isLoading } = useAuthUser();
+  useEffect(() => {
+    if (usuario) {
+      navigate({ to: redirectTo });
+    }
+  }, [usuario, navigate]);
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const submitCredentials = async () => {
+    const res = await fetch("/api/auth/login", {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username: username, password: password }),
+    });
+    if (!res.ok) {
+      console.log(res);
+      if (res.status == 401) {
+        setErrorMsg("Credenciales inválidas. Intente de nuevo.");
+      } else {
+        setErrorMsg("Error en el servidor. Intente más tarde o contacte al administrador.");
       }
-    },
-  });
+    } else {
+      navigate({ to: redirectTo });
+    }
+  };
+
+  if(isLoading) return (<></>);
 
   return (
-    <form onSubmit={(e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      form.handleSubmit();
-    }} className="max-w-sm mx-auto space-y-4">
-
-      <div>
-        <form.Field
+    <div className="text-center w-[350px] mx-auto grid grid-cols-1 gap-y-4">
+      <div className="grid grid-cols-1">
+        <label htmlFor="username">Usuario:</label>
+        <input
+          className="p-2 border rounded-md"
+          type="text"
           name="username"
-          validators={{
-            onChange: ({ value }) =>
-              !value
-                ? 'Introduzca su usuario'
-                : value.length < 3
-                  ? 'El usuario debe contener al menos 3 letras'
-                  : undefined,
-            onChangeAsyncDebounceMs: 500,
-            onChangeAsync: async ({ value }) => {
-              await new Promise((resolve) => setTimeout(resolve, 1000));
-              return (
-                value.includes('error') && '"error" no se permite como usuario'
-              )
-            },
-          }}
-          children={(field) => {
-            return (
-              <>
-                <Label htmlFor={field.name}>Usuario</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                <FieldInfo field={field} />
-              </>
-            );
-          }}
+          value={username}
+          onChange={e => setUsername(e.target.value)}
         />
       </div>
-
-      <div>
-        <form.Field
+      <div className="grid grid-cols-1 ">
+        <label htmlFor="password">Contraseña:</label>
+        <input
+          className="p-2 border rounded-md"
+          type="password"
           name="password"
-          validators={{
-            onChange: ({ value }) =>
-              !value
-                ? 'Introduzca su contraseña'
-                : value.length < 8
-                  ? 'La contraseña debe tener al menos 8 caracteres'
-                  : undefined,
-            onChangeAsyncDebounceMs: 500,
-          }}
-          children={(field) => (
-            <>
-              <Label htmlFor={field.name}>Contraseña:</Label>
-              <Input
-                type="password"
-                id={field.name}
-                name={field.name}
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)} />
-              <FieldInfo field={field} />
-            </>
-          )}
+          value={password}
+          onChange={e => setPassword(e.target.value)}
         />
       </div>
-      <form.Subscribe
-        selector={(state) => [state.canSubmit, state.isSubmitting]}
-        children={([canSubmit, isSubmitting]) => (
-          <Button type="submit" disabled={!canSubmit} >
-            {isSubmitting ? "..." : "Iniciar sesión"}
-          </Button>
-        )}
-      />
+      <div className="grid grid-cols-1 ">
+        <button
+          type="button"
+          className="bg-blue-500 text-white py-1 rounded-md text-lg hover:bg-blue-600"
+          onClick={submitCredentials}
+        >
+          Iniciar sesión
+        </button>
+      </div>
 
-      {submitError && <p className="text-red-500 text-sm">{submitError}</p>}
+      {errorMsg && (
+        <div className="bg-red-500 rounded p-2 shadow-xl">
+          <p className="text-lg text-white">{errorMsg}</p>
+        </div>
+      )}
 
-    </form >
+    </div >
   );
 }

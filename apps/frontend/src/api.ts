@@ -1,11 +1,11 @@
-import { Documento } from '@shared/zod'
+import { InmuebleType } from '@shared/zod'
 import { api } from './lib/api';
 import { useQuery } from '@tanstack/react-query';
 
-export const DocumentosApi = {
+export const InmueblesApi = {
   listar: () => {
     async function getDocumentos() {
-      const res = await api.documentos.$get();
+      const res = await api.inmuebles.$get();
       if (!res.ok) {
         throw new Error('server error');
       }
@@ -20,55 +20,55 @@ export const DocumentosApi = {
   },
 
   // Obtener un documento por ID
-  obtener: async (id: string): Promise<Documento> => {
-    const response = await fetch(`/api/documentos/${id}`);
+  obtener: async (id: string): Promise<InmuebleType> => {
+    const response = await fetch(`/api/inmuebles/${id}`);
     if (!response.ok) {
-      throw new Error(`Error al obtener documento con ID ${id}`);
+      throw new Error(`Error al obtener inmueble con ID ${id}`);
     }
     return response.json();
   },
 
   // Crear un nuevo documento
-  crear: async (documento: Documento): Promise<{ id: string }> => {
-    const response = await fetch('/api/documentos', {
+  crear: async (inmueble: InmuebleType): Promise<{ id: string }> => {
+    const response = await fetch('/api/inmuebles', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(documento),
+      body: JSON.stringify(inmueble),
     });
 
     const json = response.json();
     if (!response.ok) {
-      throw new Error('Error al crear documento');
+      throw new Error('Error al guardar el inmueble');
     }
 
     return json;
   },
 
   // Actualizar un documento existente
-  actualizar: async (id: string, documento: Documento): Promise<void> => {
-    const response = await fetch(`/api/documentos/${id}`, {
+  actualizar: async (id: string, inmueble: InmuebleType): Promise<void> => {
+    const response = await fetch(`/api/inmuebles`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(documento),
+      body: JSON.stringify(inmueble),
     });
 
     if (!response.ok) {
-      throw new Error(`Error al actualizar documento con ID ${id}`);
+      throw new Error(`Error al actualizar inmueble con ID ${id}`);
     }
   },
 
   // Eliminar un documento
   eliminar: async (id: string): Promise<void> => {
-    const response = await fetch(`/api/documentos/${id}`, {
+    const response = await fetch(`/api/inmuebles/${id}`, {
       method: 'DELETE',
     });
 
     if (!response.ok) {
-      throw new Error(`Error al eliminar documento con ID ${id}`);
+      throw new Error(`Error al eliminar inmueble con ID ${id}`);
     }
   },
 };
