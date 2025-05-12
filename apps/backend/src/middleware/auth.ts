@@ -1,9 +1,6 @@
 import { createMiddleware } from "hono/factory";
 import { getCookie } from "hono/cookie";
 import { verifyJwt } from "@/lib/jwt";
-import { db } from "@/app"
-import { schemas } from "@/db/schemas"
-import { eq } from "drizzle-orm";
 import { UsuariosModel } from "@/db/models/usuarios";
 
 type Env = {
@@ -11,7 +8,6 @@ type Env = {
 };
 
 export const getUser = createMiddleware<Env>(async (c, next) => {
-    console.log("from getUser middleware")
     const token = getCookie(c, 'auth_token');
     if (!token) {
         return c.json({ error: 'Unauthorized' }, 401);
@@ -19,7 +15,6 @@ export const getUser = createMiddleware<Env>(async (c, next) => {
 
     try {
         const payload = await verifyJwt(token);
-        console.log(payload)
         const usuario = await UsuariosModel.get(payload.sub);
         if (!usuario) {
             return c.json({ error: 'Unauthorized' }, 401);

@@ -7,7 +7,6 @@ export const inmuebles = new Hono()
   .post('/', async (c) => {
     const body = await c.req.json();
     body.id = `doc_${nanoid()}`;
-    console.log(body);
     const parse = inmuebleSchema.safeParse(body);
 
     if (!parse.success) {
@@ -22,13 +21,13 @@ export const inmuebles = new Hono()
     return c.json({ ok: true });
   })
   .get('/', async (c) => {
-    const data = InmueblesService.leer();
-    return c.json({ "inmuebles": [...data] });
+    const inmuebles = await InmueblesService.leer();
+    return c.json({inmuebles})
   })
   .get('/:id', async (c) => {
     const id = c.req.param('id');
 
-    const data = InmueblesService.leerPorId(id);
+    const data = await InmueblesService.leerPorId(id);
     if (!data) {
       return c.notFound();
     }

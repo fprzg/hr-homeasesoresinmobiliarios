@@ -1,13 +1,36 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { type InmuebleType } from '@shared/zod';
-import { InmueblePreview } from '@/components/inmueble';
 import { InmueblesApi } from '@/api';
 import { useState, useEffect } from 'react';
-import { precioLegible } from '@/lib/currency';
+import { precioLegible, fechaLegible } from '@/lib/legible';
+import { ArrowRight } from 'lucide-react';
 
 export const Route = createFileRoute('/inmuebles/')({
   component: AllInmuebles,
 });
+
+export const InmueblePreview = ({ documentoContent, keyName, className }: { documentoContent: InmuebleType, keyName?: any, className?: string }) => {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate({ to: `/inmuebles/${documentoContent.id}` })
+    };
+
+    return (
+        <div key={keyName} className={`text-center flex flex-col justify-center p-2 gap-4 shadow-md ${className}`}>
+            {/* <h1 className="text-lg">{documentoContent.asentamiento}</h1> */}
+            <p>Publicación: {fechaLegible(documentoContent.fechaActualizacion)}</p>
+            {documentoContent.precio &&
+                <p>Precio: {precioLegible(documentoContent.precio)}</p>
+            }
+            <img src={`/api/archivos/${documentoContent.portada}`} alt="" />
+            <button onClick={handleClick} className="w-30 mx-auto bg-blue-600">
+                <span>Ver más</span>
+                <ArrowRight />
+            </button>
+        </div>
+    );
+}
 
 function AllInmuebles() {
   //const { isPending, error, data } = InmueblesApi.listar();
@@ -61,7 +84,7 @@ function AllInmuebles() {
         setInmueblesOriginales(inmueblesData);
 
         // Extraer estados únicos para el filtro
-        const estadosUnicos = [...new Set(inmueblesData.map(i => i.estado))].sort();
+        const estadosUnicos = [...new Set(inmueblesData.map(i => i.asentamiento.estado))].sort();
         setEstados(estadosUnicos);
       } catch (err) {
         //setError(err.message);
@@ -101,42 +124,42 @@ function AllInmuebles() {
 
     // Filtrar por rango de área total
     if (filtros.areaMin) {
-      resultado = resultado.filter(inmueble => inmueble.area_total >= parseInt(filtros.areaMin));
+      resultado = resultado.filter(inmueble => inmueble.areaTotal >= parseInt(filtros.areaMin));
     }
     if (filtros.areaMax) {
-      resultado = resultado.filter(inmueble => inmueble.area_total <= parseInt(filtros.areaMax));
+      resultado = resultado.filter(inmueble => inmueble.areaTotal <= parseInt(filtros.areaMax));
     }
 
     // Filtrar por estado
     if (filtros.estado) {
-      resultado = resultado.filter(inmueble => inmueble.estado === filtros.estado);
+      resultado = resultado.filter(inmueble => inmueble.asentamiento.estado === filtros.estado);
     }
 
     // Filtros específicos para casas
     if (filtros.tipo === "casa") {
       if (filtros.areaConstruidaMin) {
         resultado = resultado.filter(inmueble =>
-          inmueble.tipo === "casa" && inmueble.area_construida >= parseInt(filtros.areaConstruidaMin)
+          inmueble.tipo === "casa" && inmueble.areaConstruida >= parseInt(filtros.areaConstruidaMin)
         );
       }
       if (filtros.numBanos) {
         resultado = resultado.filter(inmueble =>
-          inmueble.tipo === "casa" && inmueble.num_banos >= parseInt(filtros.numBanos)
+          inmueble.tipo === "casa" && inmueble.numBanos >= parseInt(filtros.numBanos)
         );
       }
       if (filtros.numRecamaras) {
         resultado = resultado.filter(inmueble =>
-          inmueble.tipo === "casa" && inmueble.num_recamaras >= parseInt(filtros.numRecamaras)
+          inmueble.tipo === "casa" && inmueble.numRecamaras >= parseInt(filtros.numRecamaras)
         );
       }
       if (filtros.numPisos) {
         resultado = resultado.filter(inmueble =>
-          inmueble.tipo === "casa" && inmueble.num_pisos >= parseInt(filtros.numPisos)
+          inmueble.tipo === "casa" && inmueble.numPisos >= parseInt(filtros.numPisos)
         );
       }
       if (filtros.numCocheras) {
         resultado = resultado.filter(inmueble =>
-          inmueble.tipo === "casa" && inmueble.num_cocheras >= parseInt(filtros.numCocheras)
+          inmueble.tipo === "casa" && inmueble.numCocheras >= parseInt(filtros.numCocheras)
         );
       }
       if (filtros.piscina) {
@@ -150,17 +173,17 @@ function AllInmuebles() {
     if (filtros.tipo === "terreno") {
       if (filtros.metrosFrenteMin) {
         resultado = resultado.filter(inmueble =>
-          inmueble.tipo === "terreno" && inmueble.metros_frente >= parseInt(filtros.metrosFrenteMin)
+          inmueble.tipo === "terreno" && inmueble.metrosFrente >= parseInt(filtros.metrosFrenteMin)
         );
       }
       if (filtros.metrosFondoMin) {
         resultado = resultado.filter(inmueble =>
-          inmueble.tipo === "terreno" && inmueble.metros_fondo >= parseInt(filtros.metrosFondoMin)
+          inmueble.tipo === "terreno" && inmueble.metrosFondo >= parseInt(filtros.metrosFondoMin)
         );
       }
       if (filtros.tipoPropiedad) {
         resultado = resultado.filter(inmueble =>
-          inmueble.tipo === "terreno" && inmueble.tipo_propiedad === filtros.tipoPropiedad
+          inmueble.tipo === "terreno" && inmueble.tipoPropiedad === filtros.tipoPropiedad
         );
       }
     }
@@ -473,24 +496,24 @@ function AllInmuebles() {
                       {precioLegible(inmueble.precio)}
                     </h3>
                     <span className="text-sm text-gray-500">
-                      {inmueble.area_total} m²
+                      {inmueble.areaTotal} m²
                     </span>
                   </div>
 
                   <p className="text-gray-700 mb-2">
-                    {inmueble.asentamiento}, {inmueble.estado}
+                    , {inmueble.asentamiento.estado}
                   </p>
 
                   {inmueble.tipo === "casa" && (
                     <div className="flex flex-wrap gap-2 mt-3">
                       <span className="px-2 py-1 bg-gray-100 text-sm rounded">
-                        {inmueble.num_recamaras} Rec.
+                        {inmueble.numRecamaras} Rec.
                       </span>
                       <span className="px-2 py-1 bg-gray-100 text-sm rounded">
-                        {inmueble.num_banos} Baños
+                        {inmueble.numBanos} Baños
                       </span>
                       <span className="px-2 py-1 bg-gray-100 text-sm rounded">
-                        {inmueble.area_construida} m² const.
+                        {inmueble.areaConstruida} m² const.
                       </span>
                       {inmueble.piscina && (
                         <span className="px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded">
@@ -503,13 +526,13 @@ function AllInmuebles() {
                   {inmueble.tipo === "terreno" && (
                     <div className="flex flex-wrap gap-2 mt-3">
                       <span className="px-2 py-1 bg-gray-100 text-sm rounded">
-                        {inmueble.metros_frente}m frente
+                        {inmueble.metrosFrente}m frente
                       </span>
                       <span className="px-2 py-1 bg-gray-100 text-sm rounded">
-                        {inmueble.metros_fondo}m fondo
+                        {inmueble.metrosFondo}m fondo
                       </span>
                       <span className="px-2 py-1 bg-gray-100 text-sm rounded capitalize">
-                        {inmueble.tipo_propiedad}
+                        {inmueble.tipoPropiedad}
                       </span>
                     </div>
                   )}

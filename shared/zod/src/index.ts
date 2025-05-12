@@ -1,16 +1,58 @@
 import { z } from "zod";
 
+export const estadosMexico = [
+  "Aguascalientes",
+  "Baja California",
+  "Baja California Sur",
+  "Campeche",
+  "Chiapas",
+  "Chihuahua",
+  "Ciudad de México",
+  "Coahuila",
+  "Colima",
+  "Durango",
+  "Estado de México",
+  "Guanajuato",
+  "Guerrero",
+  "Hidalgo",
+  "Jalisco",
+  "Michoacán",
+  "Morelos",
+  "Nayarit",
+  "Nuevo León",
+  "Oaxaca",
+  "Puebla",
+  "Querétaro",
+  "Quintana Roo",
+  "San Luis Potosí",
+  "Sinaloa",
+  "Sonora",
+  "Tabasco",
+  "Tamaulipas",
+  "Tlaxcala",
+  "Veracruz",
+  "Yucatán",
+  "Zacatecas",
+] as const;
+
 export const bloqueSchema = z.object({
   imagen: z.string(),
   descripcion: z.string(),
 })
 
+export const asentamientoSchema = z.object({
+  tipo: z.string(),
+  calleColonia: z.string().optional(),
+  municipio: z.string().optional(),
+  codigoPostal: z.string().optional(),
+  estado: z.enum(estadosMexico),
+});
+
 export const inmuebleBaseSchema = z.object({
   id: z.string(),
-  estado: z.string(),
-  asentamiento: z.string(),
+  asentamiento: asentamientoSchema,
   precio: z.number().int().gt(0),
-  area_total: z.number().int().gt(0),
+  areaTotal: z.number().int().gt(0),
   fechaPublicacion: z.string().datetime(),
   fechaActualizacion: z.string().datetime(),
   portada: z.string(),
@@ -19,20 +61,20 @@ export const inmuebleBaseSchema = z.object({
 
 export const casaSchema = inmuebleBaseSchema.extend({
   tipo: z.literal("casa"),
-  area_construida: z.number().int().gte(0),
-  num_banos: z.number().int().gte(0),
-  num_recamaras: z.number().int().gte(0),
-  num_pisos: z.number().int().gte(0),
-  num_cocheras: z.number().int().gte(0),
-  total_areas: z.number().int().gte(0),
+  areaConstruida: z.number().int().gte(0),
+  numBanos: z.number().int().gte(0),
+  numRecamaras: z.number().int().gte(0),
+  numPisos: z.number().int().gte(0),
+  numCocheras: z.number().int().gte(0),
+  totalAreas: z.number().int().gte(0),
   piscina: z.boolean().default(false),
 });
 
 export const terrenoSchema = inmuebleBaseSchema.extend({
   tipo: z.literal("terreno"),
-  metros_frente: z.number().int().gt(0),
-  metros_fondo: z.number().int().gt(0),
-  tipo_propiedad: z.enum(["privada", "comunal", "ejidal",]),
+  metrosFrente: z.number().int().gt(0),
+  metrosFondo: z.number().int().gt(0),
+  tipoPropiedad: z.enum(["privada", "comunal", "ejidal",]),
 });
 
 export const inmuebleSchema = z.discriminatedUnion("tipo", [
@@ -41,19 +83,29 @@ export const inmuebleSchema = z.discriminatedUnion("tipo", [
 ]);
 
 export type BloqueType = z.infer<typeof bloqueSchema>;
+export type AsentamientoType = z.infer<typeof asentamientoSchema>;
 
 export type InmuebleBaseType = z.infer<typeof inmuebleBaseSchema>;
 export type CasaType = z.infer<typeof casaSchema>;
 export type TerrenoType = z.infer<typeof terrenoSchema>;
 export type InmuebleType = z.infer<typeof inmuebleSchema>;
 
+function crearAsentamiento(): AsentamientoType {
+  return {
+    tipo: "",
+    calleColonia: "",
+    municipio: "",
+    codigoPostal: "",
+    estado: "Oaxaca",
+  };
+}
+
 function crearInmuebleBase(): InmuebleBaseType {
   return {
     id: "",
-    estado: "",
-    asentamiento: "",
+    asentamiento: crearAsentamiento(),
     precio: 0,
-    area_total: 0,
+    areaTotal: 0,
     fechaPublicacion: "",
     fechaActualizacion: "",
     portada: "",
@@ -66,12 +118,12 @@ export function crearCasa(): CasaType {
   return {
     ...base,
     tipo: "casa",
-    area_construida: 0,
-    num_banos: 0,
-    num_recamaras: 0,
-    num_pisos: 0,
-    num_cocheras: 0,
-    total_areas: 0,
+    areaConstruida: 0,
+    numBanos: 0,
+    numRecamaras: 0,
+    numPisos: 0,
+    numCocheras: 0,
+    totalAreas: 0,
     piscina: false,
   };
 }
@@ -81,9 +133,9 @@ export function crearTerreno(): TerrenoType {
   return {
     ...base,
     tipo: "terreno",
-    metros_frente: 0,
-    metros_fondo: 0,
-    tipo_propiedad: "privada",
+    metrosFrente: 0,
+    metrosFondo: 0,
+    tipoPropiedad: "privada",
   };
 }
 

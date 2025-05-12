@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 import { createFileRoute, useParams } from '@tanstack/react-router';
 import { type InmuebleType } from '@shared/zod';
 import { InmueblesApi } from '@/api';
-import DocumentForm from '@/components/inmueble-form';
+import { InmuebleForm } from '@/components/inmueble-form';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api';
 
 export const Route = createFileRoute('/dash/_authenticated/inmuebles/$id')({
   component: EditarDocumento,
@@ -11,45 +13,30 @@ export const Route = createFileRoute('/dash/_authenticated/inmuebles/$id')({
 
 function EditarDocumento() {
   const { id } = useParams({ from: '/dash/_authenticated/inmuebles/$id' });
-  const [inmueble, setInmueble] = useState<InmuebleType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  const getDocumentoById = async () => {
+    const res = await api.inmuebles[":id"].$get({ param: { id } });
+    if (!res.ok) {
+      throw new Error('server error');
+    }
+    const data = await res.json();
+    return data;
+  }
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ['get-documento-by-id'],
+    queryFn: getDocumentoById,
+  });
+
+  const [inmuebleData, setInmuebleData] = useState<InmuebleType>();
 
   useEffect(() => {
-    const cargarDocumento = async () => {
-      try {
-        setIsLoading(true);
-        //const data = await DocumentosApi.obtener(id);
-        const res = await fetch(`/api/inmuebles/${id}`)
-        const data = await res.json();
-        setInmueble(data.documento);
-        setError(null);
-      } catch (err) {
-        console.error(`Error al cargar inmueble ${id}:`, err);
-        setError('Error al cargar el inmueble. Inténtalo de nuevo.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    cargarDocumento();
-  }, [id]);
-
-  if (isLoading) {
-    return <div className="loading">Cargando inmueble...</div>;
-  }
-
-  if (error) {
-    return <div className="error">{error}</div>;
-  }
-
-  if (!inmueble) {
-    return <div className="not-found">Inmueble no encontrado.</div>;
-  }
+    if (!isPending && data?.inmueble) {
+      setInmuebleData(data.inmueble);
+    }
+  }, [isPending, data]);
 
   return (
-    <div className="editar-documento">
-      {/* <DocumentForm documentoInicial={inmueble} modo="editar" /> */}
-    </div>
+    <InmuebleForm inmuebleData={inmuebleData} />
   );
 }

@@ -1,12 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Outlet } from '@tanstack/react-router'
 import { userQueryOptions } from '@/lib/api'
-import LoginForm from '@/components/login'
 
 const Component = () => {
     const context = Route.useRouteContext();
+    const navigate= useNavigate();
+
     if (!context.usuario) {
-        return <LoginForm redirectTo="/dash" />;
+        navigate({ to: "/dash/login" });
     }
 
     return <Outlet />;

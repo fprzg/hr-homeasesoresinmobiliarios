@@ -1,5 +1,4 @@
 include .env
-include .env.dev
 export
 
 # Variable con lista ordenada de migraciones
