@@ -26,6 +26,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
     const [isEditing, setIsEditing] = useState(false);
     const [portadaFile, setPortadaFile] = useState(null);
     const [nuevoBloque, setNuevoBloque] = useState({ imagen: "", descripcion: "", });
+    const [bloqueEditandoIndex, setBloqueEditandoIndex] = useState(-1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -153,14 +154,28 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
             return;
         }
 
-        setInmueble({
-            ...inmueble,
-            contenido: [...inmueble.contenido, { ...nuevoBloque }],
-        });
-
+        if (bloqueEditandoIndex === -1) {
+            setInmueble({
+                ...inmueble,
+                contenido: [...inmueble.contenido, { ...nuevoBloque }],
+            });
+        } else {
+            const contenido = [...inmueble.contenido];
+            contenido[bloqueEditandoIndex] = nuevoBloque;
+            setInmueble({
+                ...inmueble,
+                contenido,
+            });
+        }
+        setBloqueEditandoIndex(-1);
         setNuevoBloque({ imagen: "", descripcion: "" });
         setError("");
     };
+
+    const handleUpdateBloque = (index: number) => {
+        setBloqueEditandoIndex(index);
+        setNuevoBloque(inmueble.contenido[index]);
+    }
 
     const handleRemoveBloque = (index: number) => {
         const newContenido = [...inmueble.contenido];
@@ -260,7 +275,6 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                 setError('error al eliminar el inmueble. Intente de nuevo o contacte al administrador.');
             }
 
-            // Eliminar de la lista local
             setInmuebles(inmuebles.filter((item) => item.id !== id));
 
             if (isEditing && inmueble.id === id) {
@@ -635,6 +649,13 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                         </div>
                                         <button
                                             type="button"
+                                            onClick={() => handleUpdateBloque(index)}
+                                            className="text-blue-500 hover:text-blue-700"
+                                        >
+                                            Editar
+                                        </button>
+                                        <button
+                                            type="button"
                                             onClick={() => handleRemoveBloque(index)}
                                             className="text-red-500 hover:text-red-700"
                                         >
@@ -681,7 +702,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                 onClick={handleAddBloque}
                                 className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600"
                             >
-                                Añadir bloque
+                                {bloqueEditandoIndex ? "Añadir bloque" : "Actualizar bloque"}
                             </button>
                         </div>
                     </div>

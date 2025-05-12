@@ -31,11 +31,10 @@ export function getApp() {
     .route("/archivos", routes.archivos)
     .route("/auth", routes.auth)
 
-  //app.get("*", serveStatic({ root: "./frontend/dist" }))
-  //app.get("*", serveStatic({ path: "./frontend/dist/index.html" }))
-
-  app.get("*", serveStatic({ root: envVariables.FRONT_STATIC}))
-  app.get("*", serveStatic({ path: path.join(envVariables.FRONT_STATIC, "index.html")}))
+  if (envVariables.ENV !== "dev" && envVariables.ENV !== "development") {
+    app.get("*", serveStatic({ root: envVariables.FRONT_STATIC }))
+    app.get("*", serveStatic({ path: path.join(envVariables.FRONT_STATIC, "index.html") }))
+  }
 
   return [app, apiRoutes];
 }
