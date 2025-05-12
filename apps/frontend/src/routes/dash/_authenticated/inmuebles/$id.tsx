@@ -12,6 +12,8 @@ export const Route = createFileRoute('/dash/_authenticated/inmuebles/$id')({
 function EditarDocumento() {
   const { id } = useParams({ from: '/dash/_authenticated/inmuebles/$id' });
 
+  const [inmuebleData, setInmuebleData] = useState<InmuebleType>();
+
   const getDocumentoById = async () => {
     const res = await api.inmuebles[":id"].$get({ param: { id } });
     if (!res.ok) {
@@ -21,17 +23,15 @@ function EditarDocumento() {
     return data;
   }
 
-  //const { isPending, error, data } = useQuery({
   const { isPending, data } = useQuery({
-    queryKey: ['get-documento-by-id'],
+    queryKey: ['get-documento-by-id', id],
     queryFn: getDocumentoById,
   });
 
-  const [inmuebleData, setInmuebleData] = useState<InmuebleType>();
-
   useEffect(() => {
     const xx: { inmueble: InmuebleType } = data as any as { inmueble: InmuebleType };
-    if (!isPending && xx.inmueble) {
+    if (!isPending && xx?.inmueble) {
+      console.log(xx.inmueble.contenido);
       setInmuebleData(xx.inmueble);
     }
   }, [isPending, data]);

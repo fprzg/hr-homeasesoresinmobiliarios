@@ -185,11 +185,13 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
 
     const handleSubmit = async () => {
         if (inmueble.precio <= 0 || inmueble.areaTotal <= 0) {
+            window.scrollTo(0, 0);
             setError("Por favor complete todos los campos obligatorios");
             return;
         }
 
         if (!inmueble.portada) {
+            window.scrollTo(0, 0);
             setError("La imagen de portada es obligatoria");
             return;
         }
@@ -199,7 +201,6 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
             const currentDate = new Date().toISOString();
 
             if (isEditing) {
-                // Actualizar inmueble existente
                 const updatedInmueble = {
                     ...inmueble,
                     fechaActualizacion: currentDate,
@@ -216,12 +217,9 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         item.id === inmueble.id ? updatedInmueble : item
                     )
                 );
-
             } else {
-                // Crear nuevo inmueble
                 const newInmueble = {
                     ...inmueble,
-                    //id: `inmueble_${Date.now()}`, // En implementación real, el ID vendría del backend
                     fechaPublicacion: currentDate,
                     fechaActualizacion: currentDate,
                 };
@@ -249,15 +247,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
     };
 
     const handleEdit = (id: string) => {
-        window.scrollTo(0, 0);
         navigate({ to: `/dash/inmuebles/${id}` })
-        /*
-        const inmuebleToEdit = inmuebles.find((item) => item.id === id);
-        if (inmuebleToEdit) {
-          setInmueble(inmuebleToEdit);
-          setIsEditing(true);
-        }
-          */
     };
 
     const handleDelete = async (id: string) => {
@@ -647,20 +637,22 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                             <p className="text-sm font-medium">Imagen: {bloque.imagen}</p>
                                             <p className="text-sm">Descripción: {bloque.descripcion}</p>
                                         </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleUpdateBloque(index)}
-                                            className="text-blue-500 hover:text-blue-700"
-                                        >
-                                            Editar
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRemoveBloque(index)}
-                                            className="text-red-500 hover:text-red-700"
-                                        >
-                                            Eliminar
-                                        </button>
+                                        <div className="flex space-x-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleUpdateBloque(index)}
+                                                className="text-blue-500 hover:text-blue-700"
+                                            >
+                                                Editar
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveBloque(index)}
+                                                className="text-red-500 hover:text-red-700"
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -720,6 +712,20 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                     >
                         Cancelar
                     </button>
+
+                    {isEditing && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                window.scrollTo(0, 0);
+                                resetForm();
+                                navigate({ to: "/dash" });
+                            }}
+                            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                        >
+                            Nuevo
+                        </button>
+                    )}
 
                     <button
                         type="button"
