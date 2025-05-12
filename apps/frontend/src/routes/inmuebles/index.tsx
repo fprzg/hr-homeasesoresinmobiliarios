@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { type InmuebleType } from '@shared/zod';
-import { InmueblesApi } from '@/api';
 import { useState, useEffect } from 'react';
 import { precioLegible, fechaLegible } from '@/lib/legible';
 import { ArrowRight } from 'lucide-react';
@@ -10,26 +9,26 @@ export const Route = createFileRoute('/inmuebles/')({
 });
 
 export const InmueblePreview = ({ documentoContent, keyName, className }: { documentoContent: InmuebleType, keyName?: any, className?: string }) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleClick = () => {
-        navigate({ to: `/inmuebles/${documentoContent.id}` })
-    };
+  const handleClick = () => {
+    navigate({ to: `/inmuebles/${documentoContent.id}` })
+  };
 
-    return (
-        <div key={keyName} className={`text-center flex flex-col justify-center p-2 gap-4 shadow-md ${className}`}>
-            {/* <h1 className="text-lg">{documentoContent.asentamiento}</h1> */}
-            <p>Publicación: {fechaLegible(documentoContent.fechaActualizacion)}</p>
-            {documentoContent.precio &&
-                <p>Precio: {precioLegible(documentoContent.precio)}</p>
-            }
-            <img src={`/api/archivos/${documentoContent.portada}`} alt="" />
-            <button onClick={handleClick} className="w-30 mx-auto bg-blue-600">
-                <span>Ver más</span>
-                <ArrowRight />
-            </button>
-        </div>
-    );
+  return (
+    <div key={keyName} className={`text-center flex flex-col justify-center p-2 gap-4 shadow-md ${className}`}>
+      {/* <h1 className="text-lg">{documentoContent.asentamiento}</h1> */}
+      <p>Publicación: {fechaLegible(documentoContent.fechaActualizacion)}</p>
+      {documentoContent.precio &&
+        <p>Precio: {precioLegible(documentoContent.precio)}</p>
+      }
+      <img src={`/api/archivos/${documentoContent.portada}`} alt="" />
+      <button onClick={handleClick} className="w-30 mx-auto bg-blue-600">
+        <span>Ver más</span>
+        <ArrowRight />
+      </button>
+    </div>
+  );
 }
 
 function AllInmuebles() {
@@ -64,7 +63,7 @@ function AllInmuebles() {
   const [inmueblesOriginales, setInmueblesOriginales] = useState<InmuebleType[]>([]);
   const [estados, setEstados] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState(null);
+  //const [error, setError] = useState(null);
 
   // Cargar los inmuebles al montar el componente
   useEffect(() => {
@@ -76,7 +75,6 @@ function AllInmuebles() {
           throw new Error('No se pudieron cargar los inmuebles');
         }
         const data = await response.json();
-        console.log(data);
 
         const inmueblesData = data.inmuebles as InmuebleType[];
 
@@ -221,6 +219,7 @@ function AllInmuebles() {
     );
   }
 
+  /*
   if (error) {
     return (
       <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -228,6 +227,7 @@ function AllInmuebles() {
       </div>
     );
   }
+    */
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -480,10 +480,6 @@ function AllInmuebles() {
                     src={`/api/archivos/${inmueble.portada}`}
                     alt={`Inmueble en ${inmueble.asentamiento}`}
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      //e.target.onerror = null;
-                      //e.target.src = "https://via.placeholder.com/300x200?text=Sin+imagen";
-                    }}
                   />
                   <div className="absolute top-0 right-0 bg-blue-600 text-white px-3 py-1 m-2 rounded">
                     {inmueble.tipo === "casa" ? "Casa" : "Terreno"}
@@ -539,8 +535,8 @@ function AllInmuebles() {
 
                   <div className="mt-4">
                     <button
-                    className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    onClick={()=> navigate({to: `/inmuebles/${inmueble.id}`})}
+                      className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      onClick={() => navigate({ to: `/inmuebles/${inmueble.id}` })}
                     >
                       Ver detalles
                     </button>

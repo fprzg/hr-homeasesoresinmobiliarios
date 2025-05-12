@@ -24,5 +24,8 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  build: {
+    outDir: '../backend/prod/front-static'
   }
 })

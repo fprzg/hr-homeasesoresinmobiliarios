@@ -1,8 +1,6 @@
-// src/routes/dash/documentos/editar/$id.lazy.tsx
 import { useState, useEffect } from 'react';
 import { createFileRoute, useParams } from '@tanstack/react-router';
 import { type InmuebleType } from '@shared/zod';
-import { InmueblesApi } from '@/api';
 import { InmuebleForm } from '@/components/inmueble-form';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
@@ -23,7 +21,8 @@ function EditarDocumento() {
     return data;
   }
 
-  const { isPending, error, data } = useQuery({
+  //const { isPending, error, data } = useQuery({
+  const { isPending, data } = useQuery({
     queryKey: ['get-documento-by-id'],
     queryFn: getDocumentoById,
   });
@@ -31,8 +30,9 @@ function EditarDocumento() {
   const [inmuebleData, setInmuebleData] = useState<InmuebleType>();
 
   useEffect(() => {
-    if (!isPending && data?.inmueble) {
-      setInmuebleData(data.inmueble);
+    const xx: { inmueble: InmuebleType } = data as any as { inmueble: InmuebleType };
+    if (!isPending && xx.inmueble) {
+      setInmuebleData(xx.inmueble);
     }
   }, [isPending, data]);
 

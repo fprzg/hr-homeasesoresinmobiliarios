@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { api } from '@/lib/api';
 import { useEffect, useState } from 'react';
 import { type InmuebleType } from '@shared/zod';
 import { fechaLegible, precioLegible } from '@/lib/legible';
@@ -69,7 +68,7 @@ function InmuebleById() {
 
 
         <div className="">
-          {inmueble.contenido.map((bloque, index) => (
+          {inmueble.contenido.map((bloque) => (
             <div className="grid grid-rows-1 justify-center p-4 gap-4">
               <img src={`/api/archivos/${bloque.imagen}`} alt="" />
               <p className="text-xl">{bloque.descripcion}</p>

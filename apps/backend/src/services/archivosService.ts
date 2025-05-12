@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { mkdirSync, existsSync, readFileSync, rmSync } from 'fs';
+import { mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { envSchema } from '@/zod/env';
 
@@ -15,7 +15,7 @@ export const ArchivosServiceFactory = (env: unknown) => {
     const buffer = await file.arrayBuffer();
     const filePath = join(uploadsDir, id);
 
-    const result = await Bun.write(filePath, buffer);
+    await Bun.write(filePath, buffer);
 
     return {
       id,

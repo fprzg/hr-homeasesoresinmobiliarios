@@ -1,10 +1,11 @@
 import { serveStatic } from "hono/bun";
 import { routes } from "./routes";
-import { logger } from "@/middleware/logger";
-import { createDB } from "@/db";
+import { logger } from "./middleware/logger";
+import { createDB } from "./db";
 import { createFactory } from "hono/factory";
 import { type AppEnvVariables, envSchema } from "./zod/env";
 import { ArchivosServiceFactory } from "./services/archivosService";
+import path from "node:path";
 
 export type Variables = Record<string, unknown> & AppEnvVariables;
 export const envVariables = envSchema.parse(process.env);
@@ -30,8 +31,11 @@ export function getApp() {
     .route("/archivos", routes.archivos)
     .route("/auth", routes.auth)
 
-  app.get("*", serveStatic({ root: "./frontend/dist" }))
-  app.get("*", serveStatic({ path: "./frontend/dist/index.html" }))
+  //app.get("*", serveStatic({ root: "./frontend/dist" }))
+  //app.get("*", serveStatic({ path: "./frontend/dist/index.html" }))
+
+  app.get("*", serveStatic({ root: envVariables.FRONT_STATIC}))
+  app.get("*", serveStatic({ path: path.join(envVariables.FRONT_STATIC, "index.html")}))
 
   return [app, apiRoutes];
 }

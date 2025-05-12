@@ -1,6 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
-import { crearCasa, crearTerreno, estadosMexico, InmuebleType } from "@shared/zod/src";
-import React, { useState, useEffect } from "react";
+import { crearCasa, crearTerreno, estadosMexico, InmuebleType } from "@shared/zod";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
@@ -26,7 +26,6 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
     const [isEditing, setIsEditing] = useState(false);
     const [portadaFile, setPortadaFile] = useState(null);
     const [nuevoBloque, setNuevoBloque] = useState({ imagen: "", descripcion: "", });
-    const [bloqueImagenFile, setBloqueImagenFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -125,8 +124,6 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
         const file = e.target.files[0];
         if (!file) return;
 
-        setBloqueImagenFile(file);
-
         try {
             setLoading(true);
             const formData = new FormData();
@@ -161,9 +158,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
             contenido: [...inmueble.contenido, { ...nuevoBloque }],
         });
 
-        // Limpiar el formulario del bloque
         setNuevoBloque({ imagen: "", descripcion: "" });
-        setBloqueImagenFile(null);
         setError("");
     };
 
@@ -223,8 +218,12 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                 });
                 const data = await response.json();
 
-                setInmuebles([...inmuebles, inmueble]);
-                resetForm();
+                if (data.ok) {
+                    setInmuebles([...inmuebles, inmueble]);
+                    resetForm();
+                } else {
+                    setError("error al guardar el inmueble. Intente más tarde o contacte el administrador.");
+                }
             }
 
             setLoading(false);
@@ -256,6 +255,11 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                 method: 'DELETE',
             });
 
+            const data = await res.json();
+            if (!data.ok) {
+                setError('error al eliminar el inmueble. Intente de nuevo o contacte al administrador.');
+            }
+
             // Eliminar de la lista local
             setInmuebles(inmuebles.filter((item) => item.id !== id));
 
@@ -279,7 +283,6 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
 
         setPortadaFile(null);
         setNuevoBloque({ imagen: "", descripcion: "" });
-        setBloqueImagenFile(null);
         setIsEditing(false);
         setError("");
     };

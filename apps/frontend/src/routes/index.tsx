@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect } from 'react';
+//import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 
 export const Route = createFileRoute('/')({
@@ -7,6 +7,7 @@ export const Route = createFileRoute('/')({
 })
 
 function Index() {
+  /*
   const [email, setEmail] = useState('');
 
   const handleSubmit = (e: any) => {
@@ -14,6 +15,7 @@ function Index() {
     alert('¡Gracias por contactarnos! Te responderemos pronto.');
     setEmail('');
   };
+  */
 
   return (
     <div className="font-sans bg-gray-50">
