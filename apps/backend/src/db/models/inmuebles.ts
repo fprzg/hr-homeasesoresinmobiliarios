@@ -1,3 +1,4 @@
+// @/db/models/inmuebles.ts
 import { schemas } from "@/db/schemas";
 import { eq, SQL } from "drizzle-orm";
 import { db } from "@/app"; // Asumiendo que tienes un archivo de configuración para la conexión a la BD

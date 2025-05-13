@@ -335,6 +335,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                             </div>
 
                             <div className="flex space-x-2">
+
                                 <button
                                     onClick={() => handleEdit(item.id)}
                                     className="text-blue-500 hover:text-blue-700"
@@ -347,6 +348,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                 >
                                     Eliminar
                                 </button>
+
                             </div>
                         </div>
                     </div>
@@ -645,6 +647,17 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                             <p className="text-sm">Descripción: {bloque.descripcion}</p>
                                         </div>
                                         <div className="flex space-x-2">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    name="piscina"
+                                                    checked={false}
+                                                    onChange={() => setImagenesCarrusel}
+                                                    className="mr-2"
+                                                />
+                                                <label className="text-sm font-medium">Agregar al carrusel</label>
+                                            </div>
+
                                             <button
                                                 type="button"
                                                 onClick={() => handleUpdateBloque(index)}

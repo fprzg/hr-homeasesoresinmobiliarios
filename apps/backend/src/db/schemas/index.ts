@@ -1,3 +1,4 @@
+// @/db/schemas/index.ts
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 import { type BloqueType } from '@shared/zod';
@@ -55,6 +56,7 @@ const archivos = sqliteTable('archivos', {
   size: integer('size').notNull(),
   createdAt: integer('created_at').default(Date.now()),
   inmuebleId: text('inmueble_id').references(() => inmuebles.id),
+  addToCarousel: integer('add_to_carousel').notNull().$type<0 | 1>(),
 });
 
 export const schemas = { usuarios, asentamientos, inmuebles, casas, terrenos, archivos, };

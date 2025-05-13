@@ -1,4 +1,3 @@
-
 import { hash, compare } from "bcrypt";
 import { db } from "@/app";
 import { schemas } from "@/db/schemas";

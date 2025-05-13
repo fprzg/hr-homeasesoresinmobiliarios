@@ -1,10 +1,28 @@
-import { createFileRoute } from '@tanstack/react-router'
-//import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Star } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/')({
   component: Index,
 })
+
+
+type ImagenCarrusel = { imagen: string, target: string };
+
+async function getCarruselImagenes() {
+  const res = await fetch("/api/archivos/carrusel");
+  if (!res.ok) {
+    throw new Error("no se pudieron recuperarse las imagenes del carrusel.")
+  }
+
+  const data = await res.json();
+  if (!data.ok) {
+    throw new Error("no se pudieron recuperarse las imagenes del carrusel.")
+  }
+
+  return data;
+}
 
 function Index() {
   /*
@@ -16,6 +34,18 @@ function Index() {
     setEmail('');
   };
   */
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ["get-carrusel-imagenes"],
+    queryFn: getCarruselImagenes,
+  });
+
+  const [imagenesData, setImagenesData] = useState<ImagenCarrusel[]>([]);
+  useEffect(() => {
+    if (!isPending && data?.imagenes) {
+      setImagenesData(data.imagenes);
+    }
+  }, [isPending, data])
 
   return (
     <div className="font-sans bg-gray-50">
@@ -45,7 +75,7 @@ function Index() {
         </div>
       </section>
 
-      {/* <HexagonGrid /> */}
+      {imagenesData.length > 0 ? <HexagonGrid imagenesData={imagenesData} /> : <></>}
 
 
       {/* Services */}
@@ -233,3 +263,66 @@ function Index() {
     </div>
   );
 }
+
+function HexagonGrid({ imagenesData }: { imagenesData: ImagenCarrusel[] }) {
+  const navigate = useNavigate();
+
+  /*
+  const [currentImages, setCurrentImages] = useState(imagenesData);
+  const intervalTime = 5000; // Cambia las imágenes cada 5 segundos (ajusta según necesites)
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      // Lógica para obtener nuevas imágenes (reemplaza con tu API)
+      const shuffledImages = [...imagenesData].sort(() => Math.random() - 0.5);
+      setCurrentImages(shuffledImages);
+    }, intervalTime);
+
+    return () => clearInterval(intervalId);
+  }, [imagenesData]);
+  */
+
+  const getImagenesCarrusel = (start: number, size: number) => {
+    const data: { imagen: string, target: string }[] = [];
+
+    for (let i = 0; i < size; ++i) {
+      const current = imagenesData[(start + i) % imagenesData.length];
+      data.push(current);
+    }
+
+    return data;
+  };
+
+  const handleHexagonClick = (target: string) => {
+    navigate({ to: `/inmuebles/${target}` });
+  };
+
+  const DrawRow = ({ data, className }: { data: { imagen: string, target: string }[], className?: string }) => {
+    return (
+      <div className={`flex flex-row justify-center ${className}`}>
+        {data.slice(0, 5).map((item, index) => (
+          <div key={`row1-${index}`} className={`relative aspect-square w-32 md:w-40 mx-[10px]`}>
+            <div
+              // className="absolute inset-0 bg-cover bg-center cursor-pointer w-[160px] h-[160px]"
+              className="absolute inset-0 bg-cover bg-center cursor-pointer w-[160px] h-[160px]"
+              style={{
+                backgroundImage: `url("/api/archivos/${item.imagen}")`,
+                clipPath: 'polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%)',
+              }}
+            // onClick={() => handleHexagonClick(item.target)}
+            ></div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className='py-15'>
+      <DrawRow data={getImagenesCarrusel(0, 5)} className='mb-[20px]' />
+      <DrawRow data={getImagenesCarrusel(9, 14)} className='' />
+    </div>
+  );
+};
+
+export default HexagonGrid;
