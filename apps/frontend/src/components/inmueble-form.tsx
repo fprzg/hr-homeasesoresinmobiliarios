@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
-import { crearCasa, crearTerreno, estadosMexico, InmuebleType } from "@shared/zod";
+import { crearCasa, crearInmuebleBase, crearTerreno, estadosMexico, InmuebleBaseType, InmuebleType } from "@shared/zod";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
@@ -73,7 +73,16 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
             setInmueble({ ...inmueble, [name]: checked });
         }
         else if (name === "tipo") {
-            setInmueble(value === "casa" ? crearCasa() : crearTerreno());
+            const base = crearInmuebleBase(inmueble);
+            const emptyInmueble = value === "terreno" ? crearTerreno() : crearCasa();
+            const nuevoInmueble = {
+                ...emptyInmueble,
+                ...base,
+                //id: value === "terreno" ? "terreno" : "casa",
+            }
+            console.log("asdf", base);
+            console.log(nuevoInmueble);
+            setInmueble(nuevoInmueble);
         } else {
             if (name.startsWith("asentamiento.")) {
                 const asentamientoName = name.substring("asentamiento.".length)
@@ -308,7 +317,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <div className="flex justify-between">
                             <div>
                                 <h3 className="font-medium">
-                                    {/* {item.tipo === "casa" ? "Casa" : "Terreno"} en {item.asentamiento}, {item.estado} */}
+                                    {item.tipo === "casa" ? "Casa" : "Terreno"} en {item.asentamiento.municipio}, {item.asentamiento.estado}
                                 </h3>
                                 <p className="text-gray-600">
                                     ${item.precio.toLocaleString()} MXN | Área: {item.areaTotal} m²
@@ -359,10 +368,8 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
             )}
 
             <div className="space-y-6">
-                {/* Tipo de inmueble */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-
                         <label className="block text-sm font-medium mb-1">Tipo de inmueble</label>
                         <select
                             name="tipo"

@@ -22,29 +22,23 @@ export async function leer(): Promise<InmuebleType[]> {
 }
 
 export async function leerPorId(id: string): Promise<InmuebleType | undefined> {
-    const resultados = await db.select()
+    const [resultados] = await db.select()
         .from(schemas.inmuebles)
         .leftJoin(schemas.casas, eq(schemas.inmuebles.id, schemas.casas.id))
         .leftJoin(schemas.terrenos, eq(schemas.inmuebles.id, schemas.terrenos.id))
         .leftJoin(schemas.asentamientos, eq(schemas.inmuebles.asentamientoId, schemas.asentamientos.id))
         .where(eq(schemas.inmuebles.id, id));
 
-    if (resultados.length === 0) {
+    if (!resultados) {
         return undefined;
     }
 
-    return transformarRegistroAInmueble(resultados[0]);
+    return transformarRegistroAInmueble(resultados);
 }
 
 export async function guardar(data: InmuebleType): Promise<boolean> {
     try {
-        const ahora = new Date().toISOString();
-        data.fechaPublicacion = ahora;
-        data.fechaActualizacion = ahora;
-
-        if (!data.id) {
-            data.id = `doc_${nanoid()}`;
-        }
+        data.id = `doc_${nanoid()}`;
 
         const [nuevoAsentamiento] = await db.insert(schemas.asentamientos)
             .values({
@@ -107,14 +101,12 @@ export async function guardar(data: InmuebleType): Promise<boolean> {
 
 export async function actualizar(data: InmuebleType): Promise<boolean> {
     try {
-        data.fechaActualizacion = new Date().toISOString();
-
         const [inmuebleExistente] = await db.select()
             .from(schemas.inmuebles)
             .where(eq(schemas.inmuebles.id, data.id));
 
         if (!inmuebleExistente) {
-            return false;
+            throw new Error(`no existe el inmueble con id ${data.id}`)
         }
 
         const [asentamientoActual] = await db.select()
@@ -122,43 +114,38 @@ export async function actualizar(data: InmuebleType): Promise<boolean> {
             .where(eq(schemas.asentamientos.id, inmuebleExistente.asentamientoId));
 
         if (!asentamientoActual) {
-            throw new Error(`Asentamiento con id ${inmuebleExistente.asentamientoId} no existe.`);
+            throw new Error(`asentamiento con id ${inmuebleExistente.asentamientoId} no existe`);
         }
 
         let asentamientoId = asentamientoActual.id;
 
-        if (
-            asentamientoActual.tipo !== data.asentamiento.tipo ||
+        if (asentamientoActual.tipo !== data.asentamiento.tipo ||
             asentamientoActual.estado !== data.asentamiento.estado ||
             asentamientoActual.calleColonia !== data.asentamiento.calleColonia ||
             asentamientoActual.municipio !== data.asentamiento.municipio ||
             asentamientoActual.codigoPostal !== data.asentamiento.codigoPostal
         ) {
-            const xx = {
-                tipo: data.asentamiento.tipo,
-                calleColonia: data.asentamiento.calleColonia || asentamientoActual.calleColonia,
-                municipio: data.asentamiento.municipio || asentamientoActual.municipio,
-                codigoPostal: data.asentamiento.codigoPostal || asentamientoActual.codigoPostal,
-                estado: data.asentamiento.estado
-            };
-            console.log(asentamientoActual.id);
-            console.log(xx);
-            const nuevoAsentamiento: { updatedId: number }[] = await db.update(schemas.asentamientos)
-                .set(xx)
-                .where(eq(schemas.asentamientos, asentamientoActual.id))
-                .returning({ updatedId: schemas.asentamientos.id });
-            console.log(nuevoAsentamiento);
+            const [nuevoAsentamiento] = await db.update(schemas.asentamientos)
+                .set({
+                    tipo: data.asentamiento.tipo,
+                    calleColonia: data.asentamiento.calleColonia || asentamientoActual.calleColonia,
+                    municipio: data.asentamiento.municipio || asentamientoActual.municipio,
+                    codigoPostal: data.asentamiento.codigoPostal || asentamientoActual.codigoPostal,
+                    estado: data.asentamiento.estado
+                })
+                .where(eq(schemas.asentamientos.id, asentamientoActual.id))
+                .returning({ id: schemas.asentamientos.id });
 
-            // if (!nuevoAsentamiento) {
-            // throw new Error("No se pudo actualizar el asentamiento.");
-            // }
+            if (!nuevoAsentamiento) {
+                throw new Error("no se pudo actualizar el asentamiento");
+            }
 
-            // asentamientoId = nuevoAsentamiento.id;
+            asentamientoId = nuevoAsentamiento.id;
         } else {
             asentamientoId = asentamientoActual.id;
         }
 
-        await db.update(schemas.inmuebles)
+        const [inmuebleUpdatedId] = await db.update(schemas.inmuebles)
             .set({
                 categoria: data.tipo,
                 asentamientoId,
@@ -168,7 +155,12 @@ export async function actualizar(data: InmuebleType): Promise<boolean> {
                 portada: data.portada,
                 contenido: data.contenido
             })
-            .where(eq(schemas.inmuebles.id, data.id));
+            .where(eq(schemas.inmuebles.id, data.id))
+            .returning({id: schemas.inmuebles.id});
+
+            if(!inmuebleUpdatedId) {
+                throw new Error(`no se pudo actualizar el inmueble de id ${data.id}`)
+            }
 
         if (data.tipo === "casa") {
             const casa = data as CasaType;
@@ -208,11 +200,11 @@ export async function actualizar(data: InmuebleType): Promise<boolean> {
         } else if (data.tipo === "terreno") {
             const terreno = data as TerrenoType;
 
-            const terrenoExistente = await db.select()
+            const [terrenoExistente] = await db.select()
                 .from(schemas.terrenos)
                 .where(eq(schemas.terrenos.id, data.id));
 
-            if (terrenoExistente.length > 0) {
+            if (terrenoExistente) {
                 await db.update(schemas.terrenos)
                     .set({
                         metrosFrente: terreno.metrosFrente,
@@ -283,7 +275,7 @@ function transformarRegistroAInmueble(row: any): InmuebleType {
 
     const baseInmueble = {
         id: row.inmuebles.id || "",
-        estado: row.inmuebles.estado || "", // Asumiendo que existe esta columna en la tabla
+        estado: row.inmuebles.estado || "",
         asentamiento,
         precio: row.inmuebles.precio || 0,
         areaTotal: row.inmuebles.areaTotal || 0,
@@ -311,7 +303,7 @@ function transformarRegistroAInmueble(row: any): InmuebleType {
             ...baseInmueble,
             tipo: "terreno",
             metrosFrente: row.inmu_terrenos.metrosFrente || 0,
-            metrosFondo: row.inmu_terrenos.metrosFondo || 0, // Nota: hay un error en el schema, ambos son 'metros_frente'
+            metrosFondo: row.inmu_terrenos.metrosFondo || 0,
             tipoPropiedad: (row.inmu_terrenos.tipoPropiedad as "privada" | "comunal" | "ejidal") || "privada"
         };
         return terreno;

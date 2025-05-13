@@ -44,7 +44,7 @@ const casas = sqliteTable('inmu_casas', {
 const terrenos = sqliteTable('inmu_terrenos', {
   id: text('id').primaryKey().references(() => inmuebles.id),
   metrosFrente: integer('metros_frente'),
-  metrosFondo: integer('metros_frente'),
+  metrosFondo: integer('metros_fondo'),
   tipoPropiedad: text('tipo_propiedad').$type<'privada' | 'comunal' | 'ejidal'>(),
 });
 

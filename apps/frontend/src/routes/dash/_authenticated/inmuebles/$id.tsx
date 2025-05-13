@@ -29,10 +29,10 @@ function EditarDocumento() {
   });
 
   useEffect(() => {
-    const xx: { inmueble: InmuebleType } = data as any as { inmueble: InmuebleType };
-    if (!isPending && xx?.inmueble) {
-      console.log(xx.inmueble.contenido);
-      setInmuebleData(xx.inmueble);
+    const d: { inmueble: InmuebleType } = data as any as { inmueble: InmuebleType };
+    if (!isPending && d?.inmueble) {
+      console.log(d.inmueble.contenido);
+      setInmuebleData(d.inmueble);
     }
   }, [isPending, data]);
 

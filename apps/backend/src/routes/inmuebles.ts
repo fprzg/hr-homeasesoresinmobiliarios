@@ -6,7 +6,6 @@ import { InmueblesService } from '@/db/models/inmuebles';
 export const inmuebles = new Hono()
   .post('/', async (c) => {
     const body = await c.req.json();
-    body.id = `doc_${nanoid()}`;
     const parse = inmuebleSchema.safeParse(body);
 
     if (!parse.success) {

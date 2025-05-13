@@ -100,16 +100,16 @@ function crearAsentamiento(): AsentamientoType {
   };
 }
 
-function crearInmuebleBase(): InmuebleBaseType {
+export function crearInmuebleBase(data?: InmuebleType): InmuebleBaseType {
   return {
-    id: "",
-    asentamiento: crearAsentamiento(),
-    precio: 0,
-    areaTotal: 0,
-    fechaPublicacion: "",
-    fechaActualizacion: "",
-    portada: "",
-    contenido: [],
+    id: data?.id ?? "",
+    asentamiento: data?.asentamiento ?? crearAsentamiento(),
+    precio: data?.precio ?? 0,
+    areaTotal: data?.areaTotal ?? 0,
+    fechaPublicacion: data?.fechaPublicacion ?? "",
+    fechaActualizacion: data?.fechaActualizacion ?? "",
+    portada: data?.portada ?? "",
+    contenido: data?.contenido ?? [],
   };
 }
 
