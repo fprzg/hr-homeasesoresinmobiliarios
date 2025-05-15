@@ -17,8 +17,7 @@ export const archivos = new Hono()
         for (const file of files) {
             try {
                 const image = await ArchivosService.guardar(file);
-                console.log(image)
-                await db.insert(schemas.archivos).values({ ...image, addToCarousel: 1 });
+                await db.insert(schemas.archivos).values({ ...image, addToCarousel: 0 });
                 results.push({ id: image.id, originalName: image.filename });
             } catch (err) {
                 console.error(err);
@@ -49,8 +48,6 @@ export const archivos = new Hono()
                 target: item.inmuebleId ?? defaultTarget,
             }));
 
-            console.log(imagenes);
-
             return c.json({
                 ok: true,
                 imagenes,
@@ -66,10 +63,20 @@ export const archivos = new Hono()
     })
     .get('/:id', async (c) => {
         const id = c.req.param('id');
-        const doc = await db.query.archivos.findFirst({ where: eq(schemas.archivos.id, id) });
-        if (!doc) return c.notFound();
+        const doc = await db
+            .query
+            .archivos
+            .findFirst({ where: eq(schemas.archivos.id, id) })
+            ;
+
+        if (!doc) {
+            return c.notFound();
+        }
+
         const file = await ArchivosService.leer(id);
-        if (!file) return c.notFound();
+        if (!file) {
+            return c.notFound();
+        }
 
         return c.body(file.buffer, {
             headers: {

@@ -36,8 +36,9 @@ export const estadosMexico = [
 ] as const;
 
 export const bloqueSchema = z.object({
-  imagen: z.string(),
-  descripcion: z.string(),
+  imagenId: z.string(),
+  descripcion: z.string().optional(),
+  agregarAPortada: z.boolean().default(false),
 })
 
 export const asentamientoSchema = z.object({
@@ -97,6 +98,14 @@ function crearAsentamiento(): AsentamientoType {
     municipio: "",
     codigoPostal: "",
     estado: "Oaxaca",
+  };
+}
+
+export function crearBloqueType(): BloqueType {
+  return {
+    imagenId: "",
+    descripcion: "",
+    agregarAPortada: false,
   };
 }
 

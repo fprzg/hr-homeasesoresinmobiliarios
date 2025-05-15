@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { type InmuebleType, inmuebleSchema } from '@shared/zod';
-import { nanoid } from 'nanoid';
-import { InmueblesService } from '@/db/models/inmuebles';
+import { InmueblesService } from '@/services/inmueblesService';
 
 export const inmuebles = new Hono()
   .post('/', async (c) => {

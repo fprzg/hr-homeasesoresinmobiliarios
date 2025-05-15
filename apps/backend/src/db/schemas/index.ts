@@ -54,9 +54,9 @@ const archivos = sqliteTable('archivos', {
   filename: text('filename').notNull(),
   mimetype: text('mimetype').notNull(),
   size: integer('size').notNull(),
-  createdAt: integer('created_at').default(Date.now()),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   inmuebleId: text('inmueble_id').references(() => inmuebles.id),
-  addToCarousel: integer('add_to_carousel').notNull().$type<0 | 1>(),
+  addToCarousel: integer('add_to_carousel', {mode: 'boolean'}).notNull(),
 });
 
 export const schemas = { usuarios, asentamientos, inmuebles, casas, terrenos, archivos, };

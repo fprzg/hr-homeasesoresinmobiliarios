@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
-import { crearCasa, crearInmuebleBase, crearTerreno, estadosMexico, InmuebleBaseType, InmuebleType } from "@shared/zod";
+import { crearCasa, crearInmuebleBase, crearTerreno, estadosMexico, InmuebleBaseType, BloqueType, crearBloqueType, InmuebleType } from "@shared/zod";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
@@ -25,7 +25,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
     const [inmueble, setInmueble] = useState<InmuebleType>(inmuebleData ?? crearCasa());
     const [isEditing, setIsEditing] = useState(false);
     const [portadaFile, setPortadaFile] = useState(null);
-    const [nuevoBloque, setNuevoBloque] = useState({ imagen: "", descripcion: "", });
+    const [nuevoBloque, setNuevoBloque] = useState<BloqueType>(crearBloqueType());
     const [bloqueEditandoIndex, setBloqueEditandoIndex] = useState(-1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -78,10 +78,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
             const nuevoInmueble = {
                 ...emptyInmueble,
                 ...base,
-                //id: value === "terreno" ? "terreno" : "casa",
             }
-            console.log("asdf", base);
-            console.log(nuevoInmueble);
             setInmueble(nuevoInmueble);
         } else {
             if (name.startsWith("asentamiento.")) {
@@ -97,8 +94,13 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
     };
 
     const handleBloqueChange = (e: any) => {
-        const { name, value } = e.target;
-        setNuevoBloque({ ...nuevoBloque, [name]: value });
+        const { name, value, type, checked } = e.target;
+        if (type === "checkbox") {
+            console.log(value);
+            setNuevoBloque({...nuevoBloque, [name]: checked} );
+        } else {
+            setNuevoBloque({ ...nuevoBloque, [name]: value });
+        }
     };
 
     const handlePortadaUpload = async (e: any) => {
@@ -117,11 +119,9 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
             });
             const data = await response.json();
 
-            const imageId = data.imagenes[0].id;
-
             setInmueble({
                 ...inmueble,
-                portada: imageId,
+                portada: data.imagenes[0].id as string,
             });
             setLoading(false);
         } catch (err) {
@@ -144,11 +144,9 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
             });
             const data = await response.json();
 
-            const imageId = data.imagenes[0].id;
-
             setNuevoBloque({
                 ...nuevoBloque,
-                imagen: imageId,
+                imagenId: data.imagenes[0].id as string,
             });
             setLoading(false);
         } catch (err) {
@@ -158,7 +156,8 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
     };
 
     const handleAddBloque = () => {
-        if (!nuevoBloque.imagen || !nuevoBloque.descripcion) {
+        console.log(nuevoBloque);
+        if (!nuevoBloque.imagenId || !nuevoBloque.descripcion) {
             setError("La imagen y descripción son obligatorias");
             return;
         }
@@ -177,14 +176,14 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
             });
         }
         setBloqueEditandoIndex(-1);
-        setNuevoBloque({ imagen: "", descripcion: "" });
+        setNuevoBloque(crearBloqueType());
         setError("");
     };
 
     const handleUpdateBloque = (index: number) => {
         setBloqueEditandoIndex(index);
         setNuevoBloque(inmueble.contenido[index]);
-    }
+    };
 
     const handleRemoveBloque = (index: number) => {
         const newContenido = [...inmueble.contenido];
@@ -295,7 +294,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
         }
 
         setPortadaFile(null);
-        setNuevoBloque({ imagen: "", descripcion: "" });
+        setNuevoBloque(crearBloqueType());
         setIsEditing(false);
         setError("");
     };
@@ -643,21 +642,10 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                 {inmueble.contenido.map((bloque, index) => (
                                     <div key={index} className="flex items-start border p-3 rounded-md">
                                         <div className="flex-grow">
-                                            <p className="text-sm font-medium">Imagen: {bloque.imagen}</p>
+                                            <p className="text-sm font-medium">Imagen: {bloque.imagenId}</p>
                                             <p className="text-sm">Descripción: {bloque.descripcion}</p>
                                         </div>
                                         <div className="flex space-x-2">
-                                            <div className="flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    name="piscina"
-                                                    checked={false}
-                                                    onChange={() => setImagenesCarrusel}
-                                                    className="mr-2"
-                                                />
-                                                <label className="text-sm font-medium">Agregar al carrusel</label>
-                                            </div>
-
                                             <button
                                                 type="button"
                                                 onClick={() => handleUpdateBloque(index)}
@@ -691,9 +679,9 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                     onChange={handleBloqueImagenUpload}
                                     className="w-full p-2 border rounded-md text-sm"
                                 />
-                                {nuevoBloque.imagen && (
+                                {nuevoBloque.imagenId && (
                                     <span className="text-xs text-green-600">
-                                        Imagen cargada: {nuevoBloque.imagen}
+                                        Imagen cargada: {nuevoBloque.imagenId}
                                     </span>
                                 )}
                             </div>
@@ -707,6 +695,17 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                     className="w-full p-2 border rounded-md text-sm"
                                     rows={2}
                                 ></textarea>
+                            </div>
+                            <div>
+                                <div className='flex items-center'>
+                                    <input
+                                        type="checkbox"
+                                        name="agregarAPortada"
+                                        onChange={handleBloqueChange}
+                                        className='mr-2'
+                                    />
+                                    <label htmlFor="agregarAPortada" className='text-sm font-medium'>Agregar a portada</label>
+                                </div>
                             </div>
 
                             <button
