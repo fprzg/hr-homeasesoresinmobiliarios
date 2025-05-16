@@ -9,8 +9,8 @@ function RouteComponent() {
   return (
     <div className="font-sans bg-gray-50">
       {/* Page Header */}
-      <section className="relative bg-blue-700 text-white py-20">
-        <div className="absolute inset-0 bg-blue-900 opacity-50"></div>
+      <section className="relative bg-primary text-white py-20">
+        {/* <div className="absolute inset-0 bg-blue-900 opacity-50"></div> */}
         <div className="container mx-auto px-6 relative z-10 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Nuestros Servicios</h1>
           <p className="text-xl max-w-2xl mx-auto">
@@ -27,7 +27,7 @@ function RouteComponent() {
             <div className="flex flex-col md:flex-row gap-12 items-center">
               <div className="md:w-1/2">
                 <div className="bg-blue-100 p-2 inline-block rounded-lg mb-4">
-                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                   </svg>
                 </div>
@@ -64,28 +64,28 @@ function RouteComponent() {
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Nuestro proceso</h3>
                 <div className="space-y-6">
                   <div className="flex">
-                    <div className="rounded-full bg-blue-600 text-white w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
+                    <div className="rounded-full bg-primary text-white w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
                     <div>
                       <h4 className="font-semibold text-gray-800">Consulta inicial</h4>
                       <p className="text-gray-600">Evaluamos tus necesidades y objetivos inmobiliarios</p>
                     </div>
                   </div>
                   <div className="flex">
-                    <div className="rounded-full bg-blue-600 text-white w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
+                    <div className="rounded-full bg-primary text-white w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
                     <div>
                       <h4 className="font-semibold text-gray-800">Análisis de mercado</h4>
                       <p className="text-gray-600">Realizamos un estudio comparativo del mercado actual</p>
                     </div>
                   </div>
                   <div className="flex">
-                    <div className="rounded-full bg-blue-600 text-white w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
+                    <div className="rounded-full bg-primary text-white w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
                     <div>
                       <h4 className="font-semibold text-gray-800">Estrategia personalizada</h4>
                       <p className="text-gray-600">Desarrollamos un plan de acción adaptado a tus necesidades</p>
                     </div>
                   </div>
                   <div className="flex">
-                    <div className="rounded-full bg-blue-600 text-white w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
+                    <div className="rounded-full bg-primary text-white w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
                     <div>
                       <h4 className="font-semibold text-gray-800">Cierre exitoso</h4>
                       <p className="text-gray-600">Finalizamos la transacción asegurando tu satisfacción</p>
@@ -101,7 +101,7 @@ function RouteComponent() {
             <div className="flex flex-col md:flex-row gap-12 items-center">
               <div className="md:w-1/2 order-1 md:order-2">
                 <div className="bg-blue-100 p-2 inline-block rounded-lg mb-4">
-                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
                 </div>
