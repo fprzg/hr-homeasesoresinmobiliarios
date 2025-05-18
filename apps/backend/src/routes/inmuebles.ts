@@ -2,9 +2,10 @@ import { Hono } from 'hono';
 import { type InmuebleType, inmuebleSchema, inmueblesBuscadorQuerySchema } from '@shared/zod';
 import { InmueblesService } from '@/services/inmueblesService';
 import { zValidator } from '@hono/zod-validator';
+import { getUser } from '@/middleware/auth';
 
 export const inmuebles = new Hono()
-  .post('/', async (c) => {
+  .post('/', getUser, async (c) => {
     const body = await c.req.json();
     const parse = inmuebleSchema.safeParse(body);
 
@@ -34,7 +35,7 @@ export const inmuebles = new Hono()
     }
     return c.json({ inmueble: data });
   })
-  .put('/', async (c) => {
+  .put('/', getUser, async (c) => {
     const data = await c.req.json();
 
     const ok = InmueblesService.actualizar(data);
@@ -44,7 +45,7 @@ export const inmuebles = new Hono()
 
     return c.json({ ok: true });
   })
-  .delete('/:id', async (c) => {
+  .delete('/:id', getUser, async (c) => {
     const id = c.req.param('id');
 
     const ok = InmueblesService.eliminar(id);

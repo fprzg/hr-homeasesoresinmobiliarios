@@ -267,13 +267,16 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
         try {
             setLoading(true);
 
-            const res = await fetch(`/api/inmuebles/${id}`, {
-                method: 'DELETE',
-            });
+            const res = await api.inmuebles[":id"].$get({ param: { id } });
+            if (!res.ok) {
+                setError('error al eliminar el inmueble. Intente de nuevo o contacte al administrador.');
+                return;
+            }
 
             const data = await res.json();
             if (!data.ok) {
                 setError('error al eliminar el inmueble. Intente de nuevo o contacte al administrador.');
+                return;
             }
 
             setInmuebles(inmuebles.filter((item) => item.id !== id));
@@ -391,7 +394,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="number"
                             name="precio"
-                            value={inmueble.precio || 0}
+                            value={inmueble.precio || ""}
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                             min="1"
@@ -403,7 +406,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="number"
                             name="areaTotal"
-                            value={inmueble.areaTotal || 0}
+                            value={inmueble.areaTotal || ""}
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                             min="1"
@@ -483,6 +486,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="text"
                             name="titulo"
+                            value={inmueble.titulo}
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                         />
@@ -492,6 +496,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="text"
                             name="descripcion"
+                            value={inmueble.descripcion}
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                         />
@@ -508,7 +513,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                 <input
                                     type="number"
                                     name="areaConstruida"
-                                    value={inmueble.areaConstruida || 0}
+                                    value={inmueble.areaConstruida || ""}
                                     onChange={handleChange}
                                     className="w-full p-2 border rounded-md"
                                     min="0"
@@ -520,7 +525,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                 <input
                                     type="number"
                                     name="numBanos"
-                                    value={inmueble.numBanos || 0}
+                                    value={inmueble.numBanos || ""}
                                     onChange={handleChange}
                                     className="w-full p-2 border rounded-md"
                                     min="0"
@@ -532,7 +537,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                 <input
                                     type="number"
                                     name="numRecamaras"
-                                    value={inmueble.numRecamaras || 0}
+                                    value={inmueble.numRecamaras || ""}
                                     onChange={handleChange}
                                     className="w-full p-2 border rounded-md"
                                     min="0"
@@ -544,7 +549,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                 <input
                                     type="number"
                                     name="numPisos"
-                                    value={inmueble.numPisos || 0}
+                                    value={inmueble.numPisos || ""}
                                     onChange={handleChange}
                                     className="w-full p-2 border rounded-md"
                                     min="0"
@@ -556,7 +561,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                 <input
                                     type="number"
                                     name="numCocheras"
-                                    value={inmueble.numCocheras || 0}
+                                    value={inmueble.numCocheras || ""}
                                     onChange={handleChange}
                                     className="w-full p-2 border rounded-md"
                                     min="0"
@@ -568,7 +573,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                 <input
                                     type="number"
                                     name="totalAreas"
-                                    value={inmueble.totalAreas || 0}
+                                    value={inmueble.totalAreas || ""}
                                     onChange={handleChange}
                                     className="w-full p-2 border rounded-md"
                                     min="0"
@@ -599,8 +604,8 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                 <input
                                     type="number"
                                     name="metrosFrente"
-                                    value={inmueble.metrosFrente || 0}
-                                    onChange={(e) => console.log(e)}
+                                    value={inmueble.metrosFrente || ""}
+                                    onChange={handleChange}
                                     className="w-full p-2 border rounded-md"
                                     min={1}
                                 />
@@ -611,7 +616,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                                 <input
                                     type="number"
                                     name="metrosFondo"
-                                    value={inmueble.metrosFondo || 0}
+                                    value={inmueble.metrosFondo || ""}
                                     onChange={handleChange}
                                     className="w-full p-2 border rounded-md"
                                     min="1"

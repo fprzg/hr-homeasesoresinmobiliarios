@@ -4,9 +4,10 @@ import { schemas } from '@/db/schemas';
 import { ArchivosService } from '@/app';
 import { eq } from 'drizzle-orm';
 import { error } from 'node:console';
+import { getUser } from '@/middleware/auth';
 
 export const archivos = new Hono()
-    .post('/', async (c) => {
+    .post('/', getUser, async (c) => {
         const body = await c.req.formData();
         //const files = Object.values(body).filter(f => f instanceof File) as File[];
         const files = [] as File[]
@@ -17,7 +18,7 @@ export const archivos = new Hono()
         for (const file of files) {
             try {
                 const image = await ArchivosService.guardar(file);
-                await db.insert(schemas.archivos).values({ ...image, addToCarousel: 0 });
+                await db.insert(schemas.archivos).values({ ...image, addToCarousel: true });
                 results.push({ id: image.id, originalName: image.filename });
             } catch (err) {
                 console.error(err);
@@ -30,7 +31,7 @@ export const archivos = new Hono()
         try {
             const archivosLista = await db.select()
                 .from(schemas.archivos)
-                .where(eq(schemas.archivos.addToCarousel, 1))
+                .where(eq(schemas.archivos.addToCarousel, true))
                 .limit(20)
                 .orderBy(schemas.archivos.createdAt);
 

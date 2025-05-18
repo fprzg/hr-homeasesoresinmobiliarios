@@ -59,101 +59,103 @@ function InmuebleById() {
         <div className="container mx-auto px-6 relative z-10">
 
           <div className="md:w-2/3">
-          
+
             <h1 className="text-3xl md:text-5xl font-semibold mb-6">{inmueble.titulo}</h1>
             <p className="text-3xl mb-8">{precioLegible(inmueble.precio)}</p>
           </div>
         </div>
       </section>
 
-      <div className='mx-auto w-[80%] md:w-[80%] lg:w-[65%] xl:w-[50%] gap-4 py-12'>
-        <div className={`text-center flex flex-col justify-center gap-4 `}>
+      <div className='mx-auto w-[80%] md:w-[80%] lg:w-[65%] xl:w-[50%] py-12'>
+        <div className={`text-center flex flex-col gap-8 `}>
 
-        <h1 className="text-xl lg:text-2xl">{inmueble.asentamiento.calleColonia}</h1>
-        <h1 className="text-xl lg:text-2xl">{inmueble.asentamiento.codigoPostal}, {inmueble.asentamiento.municipio}</h1>
-        <h1 className="text-xl lg:text-2xl">{inmueble.asentamiento.estado}</h1>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-xl lg:text-2xl">{inmueble.asentamiento.calleColonia}</h1>
+            <h1 className="text-xl lg:text-2xl">{inmueble.asentamiento.codigoPostal}, {inmueble.asentamiento.municipio}</h1>
+            <h1 className="text-xl lg:text-2xl">{inmueble.asentamiento.estado}</h1>
+          </div>
 
-        <table className="min-w-full table-auto border-collapse border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border px-4 py-2 text-left">Descripcion</th>
-              <th className="border px-4 py-2 text-left">N. de áreas</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inmueble.tipo === "casa" ?
-              <>
-                <tr className="bg-white">
-                  <td className="border px-4 py-2 font-medium">Área construida</td>
-                  <td className="border px-4 py-2">{inmueble.areaConstruida} m²</td>
-                </tr>
+          <p className="text-xl">{inmueble.descripcion}</p>
 
-                <tr className="bg-white">
-                  <td className="border px-4 py-2 font-medium">N. de áreas</td>
-                  <td className="border px-4 py-2">{inmueble.totalAreas}</td>
-                </tr>
-
-                <tr className="bg-white">
-                  <td className="border px-4 py-2 font-medium">N. de pisos</td>
-                  <td className="border px-4 py-2">{inmueble.numPisos}</td>
-                </tr>
-
-                <tr className="bg-white">
-                  <td className="border px-4 py-2 font-medium">N. de recámaras</td>
-                  <td className="border px-4 py-2">{inmueble.numRecamaras}</td>
-                </tr>
-
-
-                <tr className="bg-white">
-                  <td className="border px-4 py-2 font-medium">N. de baños</td>
-                  <td className="border px-4 py-2">{inmueble.numBanos}</td>
-                </tr>
-
-                {inmueble.numCocheras > 1 ?
+          <table className="min-w-full table-auto border-collapse border border-gray-300">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="border px-4 py-2 text-left">Descripcion</th>
+                <th className="border px-4 py-2 text-left">N. de áreas</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inmueble.tipo === "casa" ?
+                <>
                   <tr className="bg-white">
-                    <td className="border px-4 py-2 font-medium">N. de cocheras</td>
-                    <td className="border px-4 py-2">{inmueble.numCocheras}</td>
+                    <td className="border px-4 py-2 font-medium">Área construida</td>
+                    <td className="border px-4 py-2">{inmueble.areaConstruida} m²</td>
                   </tr>
-                  :
+
                   <tr className="bg-white">
-                    <td className="border px-4 py-2 font-medium">Cochera</td>
-                    <td className="border px-4 py-2">{inmueble.numCocheras === 1 ? "Si" : "No"}</td>
+                    <td className="border px-4 py-2 font-medium">N. de áreas</td>
+                    <td className="border px-4 py-2">{inmueble.totalAreas}</td>
                   </tr>
-                }
-              </>
-              :
-              <>
-                <tr className="bg-white">
-                  <td className="border px-4 py-2 font-medium">Metros de frente</td>
-                  <td className="border px-4 py-2">{inmueble.metrosFrente} m²</td>
-                </tr>
 
-                <tr className="bg-white">
-                  <td className="border px-4 py-2 font-medium">Metros de fondo</td>
-                  <td className="border px-4 py-2">{inmueble.metrosFondo} m²</td>
-                </tr>
+                  <tr className="bg-white">
+                    <td className="border px-4 py-2 font-medium">N. de pisos</td>
+                    <td className="border px-4 py-2">{inmueble.numPisos}</td>
+                  </tr>
 
-                <tr className="bg-white">
-                  <td className="border px-4 py-2 font-medium">Tipo de propiedad</td>
-                  <td className="border px-4 py-2">{inmueble.tipoPropiedad}</td>
-                </tr>
-              </>
-            }
-          </tbody>
-        </table>
+                  <tr className="bg-white">
+                    <td className="border px-4 py-2 font-medium">N. de recámaras</td>
+                    <td className="border px-4 py-2">{inmueble.numRecamaras}</td>
+                  </tr>
 
-        <div className="">
+
+                  <tr className="bg-white">
+                    <td className="border px-4 py-2 font-medium">N. de baños</td>
+                    <td className="border px-4 py-2">{inmueble.numBanos}</td>
+                  </tr>
+
+                  {inmueble.numCocheras > 1 ?
+                    <tr className="bg-white">
+                      <td className="border px-4 py-2 font-medium">N. de cocheras</td>
+                      <td className="border px-4 py-2">{inmueble.numCocheras}</td>
+                    </tr>
+                    :
+                    <tr className="bg-white">
+                      <td className="border px-4 py-2 font-medium">Cochera</td>
+                      <td className="border px-4 py-2">{inmueble.numCocheras === 1 ? "Si" : "No"}</td>
+                    </tr>
+                  }
+                </>
+                :
+                <>
+                  <tr className="bg-white">
+                    <td className="border px-4 py-2 font-medium">Metros de frente</td>
+                    <td className="border px-4 py-2">{inmueble.metrosFrente} m²</td>
+                  </tr>
+
+                  <tr className="bg-white">
+                    <td className="border px-4 py-2 font-medium">Metros de fondo</td>
+                    <td className="border px-4 py-2">{inmueble.metrosFondo} m²</td>
+                  </tr>
+
+                  <tr className="bg-white">
+                    <td className="border px-4 py-2 font-medium">Tipo de propiedad</td>
+                    <td className="border px-4 py-2">{inmueble.tipoPropiedad}</td>
+                  </tr>
+                </>
+              }
+            </tbody>
+          </table>
+
           {inmueble.contenido.map((bloque: any) => (
-            <div className="grid grid-rows-1 justify-center p-4 gap-4">
+            <div className="grid grid-rows-1 justify-center pb-4">
               <img src={`/api/archivos/${bloque.imagenId}`} alt="" />
               <p className="text-xl">{bloque.descripcion}</p>
             </div>
           ))}
-        </div>
 
-        <p className="text-md">Publicado {fechaLegible(inmueble.fechaActualizacion)}</p>
-      </div>
-    </div >
+          <p className="text-md">Publicado {fechaLegible(inmueble.fechaActualizacion)}</p>
+        </div>
+      </div >
     </>
   );
 }
