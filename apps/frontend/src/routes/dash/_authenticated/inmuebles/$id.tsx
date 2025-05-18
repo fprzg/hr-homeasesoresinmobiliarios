@@ -31,7 +31,6 @@ function EditarDocumento() {
   useEffect(() => {
     const d: { inmueble: InmuebleType } = data as any as { inmueble: InmuebleType };
     if (!isPending && d?.inmueble) {
-      console.log(d.inmueble.contenido);
       setInmuebleData(d.inmueble);
     }
   }, [isPending, data]);

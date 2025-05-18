@@ -13,9 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ServiciosImport } from './routes/servicios'
 import { Route as IndexImport } from './routes/index'
-import { Route as InmueblesIndexImport } from './routes/inmuebles/index'
 import { Route as DashIndexImport } from './routes/dash/index'
 import { Route as InmueblesIdImport } from './routes/inmuebles/$id'
 import { Route as DashLoginImport } from './routes/dash/login'
@@ -35,21 +33,9 @@ const DashRoute = DashImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ServiciosRoute = ServiciosImport.update({
-  id: '/servicios',
-  path: '/servicios',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const InmueblesIndexRoute = InmueblesIndexImport.update({
-  id: '/inmuebles/',
-  path: '/inmuebles/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -101,13 +87,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/servicios': {
-      id: '/servicios'
-      path: '/servicios'
-      fullPath: '/servicios'
-      preLoaderRoute: typeof ServiciosImport
-      parentRoute: typeof rootRoute
-    }
     '/dash': {
       id: '/dash'
       path: '/dash'
@@ -142,13 +121,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/dash/'
       preLoaderRoute: typeof DashIndexImport
       parentRoute: typeof DashImport
-    }
-    '/inmuebles/': {
-      id: '/inmuebles/'
-      path: '/inmuebles'
-      fullPath: '/inmuebles'
-      preLoaderRoute: typeof InmueblesIndexImport
-      parentRoute: typeof rootRoute
     }
     '/dash/_authenticated/inmuebles/$id': {
       id: '/dash/_authenticated/inmuebles/$id'
@@ -198,23 +170,19 @@ const DashRouteWithChildren = DashRoute._addFileChildren(DashRouteChildren)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/servicios': typeof ServiciosRoute
   '/dash': typeof DashAuthenticatedRouteWithChildren
   '/dash/login': typeof DashLoginRoute
   '/inmuebles/$id': typeof InmueblesIdRoute
   '/dash/': typeof DashIndexRoute
-  '/inmuebles': typeof InmueblesIndexRoute
   '/dash/inmuebles/$id': typeof DashAuthenticatedInmueblesIdRoute
   '/dash/inmuebles': typeof DashAuthenticatedInmueblesIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/servicios': typeof ServiciosRoute
   '/dash': typeof DashIndexRoute
   '/dash/login': typeof DashLoginRoute
   '/inmuebles/$id': typeof InmueblesIdRoute
-  '/inmuebles': typeof InmueblesIndexRoute
   '/dash/inmuebles/$id': typeof DashAuthenticatedInmueblesIdRoute
   '/dash/inmuebles': typeof DashAuthenticatedInmueblesIndexRoute
 }
@@ -222,13 +190,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/servicios': typeof ServiciosRoute
   '/dash': typeof DashRouteWithChildren
   '/dash/_authenticated': typeof DashAuthenticatedRouteWithChildren
   '/dash/login': typeof DashLoginRoute
   '/inmuebles/$id': typeof InmueblesIdRoute
   '/dash/': typeof DashIndexRoute
-  '/inmuebles/': typeof InmueblesIndexRoute
   '/dash/_authenticated/inmuebles/$id': typeof DashAuthenticatedInmueblesIdRoute
   '/dash/_authenticated/inmuebles/': typeof DashAuthenticatedInmueblesIndexRoute
 }
@@ -237,34 +203,28 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/servicios'
     | '/dash'
     | '/dash/login'
     | '/inmuebles/$id'
     | '/dash/'
-    | '/inmuebles'
     | '/dash/inmuebles/$id'
     | '/dash/inmuebles'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/servicios'
     | '/dash'
     | '/dash/login'
     | '/inmuebles/$id'
-    | '/inmuebles'
     | '/dash/inmuebles/$id'
     | '/dash/inmuebles'
   id:
     | '__root__'
     | '/'
-    | '/servicios'
     | '/dash'
     | '/dash/_authenticated'
     | '/dash/login'
     | '/inmuebles/$id'
     | '/dash/'
-    | '/inmuebles/'
     | '/dash/_authenticated/inmuebles/$id'
     | '/dash/_authenticated/inmuebles/'
   fileRoutesById: FileRoutesById
@@ -272,18 +232,14 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ServiciosRoute: typeof ServiciosRoute
   DashRoute: typeof DashRouteWithChildren
   InmueblesIdRoute: typeof InmueblesIdRoute
-  InmueblesIndexRoute: typeof InmueblesIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ServiciosRoute: ServiciosRoute,
   DashRoute: DashRouteWithChildren,
   InmueblesIdRoute: InmueblesIdRoute,
-  InmueblesIndexRoute: InmueblesIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -297,17 +253,12 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/servicios",
         "/dash",
-        "/inmuebles/$id",
-        "/inmuebles/"
+        "/inmuebles/$id"
       ]
     },
     "/": {
       "filePath": "index.tsx"
-    },
-    "/servicios": {
-      "filePath": "servicios.tsx"
     },
     "/dash": {
       "filePath": "dash",
@@ -335,9 +286,6 @@ export const routeTree = rootRoute
     "/dash/": {
       "filePath": "dash/index.tsx",
       "parent": "/dash"
-    },
-    "/inmuebles/": {
-      "filePath": "inmuebles/index.tsx"
     },
     "/dash/_authenticated/inmuebles/$id": {
       "filePath": "dash/_authenticated/inmuebles/$id.tsx",

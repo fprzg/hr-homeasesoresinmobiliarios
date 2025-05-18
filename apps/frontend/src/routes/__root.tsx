@@ -1,4 +1,4 @@
-import { useLocation, createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router'
+import { useLocation, createRootRouteWithContext, Link, Outlet, useNavigate } from '@tanstack/react-router'
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { type QueryClient } from '@tanstack/react-query';
 
@@ -11,19 +11,23 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function Nav() {
+  //const navigate = useNavigate();
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-primary shadow-md">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <span className="text-blue-600 font-bold text-2xl">HomeAsesores</span>
+          {/* <span className="text-blue-600 font-bold text-2xl">HomeAsesores</span> */}
+          <img src="/logo.jpg" className="w-[100px]" alt="" />
         </div>
         <div className="flex space-x-8">
-          <Link to="/" className="[&.active]:font-bold text-gray-800 hover:text-blue-600 transition">Inicio</Link>
-          <Link to="/inmuebles" className="[&.active]:font-bold text-gray-800 hover:text-blue-600 transition">Inmuebles</Link>
-          <Link to="/servicios" className="[&.active]:font-bold text-gray-800 hover:text-blue-600 transition">Servicios</Link>
-        </div>
-        <div>
-          {/* <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Contactar</button> */}
+          {/* <Link to="/" className="[&.active]:font-bold text-white hover:text-gray-300 transition text-lg">Inicio</Link> */}
+          <a href="/" className="[&.active]:font-bold text-white hover:text-gray-300 transition text-lg">Inicio</a>
+          {/* <a href="/#servicios" className="[&.active]:font-bold text-white hover:text-gray-300 transition text-lg">Servicios</a> */}
+          <a href="/#testimonios" className="[&.active]:font-bold text-white hover:text-gray-300 transition text-lg">Testimonios</a>
+          {/* <Link to="#/servicios" className="[&.active]:font-bold text-white hover:text-gray-300 transition text-lg">Servicios</Link> */}
+          {/* <Link to="/#ta" className="[&.active]:font-bold text-white hover:text-gray-300 transition text-lg">Testimonios</Link> */}
+          {/* <Link to="/inmuebles" className="[&.active]:font-bold text-white hover:text-gray-300 transition text-lg">Inmuebles</Link> */}
+          {/* <Link to="/servicios" className="[&.active]:font-bold text-white hover:text-gray-300 transition text-lg">Servicios</Link> */}
         </div>
       </div>
     </nav>
@@ -32,7 +36,7 @@ function Nav() {
 
 function Footer() {
   return (
-    <footer className="bg-gray-800 text-white py-12">
+    <footer className="bg-primary text-white py-12">
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-3 gap-8">
           <div>
@@ -45,22 +49,22 @@ function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">Enlaces rápidos</h4>
             <ul className="space-y-2">
-              <li><Link to="/" className="text-gray-400 hover:text-white transition">Inicio</Link></li>
-              <li><Link to="/inmuebles" className="text-gray-400 hover:text-white transition">Inmuebles</Link></li>
-              <li><Link to="/servicios" className="text-gray-400 hover:text-white transition">Servicios</Link></li>
+              <li><a href="/" className="text-gray-400 hover:text-white transition">Inicio</a></li>
+              {/* <li><a href="/#servicios" className="text-gray-400 hover:text-white transition">Servicios</a></li> */}
+              <li><a href="/#testimonios" className="text-gray-400 hover:text-white transition">Testimonios</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-lg font-semibold mb-4">Contacto</h4>
             <ul className="space-y-2">
-              <li className="flex items-center">
+              {/* <li className="flex items-center">
                 <MapPin size={16} className="mr-2 text-gray-400" />
                 <span className="text-gray-400">Av. Principal 123, Ciudad</span>
-              </li>
+              </li> */}
               <li className="flex items-center">
                 <Phone size={16} className="mr-2 text-gray-400" />
-                <span className="text-gray-400">+123 456 7890</span>
+                <span className="text-gray-400">+52 951 243 2416</span>
               </li>
               <li className="flex items-center">
                 <Mail size={16} className="mr-2 text-gray-400" />
@@ -72,7 +76,7 @@ function Footer() {
         </div>
 
         <div className="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">&copy; 2025 HomeAsesores. Todos los derechos reservados.</p>
+          <p className="text-gray-400 text-sm">&copy; 2025 Home Asesores Inmobiliarios. Todos los derechos reservados.</p>
           {/*
         <div className="flex space-x-4 mt-4 md:mt-0">
           <a href="#" className="text-gray-400 hover:text-white transition">

@@ -17,6 +17,8 @@ CREATE TABLE
         area_total INTEGER,
         fecha_publicacion DATETIME DEFAULT CURRENT_TIMESTAMP,
         fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+        titulo TEXT NOT NULL,
+        descripcion TEXT NOT NULL,
         portada TEXT NOT NULL,
         contenido TEXT NOT NULL,
         FOREIGN KEY (asentamiento_id) REFERENCES asentamientos (id)

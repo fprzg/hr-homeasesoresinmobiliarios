@@ -1,26 +1,82 @@
 // @/db/models/inmuebles.ts
 import { schemas } from "@/db/schemas";
-import { eq, and, inArray, isNull, isNotNull } from "drizzle-orm";
+import { eq, and, inArray, isNull, isNotNull, gte, lte, like, sql } from "drizzle-orm";
+
+// routes/inmuebles.ts
+import { } from 'drizzle-orm';
 import { db } from "@/app"; // Asumiendo que tienes un archivo de configuración para la conexión a la BD
 import {
     type InmuebleType,
     type CasaType,
     type TerrenoType,
     type AsentamientoType,
-    type BloqueType
+    type BloqueType,
+    type InmueblesBuscadorQueryType
 } from "@shared/zod";
-
 import { nanoid } from "nanoid";
 
-export async function leer(): Promise<InmuebleType[]> {
-    const resultados = await db
+export async function leer(q: InmueblesBuscadorQueryType) {
+    const offset = (q.page - 1) * q.pageSize;
+
+    const conditions = [];
+
+    if (q.tipo) conditions.push(eq(schemas.inmuebles.categoria, q.tipo));
+    if (q.precioMin) conditions.push(gte(schemas.inmuebles.precio, q.precioMin));
+    if (q.precioMax) conditions.push(lte(schemas.inmuebles.precio, q.precioMax));
+    if (q.areaMin) conditions.push(gte(schemas.inmuebles.areaTotal, q.areaMin));
+    if (q.areaMax) conditions.push(lte(schemas.inmuebles.areaTotal, q.areaMax));
+
+    if (q.estado) {
+        conditions.push(
+            eq(schemas.asentamientos.estado, q.estado)
+        );
+    }
+
+    if (q.tipo === 'casa') {
+        if (q.areaConstruidaMin) conditions.push(gte(schemas.casas.areaConstruida, q.areaConstruidaMin));
+        if (q.numBanos) conditions.push(gte(schemas.casas.numBanos, q.numBanos));
+        if (q.numRecamaras) conditions.push(gte(schemas.casas.numRecamaras, q.numRecamaras));
+        if (q.numPisos) conditions.push(gte(schemas.casas.numPisos, q.numPisos));
+        if (q.numCocheras) conditions.push(gte(schemas.casas.numCocheras, q.numCocheras));
+        if (q.piscina) conditions.push(eq(schemas.casas.piscina, q.piscina ? 1 : 0));
+    } else if (q.tipo === 'terreno') {
+        if (q.metrosFrenteMin) conditions.push(gte(schemas.terrenos.metrosFrente, q.metrosFrenteMin));
+        if (q.metrosFondoMin) conditions.push(gte(schemas.terrenos.metrosFondo, q.metrosFondoMin));
+        if (q.tipoPropiedad) conditions.push(eq(schemas.terrenos.tipoPropiedad, q.tipoPropiedad));
+    }
+
+    const whereClause = conditions.length ? and(...conditions) : undefined;
+
+    const inmueblesQuery = db
         .select()
         .from(schemas.inmuebles)
+        .leftJoin(schemas.asentamientos, eq(schemas.inmuebles.asentamientoId, schemas.asentamientos.id))
         .leftJoin(schemas.casas, eq(schemas.inmuebles.id, schemas.casas.id))
         .leftJoin(schemas.terrenos, eq(schemas.inmuebles.id, schemas.terrenos.id))
-        .leftJoin(schemas.asentamientos, eq(schemas.inmuebles.asentamientoId, schemas.asentamientos.id));
+        .where(whereClause)
+        .limit(q.pageSize)
+        .offset(offset)
 
-    return resultados.map(row => transformarRegistroAInmueble(row));
+    const totalCountResult = await db
+        .select({ count: sql<number>`COUNT(*)` })
+        .from(schemas.inmuebles)
+        .leftJoin(schemas.asentamientos, eq(schemas.inmuebles.asentamientoId, schemas.asentamientos.id))
+        .leftJoin(schemas.casas, eq(schemas.inmuebles.id, schemas.casas.id))
+        .leftJoin(schemas.terrenos, eq(schemas.inmuebles.id, schemas.terrenos.id))
+        .where(whereClause)
+
+    const totalCount = totalCountResult[0]?.count ?? 0;
+    const inmuebles = (await inmueblesQuery).map((row) => transformarRegistroAInmueble(row));
+
+    return {
+        inmuebles,
+        pagination: {
+            totalCount,
+            totalPages: Math.ceil(totalCount / q.pageSize),
+            page: q.page,
+            pageSize: q.pageSize,
+        }
+    }
 }
 
 export async function leerPorId(id: string): Promise<InmuebleType | undefined> {
@@ -71,8 +127,6 @@ export async function guardar(data: InmuebleType): Promise<boolean> {
             .where(inArray(schemas.archivos.id, addToCarousel))
             ;
 
-        console.log(addToCarousel);
-
         //
         // guardamos el asentamiento, inmueble base y extensión del inmueble
         //
@@ -104,6 +158,8 @@ export async function guardar(data: InmuebleType): Promise<boolean> {
                 areaTotal: data.areaTotal,
                 fechaPublicacion: data.fechaPublicacion,
                 fechaActualizacion: data.fechaActualizacion,
+                titulo: data.titulo,
+                descripcion: data.descripcion,
                 portada: data.portada,
                 contenido: data.contenido
             });
@@ -273,6 +329,8 @@ export async function actualizar(data: InmuebleType): Promise<boolean> {
                 precio: data.precio,
                 areaTotal: data.areaTotal,
                 fechaActualizacion: data.fechaActualizacion,
+                titulo: data.titulo,
+                descripcion: data.descripcion,
                 portada: data.portada,
                 contenido: data.contenido
             })
@@ -425,6 +483,8 @@ function transformarRegistroAInmueble(row: any): InmuebleType {
         areaTotal: row.inmuebles.areaTotal || 0,
         fechaPublicacion,
         fechaActualizacion,
+        titulo: row.inmuebles.titulo || "",
+        descripcion: row.inmuebles.descripcion || "",
         portada: row.inmuebles.portada || "",
         contenido: Array.isArray(row.inmuebles.contenido) ? row.inmuebles.contenido : []
     };

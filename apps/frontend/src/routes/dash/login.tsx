@@ -50,7 +50,6 @@ function RouteComponent() {
       body: JSON.stringify({ username: username, password: password }),
     });
     if (!res.ok) {
-      console.log(res);
       if (res.status == 401) {
         setErrorMsg("Credenciales inválidas. Intente de nuevo.");
       } else {

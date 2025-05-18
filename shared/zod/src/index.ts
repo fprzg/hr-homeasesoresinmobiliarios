@@ -56,6 +56,8 @@ export const inmuebleBaseSchema = z.object({
   areaTotal: z.number().int().gt(0),
   fechaPublicacion: z.string().datetime(),
   fechaActualizacion: z.string().datetime(),
+  titulo: z.string(),
+  descripcion: z.string(),
   portada: z.string(),
   contenido: z.array(bloqueSchema),
 });
@@ -117,6 +119,8 @@ export function crearInmuebleBase(data?: InmuebleType): InmuebleBaseType {
     areaTotal: data?.areaTotal ?? 0,
     fechaPublicacion: data?.fechaPublicacion ?? "",
     fechaActualizacion: data?.fechaActualizacion ?? "",
+    titulo: data?.titulo ?? "",
+    descripcion: data?.descripcion ?? "",
     portada: data?.portada ?? "",
     contenido: data?.contenido ?? [],
   };
@@ -148,6 +152,33 @@ export function crearTerreno(): TerrenoType {
   };
 }
 
+
+
+export const inmueblesBuscadorQuerySchema = z.object({
+  page: z.coerce.number().int().default(1),
+  pageSize: z.coerce.number().int().default(12),
+  tipo: z.enum(["casa", "terreno"]).optional(),
+
+  precioMin: z.coerce.number().int().gt(0).optional(),
+  precioMax: z.coerce.number().int().optional(),
+  areaMin: z.coerce.number().int().gt(0).optional(),
+  areaMax: z.coerce.number().int().optional(),
+  estado: z.enum(estadosMexico).optional(),
+
+  areaConstruidaMin: z.coerce.number().int().gte(0).optional(),
+  numBanos: z.coerce.number().int().gte(0).optional(),
+  numRecamaras: z.coerce.number().int().gte(0).optional(),
+  numPisos: z.coerce.number().int().gte(0).optional(),
+  numCocheras: z.coerce.number().int().gte(0).optional(),
+  totalAreas: z.coerce.number().int().gte(0).optional(),
+  piscina: z.coerce.boolean().default(false).optional(),
+
+  metrosFrenteMin: z.coerce.number().int().gt(0).optional(),
+  metrosFondoMin: z.coerce.number().int().gt(0).optional(),
+  tipoPropiedad: z.enum(["privada", "ejidal", "comunal"]).optional(),
+});
+
+export type InmueblesBuscadorQueryType = z.infer<typeof inmueblesBuscadorQuerySchema>;
 
 
 

@@ -2,6 +2,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { type InmuebleType } from '@shared/zod';
 import { fechaLegible, precioLegible } from '@/lib/legible';
+import { api } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/inmuebles/$id')({
   component: InmuebleById,
@@ -9,66 +11,139 @@ export const Route = createFileRoute('/inmuebles/$id')({
 
 function InmuebleById() {
   const { id } = Route.useParams();
-  const [inmueble, setInmueble] = useState<InmuebleType | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchInmueble() {
-      try {
-        //const res = await client.api.documentos.$get({ param: { id } });
-        const res = await fetch(`/api/inmuebles/${id}`)
-        const data = await res.json();
-        console.log(data);
-        setInmueble(data.inmueble);
-      } catch (err) {
-        console.error(err);
-        setError("No se pudo cargar el inmueble.");
-      } finally {
-        setLoading(false);
-      }
+  const [inmuebleData, setInmuebleData] = useState<InmuebleType>();
+
+  const getDocumentoById = async () => {
+    const res = await api.inmuebles[":id"].$get({ param: { id } });
+    if (!res.ok) {
+      throw new Error('server error');
     }
+    const data = await res.json();
+    return data;
+  }
 
-    fetchInmueble();
-  }, [id]);
+  const { isPending: loading, error, data } = useQuery({
+    queryKey: ['get-documento-by-id', id],
+    queryFn: getDocumentoById,
+  });
+
+  const inmueble = data?.inmueble ?? {};
 
   if (loading) return <div>Cargando inmueble...</div>;
-  if (error) return <div>{error}</div>;
-  if (!inmueble) return <div>No se encontró el inmueble.</div>;
+  if (error) return <div>{error?.message}</div>;
+  if (!inmueble) return (
+    <>
+      <h3 className="text-xl">El inmueble no existe</h3>
+      <p>No se encontró el inmueble. Puede que la url esté malformada o que el inmueble haya sido dado de baja.</p>
+    </>
+  );
 
   return (
-    <div className='mx-auto w-[80%] md:w-[80%] lg:w-[65%] xl:w-[50%] gap-4'>
-      <div className={`text-center flex flex-col justify-center p-8 gap-4 `}>
-        {/* <h1 className="text-3xl">{inmueble.asentamiento}</h1> */}
-        <p className="text-lg">Publicación: {fechaLegible(inmueble.fechaActualizacion)}</p>
-        <p className="text-lg">Precio: {precioLegible(inmueble.precio)}</p>
+    <>
+      <section className="relative py-20 lg:py-60 text-white">
+        {/* Fondo con imagen */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url(/api/archivos/${inmueble.portada})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        ></div>
 
-        <img src={`/api/archivos/${inmueble.portada}`} alt="" />
+        {/* Overlay con tinte de color primario */}
+        {/* <div className="absolute inset-0 bg-primary opacity-70"></div> */}
+        <div className="absolute inset-0 bg-primary opacity-20"></div>
 
-        <p className="text-lg">Area total: {inmueble.areaTotal}</p>
+        <div className="container mx-auto px-6 relative z-10">
 
-        {inmueble.tipo === "casa" ?
-          (
-            <>
-              <h3 className="text-xl">{inmueble.totalAreas} áreas</h3>
-              <p className="text-lg">Área construida: {inmueble.areaConstruida}</p>
-              <p className="text-lg">{inmueble.numBanos} baños</p>
-              <p className="text-lg">{inmueble.numRecamaras} recámaras</p>
-              <p className="text-lg">{inmueble.numPisos} pisos</p>
-              <p className="text-lg">{inmueble.numCocheras} cocheras</p>
-              {inmueble.piscina && <p className="text-lg">Piscina</p>}
-            </>
-          ) : (
-            <>
-              <p className="text-lg">Metros de frente: {inmueble.metrosFrente}m</p>
-              <p className="text-lg">Metros de fondo: {inmueble.metrosFondo}m</p>
-              <p className="text-lg">Propiedad {inmueble.tipoPropiedad}</p>
-            </>
-          )}
+          <div className="md:w-2/3">
+          
+            <h1 className="text-3xl md:text-5xl font-semibold mb-6">{inmueble.titulo}</h1>
+            <p className="text-3xl mb-8">{precioLegible(inmueble.precio)}</p>
+          </div>
+        </div>
+      </section>
 
+      <div className='mx-auto w-[80%] md:w-[80%] lg:w-[65%] xl:w-[50%] gap-4 py-12'>
+        <div className={`text-center flex flex-col justify-center gap-4 `}>
+
+        <h1 className="text-xl lg:text-2xl">{inmueble.asentamiento.calleColonia}</h1>
+        <h1 className="text-xl lg:text-2xl">{inmueble.asentamiento.codigoPostal}, {inmueble.asentamiento.municipio}</h1>
+        <h1 className="text-xl lg:text-2xl">{inmueble.asentamiento.estado}</h1>
+
+        <table className="min-w-full table-auto border-collapse border border-gray-300">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border px-4 py-2 text-left">Descripcion</th>
+              <th className="border px-4 py-2 text-left">N. de áreas</th>
+            </tr>
+          </thead>
+          <tbody>
+            {inmueble.tipo === "casa" ?
+              <>
+                <tr className="bg-white">
+                  <td className="border px-4 py-2 font-medium">Área construida</td>
+                  <td className="border px-4 py-2">{inmueble.areaConstruida} m²</td>
+                </tr>
+
+                <tr className="bg-white">
+                  <td className="border px-4 py-2 font-medium">N. de áreas</td>
+                  <td className="border px-4 py-2">{inmueble.totalAreas}</td>
+                </tr>
+
+                <tr className="bg-white">
+                  <td className="border px-4 py-2 font-medium">N. de pisos</td>
+                  <td className="border px-4 py-2">{inmueble.numPisos}</td>
+                </tr>
+
+                <tr className="bg-white">
+                  <td className="border px-4 py-2 font-medium">N. de recámaras</td>
+                  <td className="border px-4 py-2">{inmueble.numRecamaras}</td>
+                </tr>
+
+
+                <tr className="bg-white">
+                  <td className="border px-4 py-2 font-medium">N. de baños</td>
+                  <td className="border px-4 py-2">{inmueble.numBanos}</td>
+                </tr>
+
+                {inmueble.numCocheras > 1 ?
+                  <tr className="bg-white">
+                    <td className="border px-4 py-2 font-medium">N. de cocheras</td>
+                    <td className="border px-4 py-2">{inmueble.numCocheras}</td>
+                  </tr>
+                  :
+                  <tr className="bg-white">
+                    <td className="border px-4 py-2 font-medium">Cochera</td>
+                    <td className="border px-4 py-2">{inmueble.numCocheras === 1 ? "Si" : "No"}</td>
+                  </tr>
+                }
+              </>
+              :
+              <>
+                <tr className="bg-white">
+                  <td className="border px-4 py-2 font-medium">Metros de frente</td>
+                  <td className="border px-4 py-2">{inmueble.metrosFrente} m²</td>
+                </tr>
+
+                <tr className="bg-white">
+                  <td className="border px-4 py-2 font-medium">Metros de fondo</td>
+                  <td className="border px-4 py-2">{inmueble.metrosFondo} m²</td>
+                </tr>
+
+                <tr className="bg-white">
+                  <td className="border px-4 py-2 font-medium">Tipo de propiedad</td>
+                  <td className="border px-4 py-2">{inmueble.tipoPropiedad}</td>
+                </tr>
+              </>
+            }
+          </tbody>
+        </table>
 
         <div className="">
-          {inmueble.contenido.map((bloque) => (
+          {inmueble.contenido.map((bloque: any) => (
             <div className="grid grid-rows-1 justify-center p-4 gap-4">
               <img src={`/api/archivos/${bloque.imagenId}`} alt="" />
               <p className="text-xl">{bloque.descripcion}</p>
@@ -76,7 +151,9 @@ function InmuebleById() {
           ))}
         </div>
 
+        <p className="text-md">Publicado {fechaLegible(inmueble.fechaActualizacion)}</p>
       </div>
-    </div>
+    </div >
+    </>
   );
 }

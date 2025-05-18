@@ -96,8 +96,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
     const handleBloqueChange = (e: any) => {
         const { name, value, type, checked } = e.target;
         if (type === "checkbox") {
-            console.log(value);
-            setNuevoBloque({...nuevoBloque, [name]: checked} );
+            setNuevoBloque({ ...nuevoBloque, [name]: checked });
         } else {
             setNuevoBloque({ ...nuevoBloque, [name]: value });
         }
@@ -156,7 +155,6 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
     };
 
     const handleAddBloque = () => {
-        console.log(nuevoBloque);
         if (!nuevoBloque.imagenId || !nuevoBloque.descripcion) {
             setError("La imagen y descripción son obligatorias");
             return;
@@ -232,12 +230,17 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                     fechaActualizacion: currentDate,
                 };
 
-                const response = await fetch('/api/inmuebles', {
+                const res = await fetch('/api/inmuebles', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(newInmueble)
                 });
-                const data = await response.json();
+
+                if (!res.ok) {
+                    throw new Error("error al enviar al registar el inmueble. Intente de nuevo o contacte al administrador.");
+                }
+
+                const data = await res.json();
 
                 if (data.ok) {
                     setInmuebles([...inmuebles, inmueble]);
@@ -388,7 +391,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="number"
                             name="precio"
-                            value={inmueble.precio || ""}
+                            value={inmueble.precio || 0}
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                             min="1"
@@ -400,7 +403,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="number"
                             name="areaTotal"
-                            value={inmueble.areaTotal || ""}
+                            value={inmueble.areaTotal || 0}
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                             min="1"
@@ -472,135 +475,164 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                     </div>
                 </div>
 
+                {/* Info de la publicación*/}
+                <div>
+                    <h2 className="text-lg font-semibold">Información de la publicación</h2>
+                    <div className="">
+                        <label htmlFor="" className='block text-sm font-medium mb-1'>Título*</label>
+                        <input
+                            type="text"
+                            name="titulo"
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded-md"
+                        />
+                    </div>
+                    <div className="">
+                        <label htmlFor="" className="block text-sm font-medium mb-1">Descripción*</label>
+                        <input
+                            type="text"
+                            name="descripcion"
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded-md"
+                        />
+                    </div>
+                </div>
+
                 {/* Campos específicos para Casa */}
                 {inmueble.tipo === "casa" && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Área construida (m²)</label>
-                            <input
-                                type="number"
-                                name="areaConstruida"
-                                value={inmueble.areaConstruida || ""}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded-md"
-                                min="0"
-                            />
-                        </div>
+                    <>
+                        <h2 className="text-lg font-semibold">Información sobre la casa</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Área construida (m²)</label>
+                                <input
+                                    type="number"
+                                    name="areaConstruida"
+                                    value={inmueble.areaConstruida || 0}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded-md"
+                                    min="0"
+                                />
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Número de baños</label>
-                            <input
-                                type="number"
-                                name="numBanos"
-                                value={inmueble.numBanos || ""}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded-md"
-                                min="0"
-                            />
-                        </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Número de baños</label>
+                                <input
+                                    type="number"
+                                    name="numBanos"
+                                    value={inmueble.numBanos || 0}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded-md"
+                                    min="0"
+                                />
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Número de recámaras</label>
-                            <input
-                                type="number"
-                                name="numRecamaras"
-                                value={inmueble.numRecamaras || ""}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded-md"
-                                min="0"
-                            />
-                        </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Número de recámaras</label>
+                                <input
+                                    type="number"
+                                    name="numRecamaras"
+                                    value={inmueble.numRecamaras || 0}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded-md"
+                                    min="0"
+                                />
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Número de pisos</label>
-                            <input
-                                type="number"
-                                name="numPisos"
-                                value={inmueble.numPisos || ""}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded-md"
-                                min="0"
-                            />
-                        </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Número de pisos</label>
+                                <input
+                                    type="number"
+                                    name="numPisos"
+                                    value={inmueble.numPisos || 0}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded-md"
+                                    min="0"
+                                />
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Número de cocheras</label>
-                            <input
-                                type="number"
-                                name="numCocheras"
-                                value={inmueble.numCocheras || ""}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded-md"
-                                min="0"
-                            />
-                        </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Número de cocheras</label>
+                                <input
+                                    type="number"
+                                    name="numCocheras"
+                                    value={inmueble.numCocheras || 0}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded-md"
+                                    min="0"
+                                />
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Número de áreas</label>
-                            <input
-                                type="number"
-                                name="totalAreas"
-                                value={inmueble.totalAreas || ""}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded-md"
-                                min="0"
-                            />
-                        </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Número de áreas</label>
+                                <input
+                                    type="number"
+                                    name="totalAreas"
+                                    value={inmueble.totalAreas || 0}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded-md"
+                                    min="0"
+                                />
+                            </div>
 
-                        <div className="flex items-center">
-                            <input
-                                type="checkbox"
-                                name="piscina"
-                                checked={inmueble.piscina}
-                                onChange={handleChange}
-                                className="mr-2"
-                            />
-                            <label className="text-sm font-medium">Piscina</label>
+                            <div className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    name="piscina"
+                                    checked={inmueble.piscina}
+                                    onChange={handleChange}
+                                    className="mr-2"
+                                />
+                                <label className="text-sm font-medium">Piscina</label>
+                            </div>
                         </div>
-                    </div>
+                    </>
                 )}
 
                 {/* Campos específicos para Terreno */}
                 {inmueble.tipo === "terreno" && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Metros de frente*</label>
-                            <input
-                                type="number"
-                                name="metrosFrente"
-                                value={inmueble.metrosFrente || ""}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded-md"
-                                min="1"
-                            />
-                        </div>
+                    <>
+                        <h2 className="text-lg font-semibold">Información sobre el terreno</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Metros de frente*</label>
+                                <input
+                                    type="number"
+                                    name="metrosFrente"
+                                    value={inmueble.metrosFrente || 0}
+                                    onChange={(e) => console.log(e)}
+                                    className="w-full p-2 border rounded-md"
+                                    min={1}
+                                />
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Metros de fondo*</label>
-                            <input
-                                type="number"
-                                name="metrosFondo"
-                                value={inmueble.metrosFondo || ""}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded-md"
-                                min="1"
-                            />
-                        </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Metros de fondo*</label>
+                                <input
+                                    type="number"
+                                    name="metrosFondo"
+                                    value={inmueble.metrosFondo || 0}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded-md"
+                                    min="1"
+                                />
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Tipo de propiedad*</label>
-                            <select
-                                name="tipoPropiedad"
-                                value={inmueble.tipoPropiedad}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded-md"
-                            >
-                                <option value="privada">Privada</option>
-                                <option value="comunal">Comunal</option>
-                                <option value="ejidal">Ejidal</option>
-                            </select>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Tipo de propiedad*</label>
+                                <select
+                                    name="tipoPropiedad"
+                                    value={inmueble.tipoPropiedad}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded-md"
+                                >
+                                    <option value="privada">Privada</option>
+                                    <option value="comunal">Comunal</option>
+                                    <option value="ejidal">Ejidal</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
+                    </>
                 )}
 
                 {/* Imagen de portada */}

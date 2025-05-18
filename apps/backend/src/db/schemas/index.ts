@@ -27,6 +27,8 @@ const inmuebles = sqliteTable('inmuebles', {
   areaTotal: integer('area_total'),
   fechaPublicacion: text('fecha_publicacion').default(sql`CURRENT_TIMESTAMP`),
   fechaActualizacion: text('fecha_actualizacion').default(sql`CURRENT_TIMESTAMP`),
+  titulo: text('titulo').notNull(),
+  descripcion: text('descripcion').notNull(),
   portada: text('portada').notNull(),
   contenido: text({mode: 'json'}).$type<BloqueType[]>(),
 });

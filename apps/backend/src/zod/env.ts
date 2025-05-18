@@ -6,6 +6,7 @@ export const envSchema = z.object({
     API_KEY: z.string(),
     JWT_SECRET: z.string(),
 
+    ASSETS_DIR: z.string(),
     UPLOADS_DIR: z.string(),
     DB_DIR: z.string(),
     FRONT_STATIC: z.string(),

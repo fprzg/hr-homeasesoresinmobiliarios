@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { type InmuebleType, inmuebleSchema } from '@shared/zod';
+import { type InmuebleType, inmuebleSchema, inmueblesBuscadorQuerySchema } from '@shared/zod';
 import { InmueblesService } from '@/services/inmueblesService';
+import { zValidator } from '@hono/zod-validator';
 
 export const inmuebles = new Hono()
   .post('/', async (c) => {
@@ -18,9 +19,11 @@ export const inmuebles = new Hono()
 
     return c.json({ ok: true });
   })
-  .get('/', async (c) => {
-    const inmuebles = await InmueblesService.leer();
-    return c.json({inmuebles})
+  .get('/', zValidator('query', inmueblesBuscadorQuerySchema), async (c) => {
+    const q = c.req.valid('query');
+
+    const data = await InmueblesService.leer(q);
+    return c.json(data);
   })
   .get('/:id', async (c) => {
     const id = c.req.param('id');

@@ -22,6 +22,10 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:3000",
         changeOrigin: true,
+      },
+      "/assets": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
       }
     }
   },
