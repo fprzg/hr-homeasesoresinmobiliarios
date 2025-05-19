@@ -1,9 +1,9 @@
 import { useNavigate, Link } from '@tanstack/react-router';
-import { InmueblesBuscadorQueryType, type InmuebleType } from '@shared/zod';
+import { InmueblesBuscadorQueryType, type InmuebleType, estadosMexico } from '@shared/zod';
 import { useState, useEffect } from 'react';
 import { precioLegible, fechaLegible } from '@/lib/legible';
-import { api } from '@/lib/api';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { UseQueryResult } from '@tanstack/react-query';
+import { Divide, Smartphone } from 'lucide-react';
 
 const InmueblePreview = ({ data: inmueble }: { data: InmuebleType }) => {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const InmueblePreview = ({ data: inmueble }: { data: InmuebleType }) => {
         </div>
 
         <p className="text-gray-700 mb-2">
-          , {inmueble.asentamiento.estado}
+          {inmueble.asentamiento.municipio}, {inmueble.asentamiento.estado}
         </p>
 
         {inmueble.tipo === "casa" && (
@@ -88,13 +88,19 @@ export function InmueblesBuscador({
   fetchInmuebles: (filtros: InmueblesBuscadorQueryType) => UseQueryResult,
   params: InmueblesBuscadorQueryType,
 }) {
+  const navigate = useNavigate();
+
   const [filtros, setFiltros] = useState<InmueblesBuscadorQueryType>(params);
+  useEffect(() => {
+    setFiltros(params);
+  }, [params])
 
   const { isPending, error, data } = fetchInmuebles(filtros);
   const [inmuebles, setInmuebles] = useState<InmuebleType[]>(data?.inmuebles ?? []);
 
   useEffect(() => {
     if (!isPending && data?.inmuebles) {
+      console.log(data.pagination);
       setInmuebles(data?.inmuebles);
     }
   }, [isPending, data]);
@@ -117,8 +123,6 @@ export function InmueblesBuscador({
       "metrosFondo",
     ];
 
-    console.log(name, value)
-
     if (valoresNumericos.includes(name)) {
       const numValue = value === "" ? 0 : parseInt(value, 10);
       setFiltros({ ...filtros, [name]: numValue });
@@ -134,6 +138,96 @@ export function InmueblesBuscador({
       page: 1,
       pageSize: 12,
     });
+  };
+
+  const paginationData = {
+    totalCount: data?.pagination.totalCount,
+    totalPages: data?.pagination.totalPages,
+    page: data?.pagination.page,
+    pageSize: data?.pagination.pagesSize,
+  };
+
+  const Pagination = ({
+    totalCount,
+    totalPages,
+    page,
+    pageSize,
+    className,
+  }: {
+    totalCount: number,
+    totalPages: number,
+    page: number,
+    pageSize: number,
+    className?: string,
+  }) => {
+    const visiblePages = 6;
+    const startPage = Math.max(1, Math.min(page - Math.floor(visiblePages / 2), totalPages - visiblePages + 1));
+    const endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+    const pages = [];
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    return (
+      <div className={`flex items-center space-x-2 text-sm ${className}`}>
+        <Link
+          reloadDocument
+          disabled={page === 1}
+          to="/"
+          params={{ params }}
+          search={(prev) => {
+            return {
+              ...prev,
+              page: Math.max(1, page - 1),
+              pageSize: prev?.pageSize ?? 12,
+            }
+          }}
+          title="página anterior"
+          className="px-2 py-1 border rounded hover:bg-gray-100 disabled:opacity-30"
+        >
+          &lt;
+        </Link>
+
+        {pages.map((p) => (
+          <Link
+            key={p}
+            reloadDocument
+            disabled={page === p}
+            to="/"
+            params={{ params }}
+            search={(prev) => {
+              return {
+                ...prev,
+                page: p,
+                pageSize: prev?.pageSize ?? 12,
+              }
+            }}
+            className={`px-2 py-1 rounded border ${p === page ? "bg-primary text-white font-bold" : "hover:bg-gray-100"}`}
+          >
+            {p}
+          </Link>
+        ))}
+
+        <Link
+          reloadDocument
+          disabled={page === totalPages}
+          to="/"
+          params={{ params }}
+          search={(prev) => {
+            return {
+              ...prev,
+              page: Math.min(totalPages, page + 1),
+              pageSize: prev?.pageSize ?? 12,
+            }
+          }}
+          title="página siguiente"
+          className="px-2 py-1 border rounded hover:bg-gray-100 disabled:opacity-30"
+        >
+          &gt;
+        </Link>
+      </div>
+    );
   };
 
   if (isPending) {
@@ -158,7 +252,6 @@ export function InmueblesBuscador({
 
       <div className="bg-white shadow-md rounded-lg p-6 mb-8">
         <h2 className="text-xl font-semibold mb-4">Filtros</h2>
-        <h2 className="text-xl text-red-600">{params.tipo}</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           {/* Filtro por tipo */}
@@ -186,11 +279,9 @@ export function InmueblesBuscador({
               className="w-full p-2 border border-gray-300 rounded"
             >
               <option value="">Todos</option>
-              {/**
-              {estados.map(estado => (
+              {estadosMexico.map(estado => (
                 <option key={estado} value={estado}>{estado}</option>
-              ))} 
-               */}
+              ))}
             </select>
           </div>
 
@@ -390,7 +481,7 @@ export function InmueblesBuscador({
                 return {
                   ...filtros,
                   page: 1,
-                  pageSize: 12,
+                  pageSize: prev?.pageSize ?? 12,
                 }
               }
               }
@@ -410,17 +501,15 @@ export function InmueblesBuscador({
             <p className="text-gray-500">No se encontraron inmuebles con los filtros seleccionados</p>
           </div>
         ) : (
-          <>
+          <div className='grid gap-4'>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {inmuebles.map((inmueble, index) => (
                 <InmueblePreview key={index} data={inmueble} />
               ))}
             </div>
 
-            <div className="">
-              Página {1} de {23}
-            </div>
-          </>
+            <Pagination {...paginationData} className='mx-auto'/>
+          </div>
         )}
       </div>
     </div>

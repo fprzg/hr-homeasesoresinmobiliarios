@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { Star } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { InmueblesBuscador } from '@/components/inmueble-buscador';
