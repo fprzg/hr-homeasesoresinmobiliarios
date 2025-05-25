@@ -31,11 +31,6 @@ export function getApp() {
     .route("/archivos", routes.archivos)
     .route("/auth", routes.auth)
 
-  if (envVariables.ENV !== "dev" && envVariables.ENV !== "development") {
-    app.get("*", serveStatic({ root: envVariables.FRONT_STATIC }))
-    app.get("*", serveStatic({ path: path.join(envVariables.FRONT_STATIC, "index.html") }))
-  }
-
   return [app, apiRoutes];
 }
 

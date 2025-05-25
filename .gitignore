@@ -5,3 +5,6 @@ Casas/
 
 .env
 .env.dev
+
+# Production
+prod/

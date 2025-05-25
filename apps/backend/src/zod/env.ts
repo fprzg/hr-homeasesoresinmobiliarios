@@ -8,7 +8,6 @@ export const envSchema = z.object({
 
     UPLOADS_DIR: z.string(),
     DB_DIR: z.string(),
-    FRONT_STATIC: z.string(),
 
     DEV_DB_USERNAME: z.string().optional(),
     DEV_DB_PASSWORD: z.string().optional(),
