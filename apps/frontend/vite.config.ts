@@ -30,6 +30,6 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: '../backend/prod/front-static'
+    outDir: '../../prod/front-static'
   }
 })
