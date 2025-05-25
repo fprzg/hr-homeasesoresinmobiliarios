@@ -4,6 +4,7 @@ import { type InmuebleType } from '@shared/zod';
 import { fechaLegible, precioLegible } from '@/lib/legible';
 import { api } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
+import { ArchivosApi } from '@/api';
 
 export const Route = createFileRoute('/inmuebles/$id')({
   component: InmuebleById,
@@ -46,7 +47,7 @@ function InmuebleById() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `url(/api/archivos/${inmueble.portada})`,
+            backgroundImage: `url(${ArchivosApi.getImagenUrl(inmueble.portada)})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
@@ -146,9 +147,9 @@ function InmuebleById() {
             </tbody>
           </table>
 
-          {inmueble.contenido.map((bloque: any) => (
-            <div className="grid grid-rows-1 justify-center pb-4">
-              <img src={`/api/archivos/${bloque.imagenId}`} alt="" />
+          {inmueble.contenido.map((bloque: any, index: number) => (
+            <div key={index} className="grid grid-rows-1 justify-center pb-4">
+              <img src={ArchivosApi.getImagenUrl(bloque.imagenId)} alt="" />
               <p className="text-xl">{bloque.descripcion}</p>
             </div>
           ))}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { precioLegible, fechaLegible } from '@/lib/legible';
 import { UseQueryResult } from '@tanstack/react-query';
 import { Divide, Smartphone } from 'lucide-react';
+import { ArchivosApi } from '@/api';
 
 const InmueblePreview = ({ data: inmueble }: { data: InmuebleType }) => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const InmueblePreview = ({ data: inmueble }: { data: InmuebleType }) => {
     <div key={inmueble.id} className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="h-48 bg-gray-200 relative">
         <img
-          src={`/api/archivos/${inmueble.portada}`}
+          src={ArchivosApi.getImagenUrl(inmueble.portada)}
           alt={`Inmueble en ${inmueble.asentamiento}`}
           className="w-full h-full object-cover"
         />
@@ -100,7 +101,6 @@ export function InmueblesBuscador({
 
   useEffect(() => {
     if (!isPending && data?.inmuebles) {
-      console.log(data.pagination);
       setInmuebles(data?.inmuebles);
     }
   }, [isPending, data]);

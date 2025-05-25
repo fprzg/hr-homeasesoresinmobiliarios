@@ -60,6 +60,4 @@ run/api:
 ## run/api: Runs the api
 run/frontend:
 	@echo Starting api...
-	@cd ./apps/frontend
-	@bun run dev
-	@cd -
+	@cd apps/frontend; bun run dev

@@ -1,8 +1,6 @@
 import { z } from "zod";
 
 export const envSchema = z.object({
-    ENV: z.string(),
-
     API_KEY: z.string(),
     JWT_SECRET: z.string(),
 
@@ -11,6 +9,13 @@ export const envSchema = z.object({
 
     DEV_DB_USERNAME: z.string().optional(),
     DEV_DB_PASSWORD: z.string().optional(),
+
+    CLOUDFLARE_R2_BUCKET: z.string(),
+    CLOUDFLARE_R2_ACCESS_KEY: z.string(),
+    CLOUDFLARE_R2_SECRET_KEY: z.string(),
+    CLOUDFLARE_R2_BUCKET_ENDPOINT: z.string(),
+
+    CLOUDFLARE_R2_BUCKET_PUBLIC_URL: z.string(),
 })
 
 export type AppEnvVariables = z.infer<typeof envSchema>

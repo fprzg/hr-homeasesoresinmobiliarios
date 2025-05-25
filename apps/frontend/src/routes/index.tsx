@@ -11,7 +11,6 @@ export const Route = createFileRoute('/')({
   validateSearch: (search) => inmueblesBuscadorQuerySchema.parse(search),
 })
 
-
 function Index() {
   const buscadorParams = Route.useSearch();
 

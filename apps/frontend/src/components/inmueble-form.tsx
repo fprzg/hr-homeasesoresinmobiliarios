@@ -3,6 +3,7 @@ import { crearCasa, crearInmuebleBase, crearTerreno, estadosMexico, InmuebleBase
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { ArchivosApi } from '@/api';
 
 async function getDocumentos() {
     const res = await api.inmuebles.$get();
@@ -109,20 +110,14 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
         setPortadaFile(file);
 
         try {
-            setLoading(true);
-            const formData = new FormData();
-            formData.append('file', file);
-            const response = await fetch('/api/archivos', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
+           setLoading(true);
+           const [imgRes] = await ArchivosApi.subir([file]);
+           setInmueble({
+            ...inmueble,
+            portada: imgRes.id,
+           });
 
-            setInmueble({
-                ...inmueble,
-                portada: data.imagenes[0].id as string,
-            });
-            setLoading(false);
+           setLoading(false);
         } catch (err) {
             setError("Error al subir la imagen de portada");
             setLoading(false);
@@ -135,17 +130,11 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
 
         try {
             setLoading(true);
-            const formData = new FormData();
-            formData.append('file', file);
-            const response = await fetch('/api/archivos', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
+            const [imgRes] = await ArchivosApi.subir([file]);
 
             setNuevoBloque({
                 ...nuevoBloque,
-                imagenId: data.imagenes[0].id as string,
+                imagenId: imgRes.id,
             });
             setLoading(false);
         } catch (err) {

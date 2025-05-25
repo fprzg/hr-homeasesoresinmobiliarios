@@ -62,6 +62,7 @@ export const archivos = new Hono()
             })
         }
     })
+    /*
     .get('/:id', async (c) => {
         const id = c.req.param('id');
         const doc = await db
@@ -87,3 +88,4 @@ export const archivos = new Hono()
             }
         })
     })
+        */

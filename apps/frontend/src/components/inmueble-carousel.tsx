@@ -1,5 +1,6 @@
 import { UseQueryResult } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { ArchivosApi } from "@/api";
 
 type ImagenCarrusel = { imagen: string, target: string };
 
@@ -40,7 +41,7 @@ export function HexagonGrid({
                             // className="absolute inset-0 bg-cover bg-center cursor-pointer w-[160px] h-[160px]"
                             className="absolute inset-0 bg-cover bg-center cursor-pointer w-[160px] h-[160px]"
                             style={{
-                                backgroundImage: `url("/api/archivos/${item.imagen}")`,
+                                backgroundImage: `url(${ArchivosApi.getImagenUrl(item.imagen)})`,
                                 clipPath: 'polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%)',
                             }}
                         // onClick={() => handleHexagonClick(item.target)}

@@ -1,11 +1,10 @@
-import { serveStatic } from "hono/bun";
 import { routes } from "./routes";
 import { logger } from "./middleware/logger";
 import { createDB } from "./db";
 import { createFactory } from "hono/factory";
 import { type AppEnvVariables, envSchema } from "./zod/env";
 import { ArchivosServiceFactory } from "./services/archivosService";
-import path from "node:path";
+import { S3Client } from "bun";
 
 export type Variables = Record<string, unknown> & AppEnvVariables;
 export const envVariables = envSchema.parse(process.env);
@@ -41,3 +40,10 @@ export const ArchivosService = ArchivosServiceFactory(envVariables);
 
 export default app;
 export type ApiRoutes = typeof apiRoutes;
+
+export const s3Storage = new S3Client({
+  accessKeyId: envVariables.CLOUDFLARE_R2_ACCESS_KEY,
+  secretAccessKey: envVariables.CLOUDFLARE_R2_SECRET_KEY,
+  bucket: envVariables.CLOUDFLARE_R2_BUCKET,
+  endpoint: envVariables.CLOUDFLARE_R2_BUCKET_ENDPOINT,
+});

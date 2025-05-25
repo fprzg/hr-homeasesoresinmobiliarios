@@ -79,30 +79,28 @@ export interface ArchivoResponse {
 }
 
 export const ArchivosApi = {
-  // Subir imágenes
   subir: async (files: File[]): Promise<ArchivoResponse[]> => {
     const formData = new FormData();
 
-    // Añadir cada archivo al FormData
     files.forEach(file => {
       formData.append('imagenes', file);
     });
 
-    const response = await fetch('/api/archivos', {
+    const res = await fetch('/api/archivos', {
       method: 'POST',
       body: formData,
     });
 
-    if (!response.ok) {
+    if (!res.ok) {
       throw new Error('Error al subir archivos');
     }
 
-    const data = await response.json();
+    const data = await res.json();
     return data.imagenes;
   },
 
-  // Obtener URL de imagen
   getImagenUrl: (id: string): string => {
-    return `/api/archivos/${id}`;
+    const baseUrl = import.meta.env.VITE_R2_BUCKET_PUBLIC_URL;
+    return `${baseUrl}/${id}`;
   },
 };
