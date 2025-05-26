@@ -26,7 +26,7 @@ export const archivos = new Hono()
                 await db.insert(schemas.archivos).values({ ...image, addToCarousel: true });
                 results.push({ id: image.id, originalName: image.filename });
             } catch (unkErr) {
-                logger.error("error al ", normalizeError(unkErr))
+                logger.error("[POST router.archivos]", normalizeError(unkErr))
             }
         }
 
@@ -59,7 +59,7 @@ export const archivos = new Hono()
                 imagenes,
             }, 200);
         } catch (unkErr) {
-            logger.error("error al obtener archivos para el carrusel", normalizeError(unkErr))
+            logger.error("[GET router.carrusel] error al obtener archivos para el carrusel", normalizeError(unkErr))
             return c.json({
                 ok: false,
                 message: "Error al obtener los archivos del carrusel",

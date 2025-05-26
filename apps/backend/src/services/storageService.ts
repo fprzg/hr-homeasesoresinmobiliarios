@@ -94,7 +94,7 @@ export class StorageServiceS3 implements StorageService {
       const s3File: S3File = s3Storage.file(id)
       await s3File.write(await file.arrayBuffer(), { type: file.type });
 
-      logger.info("se guardó el archivo", { "id": id });
+      logger.info("[storageServiceS3.guardar] se guardó el archivo", { "id": id });
 
       return {
         id,
@@ -103,7 +103,7 @@ export class StorageServiceS3 implements StorageService {
         size: file.size,
       };
     } catch (unkErr) {
-      logger.error("error al guardar archivo", normalizeError(unkErr), { "id": id, "filename": file.name, "mimetype": file.type, "size": file.size });
+      logger.error("[storageServiceS3.guardar] error al guardar archivo", normalizeError(unkErr), { "id": id, "filename": file.name, "mimetype": file.type, "size": file.size });
       return undefined;
     }
   }
@@ -111,7 +111,7 @@ export class StorageServiceS3 implements StorageService {
   private async purgar(): Promise<void> {
     try {
 
-      logger.info("comenzando purga de storageService...");
+      logger.info("[storageServiceS3.purgar] comenzando purga de storageService...");
       const archivos = await db
         .select()
         .from(schemas.pendienteEliminar)
@@ -125,7 +125,7 @@ export class StorageServiceS3 implements StorageService {
           .where(eq(schemas.pendienteEliminar.id, archivo.id))
           ;
 
-        logger.info("archivo eliminado", { "id": archivo.id });
+        logger.info("[storageServiceS3.purgar] archivo eliminado", { "id": archivo.id });
       })
 
       await Promise.all(rutinasEliminacion);
@@ -147,13 +147,13 @@ export class StorageServiceS3 implements StorageService {
           .where(eq(schemas.archivos.id, archivo.id))
           ;
 
-        logger.info("archivo eliminado", { "id": archivo.id });
+        logger.info("[storageServiceS3.purgar] archivo eliminado", { "id": archivo.id });
       })
 
-      logger.info("purga de storageService finalizada");
+      logger.info("[storageServiceS3.purgar] purga de storageService finalizada");
 
     } catch (unkErr) {
-      logger.error("error al ejecutar rutinaS3Purge", normalizeError(unkErr));
+      logger.error("[storageServiceS3.purgar] error al ejecutar rutinaS3Purge", normalizeError(unkErr));
     }
   }
 
@@ -166,11 +166,11 @@ export class StorageServiceS3 implements StorageService {
         })
         ;
 
-      logger.info("se programó la eliminación del archivo", { "id": id });
+      logger.info("[storageServiceS3.programarEliminacion] se programó la eliminación del archivo", { "id": id });
 
       return true;
     } catch (unkErr) {
-      logger.error("error al programar eliminación del archivo", normalizeError(unkErr), { id });
+      logger.error("[storageServiceS3.programarEliminacion] error al programar eliminación del archivo", normalizeError(unkErr), { id });
       return false;
     }
   }
