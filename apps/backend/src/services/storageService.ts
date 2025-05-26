@@ -8,6 +8,7 @@ import { envVariables } from '@/lib/env';
 import { schemas } from '@/db/schemas';
 import { logger } from '@/lib/logger';
 import { normalizeError } from '@shared/types';
+import { sql, isNull, eq } from 'drizzle-orm';
 
 export interface StorageService {
   //leer(id: string): File;
@@ -61,6 +62,32 @@ export class ArchivosServiceLocalFS implements ArchivosService {
   */
 
 export class StorageServiceS3 implements StorageService {
+  constructor({ rutinaPurga = false }: { rutinaPurga?: boolean } = {}) {
+    const environment = "dev";
+    const intervaloMs = environment === "dev" ? 120_000 : 7 * 24 * 60 * 60 * 1000; // 1 min en dev, 7 días en prod
+
+    if (rutinaPurga) {
+      setInterval(async () => {
+        await this.purgar();
+      }, intervaloMs);
+    }
+  }
+
+  /*
+  const leer = async (id: string) => {
+    const filePath = join(uploadsDir, id);
+    if (!existsSync(filePath)) return null;
+
+    const file = Bun.file(filePath)
+    const buffer = await file.arrayBuffer()
+
+    return {
+      buffer,
+      size: file.size,
+    };
+  }
+    */
+
   async guardar(file: File) {
     const id = `file_${nanoid()}`;
     try {
@@ -81,32 +108,53 @@ export class StorageServiceS3 implements StorageService {
     }
   }
 
-  /*
-  const leer = async (id: string) => {
-    const filePath = join(uploadsDir, id);
-    if (!existsSync(filePath)) return null;
-
-    const file = Bun.file(filePath)
-    const buffer = await file.arrayBuffer()
-
-    return {
-      buffer,
-      size: file.size,
-    };
-  }
-    */
-
-  private async eliminar(id: string): Promise<boolean> {
+  private async purgar(): Promise<void> {
     try {
-      const s3File: S3File = s3Storage.file(id);
-      await s3File.delete();
-      return true;
-    } catch (e) {
-      if (e instanceof Error) {
-        console.log(`error al eliminar archivo ${id}: ${e.message}`);
-      }
+
+      logger.info("comenzando purga de storageService...");
+      const archivos = await db
+        .select()
+        .from(schemas.pendienteEliminar)
+        ;
+
+      const rutinasEliminacion = archivos.map(async (archivo) => {
+        const s3File: S3File = s3Storage.file(archivo.id);
+        await s3File.delete();
+        await db
+          .delete(schemas.pendienteEliminar)
+          .where(eq(schemas.pendienteEliminar.id, archivo.id))
+          ;
+
+        logger.info("archivo eliminado", { "id": archivo.id });
+      })
+
+      await Promise.all(rutinasEliminacion);
+
+      const totalMilliseconds = 10 * 1000;
+      const cutoffDate = new Date();
+      cutoffDate.setTime(cutoffDate.getTime() - totalMilliseconds);
+
+      const archivosHuerfanos = await db
+        .select({ id: schemas.archivos.id })
+        .from(schemas.archivos)
+        .where(sql`${schemas.archivos.createdAt} < ${cutoffDate.toISOString()} AND ${isNull(schemas.archivos.inmuebleId)}`)
+
+      const eliminacionHuerfanos = archivosHuerfanos.map(async (archivo) => {
+        const s3File: S3File = s3Storage.file(archivo.id);
+        await s3File.delete();
+        await db
+          .delete(schemas.archivos)
+          .where(eq(schemas.archivos.id, archivo.id))
+          ;
+
+        logger.info("archivo eliminado", { "id": archivo.id });
+      })
+
+      logger.info("purga de storageService finalizada");
+
+    } catch (unkErr) {
+      logger.error("error al ejecutar rutinaS3Purge", normalizeError(unkErr));
     }
-    return false;
   }
 
   async programarEliminacion(id: string): Promise<boolean> {
@@ -128,4 +176,4 @@ export class StorageServiceS3 implements StorageService {
   }
 }
 
-export const storageService: StorageService = new StorageServiceS3();
+export const storageService: StorageService = new StorageServiceS3({ rutinaPurga: true });
