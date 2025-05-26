@@ -18,7 +18,7 @@ function InmuebleById() {
   const getDocumentoById = async () => {
     const res = await api.inmuebles[":id"].$get({ param: { id } });
     if (!res.ok) {
-      throw new Error('server error');
+      throw new Error("El inmueble no existe");
     }
     const data = await res.json();
     return data;
@@ -31,8 +31,8 @@ function InmuebleById() {
 
   const inmueble = data?.inmueble ?? {};
 
-  if (loading) return <div>Cargando inmueble...</div>;
-  if (error) return <div>{error?.message}</div>;
+  if (loading) return <div className=''>Cargando inmueble...</div>;
+  if (error) return <div className='w-full'>{error.message}</div>;
   if (!inmueble) return (
     <>
       <h3 className="text-xl">El inmueble no existe</h3>
@@ -42,7 +42,7 @@ function InmuebleById() {
 
   return (
     <>
-      <section className="relative py-20 lg:py-60 text-white">
+      <section className="relative py-20 lg:py-60 text-white ">
         {/* Fondo con imagen */}
         <div
           className="absolute inset-0"

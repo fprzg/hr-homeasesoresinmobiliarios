@@ -14,8 +14,6 @@ export const envSchema = z.object({
     CLOUDFLARE_R2_ACCESS_KEY: z.string(),
     CLOUDFLARE_R2_SECRET_KEY: z.string(),
     CLOUDFLARE_R2_BUCKET_ENDPOINT: z.string(),
-
-    CLOUDFLARE_R2_BUCKET_PUBLIC_URL: z.string(),
 })
 
 export type AppEnvVariables = z.infer<typeof envSchema>

@@ -1,10 +1,11 @@
 import { Hono } from 'hono';
 import { db } from '@/app';
 import { schemas } from '@/db/schemas';
-import { ArchivosService } from '@/app';
+import { storageService } from '@/services/storageService';
 import { eq } from 'drizzle-orm';
-import { error } from 'node:console';
 import { getUser } from '@/middleware/auth';
+import { logger } from '@/lib/logger';
+import { normalizeError } from '@shared/types';
 
 export const archivos = new Hono()
     .post('/', getUser, async (c) => {
@@ -17,11 +18,15 @@ export const archivos = new Hono()
 
         for (const file of files) {
             try {
-                const image = await ArchivosService.guardar(file);
+                const image = await storageService.guardar(file);
+                if (!image) {
+                    throw new Error(`error al guardar archivo '${file.name}'`);
+                }
+
                 await db.insert(schemas.archivos).values({ ...image, addToCarousel: true });
                 results.push({ id: image.id, originalName: image.filename });
-            } catch (err) {
-                console.error(err);
+            } catch (unkErr) {
+                logger.error("error al ", normalizeError(unkErr))
             }
         }
 
@@ -53,39 +58,38 @@ export const archivos = new Hono()
                 ok: true,
                 imagenes,
             }, 200);
-        } catch (e) {
-            console.error("Error al obtener archivos para el carrusel", error);
+        } catch (unkErr) {
+            logger.error("error al obtener archivos para el carrusel", normalizeError(unkErr))
             return c.json({
                 ok: false,
                 message: "Error al obtener los archivos del carrusel",
-                error: e instanceof Error ? e.message : null,
             })
         }
     })
-    /*
-    .get('/:id', async (c) => {
-        const id = c.req.param('id');
-        const doc = await db
-            .query
-            .archivos
-            .findFirst({ where: eq(schemas.archivos.id, id) })
-            ;
+/*
+.get('/:id', async (c) => {
+    const id = c.req.param('id');
+    const doc = await db
+        .query
+        .archivos
+        .findFirst({ where: eq(schemas.archivos.id, id) })
+        ;
 
-        if (!doc) {
-            return c.notFound();
+    if (!doc) {
+        return c.notFound();
+    }
+
+    const file = await ArchivosService.leer(id);
+    if (!file) {
+        return c.notFound();
+    }
+
+    return c.body(file.buffer, {
+        headers: {
+            'Content-Type': doc.mimetype,
+            'Content-Length': file.size.toString(),
+            'Content-Disposition': `inline; filename="${doc.filename}"`,
         }
-
-        const file = await ArchivosService.leer(id);
-        if (!file) {
-            return c.notFound();
-        }
-
-        return c.body(file.buffer, {
-            headers: {
-                'Content-Type': doc.mimetype,
-                'Content-Length': file.size.toString(),
-                'Content-Disposition': `inline; filename="${doc.filename}"`,
-            }
-        })
     })
-        */
+})
+    */

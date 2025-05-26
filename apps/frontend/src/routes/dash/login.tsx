@@ -22,11 +22,6 @@ function RouteComponent() {
   const redirectTarget = "/dash";
   const navigate = useNavigate();
 
-  const context = Route.useRouteContext();
-  if (context.usuario) {
-    navigate({ to: redirectTarget });
-  }
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -60,6 +55,11 @@ function RouteComponent() {
     }
   };
 
+  const context = Route.useRouteContext();
+  if (context.usuario) {
+    navigate({ to: redirectTarget });
+  }
+  
   return (
     <div className="text-center w-[350px] mx-auto grid grid-cols-1 gap-y-4">
       <div className="grid grid-cols-1">

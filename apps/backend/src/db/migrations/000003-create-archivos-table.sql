@@ -9,3 +9,9 @@ CREATE TABLE
         add_to_carousel INTEGER NOT NULL CHECK (add_to_carousel IN (0, 1)),
         FOREIGN KEY (inmueble_id) REFERENCES inmuebles (id)
     );
+
+CREATE TABLE 
+    pendiente_eliminar (
+        id TEXT PRIMARY KEY,
+        FOREIGN KEY (id) REFERENCES archivos (id)
+    );

@@ -1,19 +1,20 @@
-// @/db/models/inmuebles.ts
+// @/services/inmueblesService.ts
 import { schemas } from "@/db/schemas";
 import { eq, and, inArray, isNull, isNotNull, gte, lte, like, sql } from "drizzle-orm";
-
-// routes/inmuebles.ts
-import { } from 'drizzle-orm';
-import { db } from "@/app"; // Asumiendo que tienes un archivo de configuración para la conexión a la BD
+import { storageService } from "@/services/storageService";
+import { logger } from "@/lib/logger";
+import { db } from "@/app";
 import {
     type InmuebleType,
     type CasaType,
     type TerrenoType,
     type AsentamientoType,
     type BloqueType,
-    type InmueblesBuscadorQueryType
+    type InmueblesBuscadorQueryType,
+    type InmuebleRegistroType
 } from "@shared/zod";
 import { nanoid } from "nanoid";
+import { normalizeError } from "@shared/types";
 
 export async function leer(q: InmueblesBuscadorQueryType) {
     const offset = (q.page - 1) * q.pageSize;
@@ -95,11 +96,17 @@ export async function leerPorId(id: string): Promise<InmuebleType | undefined> {
     return transformarRegistroAInmueble(resultados);
 }
 
-export async function guardar(data: InmuebleType): Promise<boolean> {
+export async function guardar(dataRegistro: InmuebleRegistroType): Promise<InmuebleType | undefined> {
     try {
         //
         // verificar que todas las imagenes referenciadas existan en la base de datos
         //
+
+        const data: InmuebleType = {
+            ...dataRegistro,
+            id: `doc_${nanoid()}`,
+        }
+
         const inmuebleIds: string[] = data.contenido.map((bloque) => bloque.imagenId);
         inmuebleIds.push(data.portada);
         const idsInDB = await db
@@ -111,13 +118,15 @@ export async function guardar(data: InmuebleType): Promise<boolean> {
                     isNull(schemas.archivos.inmuebleId)
                 )
             );
+
         if (idsInDB.length !== inmuebleIds.length) {
-            return false;
+            throw new Error("el inmueble incluye imagenes que no existen")
         }
 
         //
-        // checar si 
+        // actualizar imagenes que se van agregar al carrusel
         //
+
         const addToCarousel = data.contenido.filter((bloque) => bloque.agregarAPortada).map((bloque) => bloque.imagenId);
         addToCarousel.push(data.portada);
 
@@ -131,8 +140,6 @@ export async function guardar(data: InmuebleType): Promise<boolean> {
         // guardamos el asentamiento, inmueble base y extensión del inmueble
         //
 
-        data.id = `doc_${nanoid()}`;
-
         const [nuevoAsentamiento] = await db
             .insert(schemas.asentamientos)
             .values({
@@ -144,12 +151,12 @@ export async function guardar(data: InmuebleType): Promise<boolean> {
             })
             .returning({ id: schemas.asentamientos.id });
         if (!nuevoAsentamiento) {
-            throw new Error("no se pudo guardar el asentamiento.")
+            throw new Error("error al guardar el asentamiento")
         }
 
         const asentamientoId = nuevoAsentamiento.id;
 
-        await db.insert(schemas.inmuebles)
+        const [dbFechas] = await db.insert(schemas.inmuebles)
             .values({
                 id: data.id,
                 categoria: data.tipo,
@@ -162,7 +169,16 @@ export async function guardar(data: InmuebleType): Promise<boolean> {
                 descripcion: data.descripcion,
                 portada: data.portada,
                 contenido: data.contenido
-            });
+            })
+            .returning({
+                publicacion: schemas.inmuebles.fechaPublicacion,
+                actualizacion: schemas.inmuebles.fechaActualizacion,
+            })
+            ;
+
+        if (!dbFechas || !dbFechas.publicacion || !dbFechas.actualizacion) {
+            throw new Error("error al guardar inmueble");
+        }
 
         if (data.tipo === "casa") {
             const casa = data as CasaType;
@@ -175,7 +191,7 @@ export async function guardar(data: InmuebleType): Promise<boolean> {
                     numRecamaras: casa.numRecamaras,
                     numPisos: casa.numPisos,
                     numCocheras: casa.numCocheras,
-                    piscina: casa.piscina ? 1 : 0
+                    piscina: casa.piscina ? 1 : 0,
                 });
         } else if (data.tipo === "terreno") {
             const terreno = data as TerrenoType;
@@ -193,25 +209,28 @@ export async function guardar(data: InmuebleType): Promise<boolean> {
             .set({ inmuebleId: data.id })
             .where(inArray(schemas.archivos.id, inmuebleIds))
 
-        return true;
-    } catch (error) {
-        console.error("Error al guardar inmueble:", error);
-        return false;
+        logger.info("se guardó el inmueble", { "id": data.id })
+
+        data.fechaActualizacion = dbFechas.actualizacion;
+        data.fechaPublicacion = dbFechas.publicacion;
+
+        return data;
+    } catch (unkErr) {
+        logger.error("error al guardar inmueble", normalizeError(unkErr));
+        return undefined;
     }
 }
 
-export async function actualizar(data: InmuebleType): Promise<boolean> {
+export async function actualizar(data: InmuebleType): Promise<string | undefined> {
     try {
         //
-        // Verificar que el inmueble exista
+        // verificar que el inmueble exista
         //
 
         const [inmuebleExistente] = await db
             .select()
             .from(schemas.inmuebles)
-            .where(
-                eq(schemas.inmuebles.id, data.id)
-            )
+            .where(eq(schemas.inmuebles.id, data.id))
             ;
 
         if (!inmuebleExistente) {
@@ -241,21 +260,19 @@ export async function actualizar(data: InmuebleType): Promise<boolean> {
 
         await db
             .delete(schemas.archivos)
-            .where(
-                inArray(schemas.archivos.id, Array.from(pendientesEliminar))
-            )
+            .where(inArray(schemas.archivos.id, Array.from(pendientesEliminar)))
             ;
 
         await db
             .update(schemas.archivos)
             .set({ inmuebleId: data.id })
-            .where(
-                inArray(schemas.archivos.id, Array.from(pendientesReferenciar))
-            )
+            .where(inArray(schemas.archivos.id, Array.from(pendientesReferenciar)))
             ;
 
+        pendientesEliminar.forEach((id) => storageService.programarEliminacion(id));
+
         //
-        // actualizar agregarAPortada
+        // agregamos imagenes al carrusel
         //
 
         const agregarAPortadaTrue = data.contenido.filter((elem) => elem.agregarAPortada).map((elem) => elem.imagenId);
@@ -274,7 +291,7 @@ export async function actualizar(data: InmuebleType): Promise<boolean> {
             ;
 
         //
-        // Actualizar el contenido
+        // actualizar asentamiento
         //
 
         const [asentamientoActual] = await db
@@ -322,7 +339,11 @@ export async function actualizar(data: InmuebleType): Promise<boolean> {
             asentamientoId = asentamientoActual.id;
         }
 
-        const [inmuebleUpdatedId] = await db.update(schemas.inmuebles)
+        //
+        // actualizar inmueble
+        //
+
+        const [dbFecha] = await db.update(schemas.inmuebles)
             .set({
                 categoria: data.tipo,
                 asentamientoId,
@@ -335,11 +356,15 @@ export async function actualizar(data: InmuebleType): Promise<boolean> {
                 contenido: data.contenido
             })
             .where(eq(schemas.inmuebles.id, data.id))
-            .returning({ id: schemas.inmuebles.id });
+            .returning({ actualizacion: schemas.inmuebles.fechaActualizacion });
 
-        if (!inmuebleUpdatedId) {
+        if (!dbFecha || !dbFecha.actualizacion) {
             throw new Error(`no se pudo actualizar el inmueble de id ${data.id}`)
         }
+
+        //
+        // actualizar contenido de la casa o terreno
+        //
 
         if (data.tipo === "casa") {
             const casa = data as CasaType;
@@ -405,10 +430,10 @@ export async function actualizar(data: InmuebleType): Promise<boolean> {
             }
         }
 
-        return true;
-    } catch (error) {
-        console.error("Error al actualizar inmueble:", error);
-        return false;
+        return dbFecha.actualizacion;
+    } catch (unkErr) {
+        logger.error("error al actualizar inmueble", normalizeError(unkErr));
+        return undefined;
     }
 }
 
@@ -417,9 +442,7 @@ export async function eliminar(id: string): Promise<boolean> {
         const [inmuebleExistente] = await db
             .select()
             .from(schemas.inmuebles)
-            .where(
-                eq(schemas.inmuebles.id, id)
-            )
+            .where(eq(schemas.inmuebles.id, id))
             ;
 
         if (!inmuebleExistente) {
@@ -429,36 +452,31 @@ export async function eliminar(id: string): Promise<boolean> {
         if (inmuebleExistente.categoria === "casa") {
             await db
                 .delete(schemas.casas)
-                .where(
-                    eq(schemas.casas.id, id)
-                )
+                .where(eq(schemas.casas.id, id))
                 ;
         } else if (inmuebleExistente.categoria === "terreno") {
             await db
                 .delete(schemas.terrenos)
-                .where(
-                    eq(schemas.terrenos.id, id)
-                )
+                .where(eq(schemas.terrenos.id, id))
                 ;
         }
 
         await db
             .delete(schemas.inmuebles)
-            .where(
-                eq(schemas.inmuebles.id, id)
-            )
+            .where(eq(schemas.inmuebles.id, id))
             ;
 
         await db
             .delete(schemas.archivos)
-            .where(
-                eq(schemas.archivos.inmuebleId, id)
-            )
+            .where(eq(schemas.archivos.inmuebleId, id))
             ;
 
+        storageService.programarEliminacion(inmuebleExistente.portada);
+        inmuebleExistente.contenido?.forEach((bloque) => storageService.programarEliminacion(bloque.imagenId));
+
         return true;
-    } catch (error) {
-        console.error("Error al eliminar inmueble:", error);
+    } catch (unkErr) {
+        logger.error("error al eliminar inmueble", normalizeError(unkErr));
         return false;
     }
 }

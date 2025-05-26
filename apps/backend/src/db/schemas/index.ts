@@ -61,4 +61,16 @@ const archivos = sqliteTable('archivos', {
   addToCarousel: integer('add_to_carousel', {mode: 'boolean'}).notNull(),
 });
 
-export const schemas = { usuarios, asentamientos, inmuebles, casas, terrenos, archivos, };
+const pendienteEliminar = sqliteTable('pendiente_eliminar', {
+  id: text('id').primaryKey().references(() => archivos.id),
+});
+
+export const schemas = {
+  usuarios,
+  asentamientos,
+  inmuebles,
+  casas,
+  terrenos,
+  archivos,
+  pendienteEliminar,
+};

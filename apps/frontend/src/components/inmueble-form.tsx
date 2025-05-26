@@ -1,9 +1,10 @@
 import { useNavigate } from '@tanstack/react-router';
-import { crearCasa, crearInmuebleBase, crearTerreno, estadosMexico, InmuebleBaseType, BloqueType, crearBloqueType, InmuebleType } from "@shared/zod";
+import { crearCasa, crearInmuebleBase, crearTerreno, estadosMexico, BloqueType, crearBloqueType, InmuebleType } from "@shared/zod";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { ArchivosApi } from '@/api';
+import { normalizeError } from '@shared/types';
 
 async function getDocumentos() {
     const res = await api.inmuebles.$get();
@@ -110,14 +111,14 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
         setPortadaFile(file);
 
         try {
-           setLoading(true);
-           const [imgRes] = await ArchivosApi.subir([file]);
-           setInmueble({
-            ...inmueble,
-            portada: imgRes.id,
-           });
+            setLoading(true);
+            const [imgRes] = await ArchivosApi.subir([file]);
+            setInmueble({
+                ...inmueble,
+                portada: imgRes.id,
+            });
 
-           setLoading(false);
+            setLoading(false);
         } catch (err) {
             setError("Error al subir la imagen de portada");
             setLoading(false);
@@ -193,55 +194,46 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
 
         try {
             setLoading(true);
-            const currentDate = new Date().toISOString();
 
             if (isEditing) {
-                const updatedInmueble = {
-                    ...inmueble,
-                    fechaActualizacion: currentDate,
-                };
-
-                await fetch('/api/inmuebles', {
+                const res = await fetch('/api/inmuebles', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updatedInmueble)
+                    body: JSON.stringify(inmueble)
                 });
+                if (!res.ok) {
+                    throw new Error("hubo un error al actualizar el inmueble")
+                }
+                const data = await res.json();
 
                 setInmuebles(
                     inmuebles.map((item) =>
-                        item.id === inmueble.id ? updatedInmueble : item
+                        item.id === inmueble.id
+                            ? { ...inmueble, fechaActualizacion: data.fechaActualizacion }
+                            : item
                     )
                 );
             } else {
-                const newInmueble = {
-                    ...inmueble,
-                    fechaPublicacion: currentDate,
-                    fechaActualizacion: currentDate,
-                };
-
                 const res = await fetch('/api/inmuebles', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newInmueble)
+                    body: JSON.stringify(inmueble)
                 });
 
                 if (!res.ok) {
-                    throw new Error("error al enviar al registar el inmueble. Intente de nuevo o contacte al administrador.");
+                    throw new Error("error al registrar el inmueble. Intente de nuevo o contacte al administrador.");
                 }
 
                 const data = await res.json();
+                console.log(data.fechaActualizacion);
 
-                if (data.ok) {
-                    setInmuebles([...inmuebles, inmueble]);
-                    resetForm();
-                } else {
-                    setError("error al guardar el inmueble. Intente más tarde o contacte el administrador.");
-                }
+                setInmuebles([...inmuebles, { ...inmueble }]);
+                resetForm();
             }
 
             setLoading(false);
-        } catch (err) {
-            setError("Error al guardar el inmueble");
+        } catch (unkErr) {
+            setError(normalizeError(unkErr).message);
             setLoading(false);
         }
     };
@@ -256,7 +248,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
         try {
             setLoading(true);
 
-            const res = await api.inmuebles[":id"].$get({ param: { id } });
+            const res = await api.inmuebles[":id"].$delete({ param: { id } });
             if (!res.ok) {
                 setError('error al eliminar el inmueble. Intente de nuevo o contacte al administrador.');
                 return;
@@ -426,7 +418,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="text"
                             name="asentamiento.tipo"
-                            value={inmueble.asentamiento.tipo}
+                            value={inmueble.asentamiento.tipo || ""}
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                         />
@@ -437,7 +429,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="text"
                             name="asentamiento.calleColonia"
-                            value={inmueble.asentamiento.calleColonia}
+                            value={inmueble.asentamiento.calleColonia || ""}
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                         />
@@ -448,7 +440,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="text"
                             name="asentamiento.municipio"
-                            value={inmueble.asentamiento.municipio}
+                            value={inmueble.asentamiento.municipio || ""} 
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                         />
@@ -459,7 +451,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="number"
                             name="asentamiento.codigoPostal"
-                            value={inmueble.asentamiento.codigoPostal}
+                            value={inmueble.asentamiento.codigoPostal || ""}
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                             min="1"
@@ -475,7 +467,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="text"
                             name="titulo"
-                            value={inmueble.titulo}
+                            value={inmueble.titulo || ""}
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                         />
@@ -485,7 +477,7 @@ export function InmuebleForm({ inmuebleData }: { inmuebleData?: InmuebleType }) 
                         <input
                             type="text"
                             name="descripcion"
-                            value={inmueble.descripcion}
+                            value={inmueble.descripcion || ""}
                             onChange={handleChange}
                             className="w-full p-2 border rounded-md"
                         />

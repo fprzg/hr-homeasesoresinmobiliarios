@@ -54,15 +54,15 @@ export const inmuebleBaseSchema = z.object({
   asentamiento: asentamientoSchema,
   precio: z.number().int().gt(0),
   areaTotal: z.number().int().gt(0),
-  fechaPublicacion: z.string().datetime(),
-  fechaActualizacion: z.string().datetime(),
+  fechaPublicacion: z.string().datetime().optional(),
+  fechaActualizacion: z.string().datetime().optional(),
   titulo: z.string(),
   descripcion: z.string(),
   portada: z.string(),
   contenido: z.array(bloqueSchema),
 });
 
-export const casaSchema = inmuebleBaseSchema.extend({
+const casaCampos = {
   tipo: z.literal("casa"),
   areaConstruida: z.number().int().gte(0),
   numBanos: z.number().int().gte(0),
@@ -71,27 +71,38 @@ export const casaSchema = inmuebleBaseSchema.extend({
   numCocheras: z.number().int().gte(0),
   totalAreas: z.number().int().gte(0),
   piscina: z.boolean().default(false),
-});
+};
 
-export const terrenoSchema = inmuebleBaseSchema.extend({
+const terrenoCampos = {
   tipo: z.literal("terreno"),
   metrosFrente: z.number().int().gt(0),
   metrosFondo: z.number().int().gt(0),
   tipoPropiedad: z.enum(["privada", "comunal", "ejidal",]),
-});
+};
+
+export const casaSchema = inmuebleBaseSchema.extend(casaCampos);
+export const terrenoSchema = inmuebleBaseSchema.extend(terrenoCampos);
 
 export const inmuebleSchema = z.discriminatedUnion("tipo", [
   casaSchema,
   terrenoSchema,
 ]);
 
+export const inmuebleRegistroSchema = z.discriminatedUnion("tipo", [
+  inmuebleBaseSchema.omit({ id: true, fechaPublicacion: true, fechaActualizacion: true }).extend(casaCampos),
+  inmuebleBaseSchema.omit({ id: true, fechaPublicacion: true, fechaActualizacion: true }).extend(terrenoCampos)
+]);
+
 export type BloqueType = z.infer<typeof bloqueSchema>;
 export type AsentamientoType = z.infer<typeof asentamientoSchema>;
-
 export type InmuebleBaseType = z.infer<typeof inmuebleBaseSchema>;
+
 export type CasaType = z.infer<typeof casaSchema>;
 export type TerrenoType = z.infer<typeof terrenoSchema>;
+
 export type InmuebleType = z.infer<typeof inmuebleSchema>;
+
+export type InmuebleRegistroType = z.infer<typeof inmuebleRegistroSchema>;
 
 function crearAsentamiento(): AsentamientoType {
   return {

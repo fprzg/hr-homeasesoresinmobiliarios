@@ -1,13 +1,10 @@
 import { routes } from "./routes";
-import { logger } from "./middleware/logger";
+import { middlewareLogger } from "./middleware/logger";
 import { createDB } from "./db";
 import { createFactory } from "hono/factory";
-import { type AppEnvVariables, envSchema } from "./zod/env";
-import { ArchivosServiceFactory } from "./services/archivosService";
 import { S3Client } from "bun";
-
-export type Variables = Record<string, unknown> & AppEnvVariables;
-export const envVariables = envSchema.parse(process.env);
+import { type AppEnvVariables } from "@/zod/env";
+import { type Variables, envVariables } from "@/lib/env";
 
 const factory = createFactory<{ Variables: Variables }>({
   initApp: (app) => {
@@ -23,7 +20,7 @@ const factory = createFactory<{ Variables: Variables }>({
 export function getApp() {
   const app = factory.createApp();
 
-  app.use("*", logger);
+  app.use("*", middlewareLogger);
 
   const apiRoutes = app.basePath("/api")
     .route("/inmuebles", routes.inmuebles)
@@ -36,7 +33,6 @@ export function getApp() {
 const [app, apiRoutes] = getApp();
 
 export const db = createDB(envVariables);
-export const ArchivosService = ArchivosServiceFactory(envVariables);
 
 export default app;
 export type ApiRoutes = typeof apiRoutes;

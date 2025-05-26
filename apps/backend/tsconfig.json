@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@shared/api":["../../shared/api"],
+      "@shared/types":["../../shared/types"],
       "@shared/zod":["../../shared/zod"],
       "@/*":["./src/*"]
     },
